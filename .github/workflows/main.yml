@@ -1,0 +1,21 @@
+name: Check Code Formatting
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: "**"
+jobs:
+  test:
+    name: Check Code Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install packages
+        run: npm i
+      - name: Prettier
+        run: npm run prettier
+      - name: Lint
+        run: npm run lint
