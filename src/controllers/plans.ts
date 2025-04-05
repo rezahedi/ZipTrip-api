@@ -7,25 +7,35 @@ const dummyStops: stopType[] = dummyData.stops
 const dummyCategories: categoryType[] = dummyData.categories
 const dummyUsers: userType[] = dummyData.users
 
+const PAGE_SIZE = 10
+
 const getAllPlans = (req: Request, res: Response) => {
-  const { categoryId } = req.query
+  const { categoryId, page = 1, size = PAGE_SIZE } = req.query
+
   let resultPlans: planType[] = dummyPlans
 
   if (categoryId) {
-    resultPlans = dummyPlans.filter((plan: planType) => {
+    resultPlans = resultPlans.filter((plan: planType) => {
       return plan.categoryId === categoryId
     })
   }
 
-  // TODO: Add pagination, sorting, filtering logic
+  // Pagination
+  const pageNumber = parseInt(page as string)
+  const pageSize = parseInt(size as string)
+  resultPlans = resultPlans.slice((pageNumber - 1) * pageSize, pageNumber * pageSize)
 
   res.json({
-    plans: resultPlans,
+    plans: {
+      page: pageNumber,
+      size: pageSize,
+      data: resultPlans,
+    },
   })
 }
 
 const getUserPlans = (req: Request, res: Response) => {
-  const { userId } = req.params
+  const { userId, page = 1, size = PAGE_SIZE } = req.params
 
   const user = dummyUsers.find((user: userType) => {
     return user.userId === userId
@@ -38,21 +48,31 @@ const getUserPlans = (req: Request, res: Response) => {
     return
   }
 
+  let resultPlans: planType[] = dummyPlans
+  resultPlans = resultPlans.filter((plan: planType) => {
+    return plan.userId === userId
+  })
+
+  // Pagination
+  const pageNumber = parseInt(page as string)
+  const pageSize = parseInt(size as string)
+  resultPlans = resultPlans.slice((pageNumber - 1) * pageSize, pageNumber * pageSize)
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password, ...userWithoutPassword } = user
 
-  // TODO: Add pagination, sorting, filtering logic
-
   res.json({
     ...userWithoutPassword,
-    plans: dummyPlans.filter((plan: planType) => {
-      return plan.userId === userId
-    }),
+    plans: {
+      page: pageNumber,
+      size: pageSize,
+      data: resultPlans,
+    },
   })
 }
 
 const getCategoryPlans = (req: Request, res: Response) => {
-  const { categoryId } = req.params
+  const { categoryId, page = 1, size = PAGE_SIZE } = req.params
 
   const category = dummyCategories.find((category: categoryType) => {
     return category.categoryId === categoryId
@@ -65,13 +85,23 @@ const getCategoryPlans = (req: Request, res: Response) => {
     return
   }
 
-  // TODO: Add pagination, sorting, filtering logic
+  let resultPlans: planType[] = dummyPlans
+  resultPlans = resultPlans.filter((plan: planType) => {
+    return plan.categoryId === categoryId
+  })
+
+  // Pagination
+  const pageNumber = parseInt(page as string)
+  const pageSize = parseInt(size as string)
+  resultPlans = resultPlans.slice((pageNumber - 1) * pageSize, pageNumber * pageSize)
 
   res.json({
     ...category,
-    plans: dummyPlans.filter((plan: planType) => {
-      return plan.categoryId === categoryId
-    }),
+    plans: {
+      page: pageNumber,
+      size: pageSize,
+      data: resultPlans,
+    },
   })
 }
 
