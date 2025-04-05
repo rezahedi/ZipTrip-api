@@ -114,9 +114,7 @@
       "planId": "berkeley-highlights-tour",
       "title": "Berkeley Highlights Tour",
       "description": "A day exploring the University of California, Berkeley campus and surrounding cultural spots.",
-      "images": [
-        "https://dummyimage.com/390x265/673AB7/fff.png"
-      ],
+      "images": ["https://dummyimage.com/390x265/673AB7/fff.png"],
       "type": "Evening",
       "stopCount": 4,
       "rating": 4.9,
