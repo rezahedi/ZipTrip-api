@@ -5,6 +5,7 @@
       "name": "Jane Doe",
       "email": "jane.doe@example.com",
       "password": "hashed_password",
+      "pictureURL": "https://api.dicebear.com/9.x/dylan/svg?seed=jane-doe",
       "createdAt": "2025-04-04T16:50:54Z",
       "updatedAt": "2025-04-04T16:50:54Z"
     },
@@ -13,6 +14,7 @@
       "name": "John Smith",
       "email": "john.smith@example.com",
       "password": "hashed_password",
+      "pictureURL": "https://api.dicebear.com/9.x/dylan/svg?seed=john-smith",
       "createdAt": "2025-04-04T16:55:54Z",
       "updatedAt": "2025-04-04T16:55:54Z"
     },
@@ -21,6 +23,7 @@
       "name": "Alice Johnson",
       "email": "alice.johnson@example.com",
       "password": "hashed_password",
+      "pictureURL": "https://api.dicebear.com/9.x/dylan/svg?seed=alice-johnson",
       "createdAt": "2025-04-04T17:00:54Z",
       "updatedAt": "2025-04-04T17:00:54Z"
     }

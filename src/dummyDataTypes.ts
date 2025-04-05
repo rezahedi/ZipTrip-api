@@ -49,6 +49,7 @@ interface userType {
   name: string
   email: string
   password: string
+  pictureURL: string
   createdAt: string // ISO 8601 format, e.g. "2023-10-01T12:00:00Z"
   updatedAt: string // ISO 8601 format, e.g. "2023-10-01T12:00:00Z"
 }
