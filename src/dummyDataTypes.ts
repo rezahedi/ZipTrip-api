@@ -9,6 +9,7 @@ interface planType {
   title: string
   description: string
   imageURL: string
+  type: string // 'Full day' | 'Mid day' | 'Evening' | 'Night' | 'All Night'
   stopCount: number // Number of stops in the plan
   rating: number // Average rating of the plan (0 to 5)
   reviewCount: number // Number of reviews/rates for the plan
