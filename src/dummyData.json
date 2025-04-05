@@ -67,7 +67,12 @@
       "planId": "san-francisco-day-tour",
       "title": "San Francisco Day Tour",
       "description": "A one-day tour exploring San Francisco's iconic sites, parks, museums, and dining establishments.",
-      "imageURL": "https://dummyimage.com/390x265/2196F3/fff.png",
+      "images": [
+        "https://dummyimage.com/390x265/2196F3/fff.png",
+        "https://dummyimage.com/390x265/FF9800/fff.png",
+        "https://dummyimage.com/390x265/673AB7/fff.png",
+        "https://dummyimage.com/390x265/8BC34A/fff.png"
+      ],
       "type": "Full day",
       "stopCount": 5,
       "rating": 4.8,
@@ -85,7 +90,13 @@
       "planId": "oakland-cultural-highlights",
       "title": "Oakland Cultural Highlights",
       "description": "A day exploring Oakland's cultural landmarks, parks, and dining spots.",
-      "imageURL": "https://dummyimage.com/390x265/FF9800/fff.png",
+      "images": [
+        "https://dummyimage.com/390x265/FF9800/fff.png",
+        "https://dummyimage.com/390x265/8BC34A/fff.png",
+        "https://dummyimage.com/390x265/673AB7/fff.png",
+        "https://dummyimage.com/390x265/3F51B5/fff.png",
+        "https://dummyimage.com/390x265/2196F3/fff.png"
+      ],
       "type": "Mid day",
       "stopCount": 4,
       "rating": 4.7,
@@ -103,7 +114,9 @@
       "planId": "berkeley-highlights-tour",
       "title": "Berkeley Highlights Tour",
       "description": "A day exploring the University of California, Berkeley campus and surrounding cultural spots.",
-      "imageURL": "https://dummyimage.com/390x265/673AB7/fff.png",
+      "images": [
+        "https://dummyimage.com/390x265/673AB7/fff.png"
+      ],
       "type": "Evening",
       "stopCount": 4,
       "rating": 4.9,
@@ -121,7 +134,11 @@
       "planId": "berkeley-nature-history-tour",
       "title": "Berkeley Nature & History Tour",
       "description": "A day exploring Berkeley’s natural beauty, parks, and historical sites.",
-      "imageURL": "https://dummyimage.com/390x265/8BC34A/fff.png",
+      "images": [
+        "https://dummyimage.com/390x265/8BC34A/fff.png",
+        "https://dummyimage.com/390x265/7C4A2/fff.png",
+        "https://dummyimage.com/390x265/FF9800/fff.png"
+      ],
       "type": "Night",
       "stopCount": 5,
       "rating": 4.8,

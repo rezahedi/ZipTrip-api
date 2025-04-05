@@ -8,7 +8,7 @@ interface planType {
   planId: string
   title: string
   description: string
-  imageURL: string
+  images: string[] // Array of image URLs for the plan
   type: string // 'Full day' | 'Mid day' | 'Evening' | 'Night' | 'All Night'
   stopCount: number // Number of stops in the plan
   rating: number // Average rating of the plan (0 to 5)
