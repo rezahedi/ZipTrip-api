@@ -27,6 +27,7 @@ const getAllPlans = (req: Request, res: Response) => {
 
   res.json({
     plans: {
+      ...(categoryId && { categoryId }),
       page: pageNumber,
       size: pageSize,
       data: resultPlans,
