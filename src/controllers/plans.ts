@@ -26,12 +26,10 @@ const getAllPlans = (req: Request, res: Response) => {
   resultPlans = resultPlans.slice((pageNumber - 1) * pageSize, pageNumber * pageSize)
 
   res.json({
-    plans: {
-      ...(categoryId && { categoryId }),
-      page: pageNumber,
-      size: pageSize,
-      data: resultPlans,
-    },
+    ...(categoryId && { categoryId }),
+    page: pageNumber,
+    size: pageSize,
+    items: resultPlans,
   })
 }
 
@@ -67,7 +65,7 @@ const getUserPlans = (req: Request, res: Response) => {
     plans: {
       page: pageNumber,
       size: pageSize,
-      data: resultPlans,
+      items: resultPlans,
     },
   })
 }
@@ -101,7 +99,7 @@ const getCategoryPlans = (req: Request, res: Response) => {
     plans: {
       page: pageNumber,
       size: pageSize,
-      data: resultPlans,
+      items: resultPlans,
     },
   })
 }
