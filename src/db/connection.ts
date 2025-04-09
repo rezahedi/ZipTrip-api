@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
-require('dotenv').config()
+import dotenv from 'dotenv';
+dotenv.config();
 
 const connectDB = (url: string) => {
   if (!url) {
