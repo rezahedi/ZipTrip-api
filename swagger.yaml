@@ -14,34 +14,10 @@ paths:
       summary: Get All Plans, filter by category or search, with pagination of 10 rows by default
       operationId: GetAllPlans
       parameters:
-        - in: query
-          name: categoryId
-          schema:
-            type: string
-            example: nature-and-history
-          required: false
-          description: Category ID to filter plans by category (optional)
-        - in: query
-          name: page
-          schema:
-            type: integer
-            default: 1
-          required: false
-          description: Page number for pagination (optional, default is 1)
-        - in: query
-          name: size
-          schema:
-            type: integer
-            default: 10
-          required: false
-          description: Number of items per page for pagination (optional, default is 10)
-        - in: query
-          name: search
-          schema:
-            type: string
-            default: ''
-          required: false
-          description: Search through title of plans to find matching words (optional)
+        - $ref: '#/components/parameters/CategoryIdParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/SearchParam'
       responses:
         '200':
           description: Successful response
@@ -742,6 +718,42 @@ components:
             type: number
         sequence:
           type: number
+  parameters:
+    CategoryIdParam:
+      name: categoryId
+      in: query
+      schema:
+        type: string
+        example: nature-and-history
+      required: false
+      description: Category ID to filter plans by category (optional)
+
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+      required: false
+      description: Page number for pagination (optional, default is 1)
+
+    SizeParam:
+      name: size
+      in: query
+      schema:
+        type: integer
+        default: 10
+      required: false
+      description: Number of items per page for pagination (optional, default is 10)
+
+    SearchParam:
+      name: search
+      in: query
+      schema:
+        type: string
+        default: null
+      required: false
+      description: (NOT Working Yet) Search through title of plans to find matching words (optional)
 tags:
   - name: Plans
     description: Fetching plans for public views
