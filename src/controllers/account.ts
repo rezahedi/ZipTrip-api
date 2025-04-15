@@ -107,12 +107,26 @@ const updatePlan = async (req: Request, res: Response) => {
   res.status(StatusCodes.CREATED).json({ plan: updatedPlan, stops })
 }
 
-const deletePlan = (req: Request, res: Response) => {
-  // TODO: Delete a plan with all associated stops.
+const deletePlan = async (req: Request, res: Response) => {
+  if (!req.user) throw new Error('Authentication Invalid')
 
-  res.json({
-    msg: 'DRAFT - delete a plan',
+  const userId = req.user.userId
+  const planId = req.params.planId
+
+  const result = await PlanSchema.findByIdAndDelete({
+    _id: planId,
+    userId,
   })
+
+  if (!result) {
+    throw new Error(`No plan with id ${planId}`)
+  }
+
+  await StopSchema.deleteMany({
+    planId,
+  })
+
+  res.status(StatusCodes.NO_CONTENT).end()
 }
 
 export { fetchAllPlans, createNewPlan, fetchPlan, updatePlan, deletePlan }
