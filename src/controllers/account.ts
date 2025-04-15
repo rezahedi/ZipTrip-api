@@ -54,11 +54,30 @@ const createNewPlan = async (req: Request, res: Response) => {
   res.status(StatusCodes.CREATED).json({ plan: createdPlan, stops: createdStops })
 }
 
-const fetchPlan = (req: Request, res: Response) => {
-  // TODO: Fetch a plan with all stops if had any.
+const fetchPlan = async (req: Request, res: Response) => {
+  if (!req.user) throw new Error('Authentication Invalid')
 
-  res.json({
-    msg: 'DRAFT - fetch a plan',
+  const userId = req.user.userId
+  const planId = req.params.planId
+  console.log('userId', userId)
+  console.log('planId', planId)
+
+  const plan: IPlan | null = await PlanSchema.findOne({
+    userId,
+    _id: planId,
+  }).populate('categoryId', 'title')
+
+  if (!plan) {
+    throw new Error(`No plan with id ${planId}`)
+  }
+
+  const stops = await StopSchema.find({
+    planId,
+  })
+
+  res.status(StatusCodes.OK).json({
+    ...plan.toJSON(),
+    stops,
   })
 }
 
