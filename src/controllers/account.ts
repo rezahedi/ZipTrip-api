@@ -89,14 +89,6 @@ const updatePlan = (req: Request, res: Response) => {
   })
 }
 
-const ChangePlanStatus = (req: Request, res: Response) => {
-  // TODO: Change a plan's status to published or pending.
-
-  res.json({
-    msg: 'DRAFT - change a plan status',
-  })
-}
-
 const deletePlan = (req: Request, res: Response) => {
   // TODO: Delete a plan with all associated stops.
 
@@ -105,4 +97,4 @@ const deletePlan = (req: Request, res: Response) => {
   })
 }
 
-export { fetchAllPlans, createNewPlan, fetchPlan, updatePlan, ChangePlanStatus, deletePlan }
+export { fetchAllPlans, createNewPlan, fetchPlan, updatePlan, deletePlan }
