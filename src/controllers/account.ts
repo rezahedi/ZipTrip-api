@@ -81,12 +81,30 @@ const fetchPlan = async (req: Request, res: Response) => {
   })
 }
 
-const updatePlan = (req: Request, res: Response) => {
-  // TODO: Update a plan's details.
+const updatePlan = async (req: Request, res: Response) => {
+  if (!req.user) throw new Error('Authentication Invalid')
 
-  res.json({
-    msg: 'DRAFT - update a plan',
-  })
+  const userId: string = req.user.userId
+  const planId = req.params.planId
+  let { stops, ...plan } = req.body
+
+  const updatedPlan: IPlan | null = await PlanSchema.findByIdAndUpdate(
+    {
+      _id: planId,
+      userId,
+    },
+    plan,
+    {
+      new: true,
+      runValidators: true,
+    }
+  )
+
+  if (!updatedPlan) throw new Error('Failed to create plan')
+
+  // TODO: Update multiple stops logic here
+
+  res.status(StatusCodes.CREATED).json({ plan: updatedPlan, stops })
 }
 
 const deletePlan = (req: Request, res: Response) => {
