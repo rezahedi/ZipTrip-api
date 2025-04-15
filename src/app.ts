@@ -2,10 +2,9 @@ import express from 'express'
 import cors from 'cors'
 import favicon from 'express-favicon'
 import logger from 'morgan'
-import router from './routes/mainRouter'
+import userRouter from './routes/user'
 import plansRouter from './routes/plans'
 import accountRouter from './routes/account'
-import authRouter from './routes/auth'
 import swaggerUI from 'swagger-ui-express'
 import YAML from 'yamljs'
 import authMiddleware from './middlewares/authMiddleware'
@@ -23,9 +22,8 @@ app.use(favicon(__dirname + '/public/favicon.ico'))
 // TODO: Should setup some security middlewares like: rate limiter, helmet, xss ...
 
 // routes
-app.use('/api/v1', router)
 app.use('/api/v1/plans', plansRouter)
-app.use('/api/v1/auth', authRouter)
+app.use('/api/v1/user', userRouter)
 app.use('/api/v1/account/plans', authMiddleware, accountRouter)
 
 // TODO: Add not found middleware
