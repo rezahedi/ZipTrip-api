@@ -1,9 +1,27 @@
-import mongoose from 'mongoose'
+import mongoose, { Schema, Document, Types } from 'mongoose'
 
-const PlanSchema = new mongoose.Schema(
+export interface IPlan extends Document {
+  userId: Types.ObjectId
+  title: string
+  description?: string
+  images: string[]
+  type?: 'Full day' | 'Half day' | 'Night'
+  stopCount: number
+  rate: number
+  reviewCount: number
+  startLocation: [number, number]
+  finishLocation: [number, number]
+  distance: number
+  duration: number
+  categoryId: Types.ObjectId
+  createdAt?: Date
+  updatedAt?: Date
+}
+
+const PlanSchema: Schema<IPlan> = new Schema(
   {
     userId: {
-      type: mongoose.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'Provide user'],
     },
@@ -38,11 +56,11 @@ const PlanSchema = new mongoose.Schema(
       default: 0,
     },
     startLocation: {
-      type: [Number, Number],
+      type: [Number],
       required: [true, 'Provide start location'],
     },
     finishLocation: {
-      type: [Number, Number],
+      type: [Number],
       required: [true, 'Provide finish location'],
     },
     distance: {
@@ -56,7 +74,7 @@ const PlanSchema = new mongoose.Schema(
       required: [true, 'Provide duration'],
     },
     categoryId: {
-      type: mongoose.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'Category',
       required: [true, 'Provide category'],
     },
@@ -66,4 +84,4 @@ const PlanSchema = new mongoose.Schema(
   }
 )
 
-export default mongoose.model('Plan', PlanSchema)
+export default mongoose.model<IPlan>('Plan', PlanSchema)
