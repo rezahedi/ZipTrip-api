@@ -45,4 +45,4 @@ const StopSchema = new mongoose.Schema(
   }
 )
 
-module.exports = mongoose.model('Stop', StopSchema)
+export default mongoose.model('Stop', StopSchema)
