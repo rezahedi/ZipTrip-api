@@ -1,4 +1,6 @@
 import mongoose, { Schema, Document, Types } from 'mongoose'
+import './Categories'
+import './Users'
 
 export interface IPlan extends Document {
   userId: Types.ObjectId
