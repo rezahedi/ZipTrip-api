@@ -295,7 +295,7 @@ paths:
         - bearerAuth: []
       operationId: AccountGetUserPlans
       parameters: []
-      responses: 
+      responses:
         200:
           description: Successful response
           content:
@@ -437,7 +437,7 @@ paths:
                 }
           headers: {}
       deprecated: false
-    put: 
+    put:
       tags:
         - Account
       summary: (Draft) Modify the plan details
@@ -461,7 +461,7 @@ paths:
                 "categoryId": "city-exploration"
               }
         required: true
-      responses: 
+      responses:
         '200':
           description: Successful response
           content:
@@ -487,7 +487,7 @@ paths:
                 }
           headers: {}
       deprecated: false
-    patch: 
+    patch:
       tags:
         - Account
       summary: (Draft) Set plan status to published or pending
@@ -506,7 +506,7 @@ paths:
                 "status": true
               }
         required: true
-      responses: 
+      responses:
         '200':
           description: Successful response
           content:
@@ -574,7 +574,7 @@ paths:
                 }
           headers: {}
       deprecated: false
-    put: 
+    put:
       tags:
         - Account
       summary: (Draft) Modify the stop details
@@ -598,7 +598,7 @@ paths:
                 "sequence": 1
               }
         required: true
-      responses: 
+      responses:
         '200':
           description: Successful response
           content:
