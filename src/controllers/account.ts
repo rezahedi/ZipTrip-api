@@ -5,7 +5,6 @@ import StopSchema, { IStop } from '../models/Stops'
 import mongoose from 'mongoose'
 
 const fetchAllPlans = async (req: Request, res: Response) => {
-
   if (!req.user) throw new Error('Authentication Invalid')
 
   const filters = {
@@ -28,7 +27,6 @@ const fetchAllPlans = async (req: Request, res: Response) => {
 //   }
 // }
 const createNewPlan = async (req: Request, res: Response) => {
-
   if (!req.user) throw new Error('Authentication Invalid')
 
   const userId: string = req.user.userId
