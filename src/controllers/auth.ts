@@ -8,14 +8,13 @@ import sendEmail from '../utils/email'
 import User from '../models/Users'
 
 interface RegisterRequestBody {
-  firstName: string
-  lastName: string
+  name: string
   email: string
   password: string
 }
 
 const register = async (req: Request<object, object, RegisterRequestBody>, res: Response): Promise<void> => {
-  const { firstName, lastName, email, password } = req.body
+  const { name, email, password } = req.body
   try {
     const existingUser = await User.findOne({ email })
     if (existingUser) {
@@ -23,14 +22,13 @@ const register = async (req: Request<object, object, RegisterRequestBody>, res: 
       return
     }
     const user = new User({
-      firstName,
-      lastName,
+      name,
       email,
       password,
     })
     await user.save()
     res.status(StatusCodes.CREATED).json({
-      user: { id: user._id, name: `${user.firstName} ${user.lastName}` },
+      user: { id: user._id, name: user.name },
       msg: 'User registered successfully',
     })
   } catch (err) {
@@ -65,7 +63,7 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<v
       sameSite: 'strict',
     })
     res.status(StatusCodes.OK).json({
-      user: { id: user._id, name: `${user.firstName} ${user.lastName}` },
+      user: { id: user._id, name: user.name },
       token,
     })
   } catch (error) {
