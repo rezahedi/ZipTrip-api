@@ -27,9 +27,14 @@ const register = async (req: Request<object, object, RegisterRequestBody>, res: 
       password,
     })
     await user.save()
+
+    const token = user.createJWT()
+
     res.status(StatusCodes.CREATED).json({
-      user: { id: user._id, name: user.name },
-      msg: 'User registered successfully',
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      token,
     })
   } catch (err) {
     console.error(err)
@@ -63,7 +68,9 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<v
       sameSite: 'strict',
     })
     res.status(StatusCodes.OK).json({
-      user: { id: user._id, name: user.name },
+      _id: user._id,
+      name: user.name,
+      email: user.email,
       token,
     })
   } catch (error) {
