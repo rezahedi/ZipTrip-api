@@ -35,11 +35,13 @@ const PlanSchema: Schema<IPlan> = new Schema(
     },
     description: {
       type: String,
-      maxLength: 255,
+      maxLength: [255, 'Description max length is 255'],
+      required: [true, 'Provide description'],
     },
     images: {
       type: [String],
       default: [],
+      required: [true, 'Provide at least one image url'],
     },
     type: {
       type: String,
@@ -58,22 +60,18 @@ const PlanSchema: Schema<IPlan> = new Schema(
       default: 0,
     },
     startLocation: {
-      type: [Number],
-      required: [true, 'Provide start location'],
+      type: [Number, Number],
     },
     finishLocation: {
-      type: [Number],
-      required: [true, 'Provide finish location'],
+      type: [Number, Number],
     },
     distance: {
       type: Number,
       default: 0,
-      required: [true, 'Provide distance'],
     },
     duration: {
       type: Number,
       default: 0,
-      required: [true, 'Provide duration'],
     },
     categoryId: {
       type: Schema.Types.ObjectId,

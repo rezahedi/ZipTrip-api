@@ -38,6 +38,7 @@ const StopSchema: Schema<IStop> = new Schema(
     imageURL: {
       type: String,
       default: '',
+      required: [true, 'Provide image URL'],
     },
     address: {
       type: String,
@@ -45,13 +46,11 @@ const StopSchema: Schema<IStop> = new Schema(
       required: [true, 'Provide address'],
     },
     location: {
-      type: [Number],
-      required: [true, 'Provide location'],
+      type: [Number, Number],
     },
     sequence: {
       type: Number,
       default: 0,
-      required: [true, 'Provide sequence'],
     },
   },
   {
