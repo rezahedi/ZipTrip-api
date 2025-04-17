@@ -295,7 +295,7 @@ paths:
         - bearerAuth: []
       operationId: AccountGetUserPlans
       parameters: []
-      responses: 
+      responses:
         200:
           description: Successful response
           content:
@@ -456,7 +456,7 @@ paths:
                 }
           headers: {}
       deprecated: false
-    put: 
+    put:
       tags:
         - Account
       summary: (Draft) Modify the plan details
@@ -485,7 +485,7 @@ paths:
                 ]
               }
         required: true
-      responses: 
+      responses:
         '200':
           description: Successful response
           content:
