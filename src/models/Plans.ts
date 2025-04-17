@@ -15,11 +15,13 @@ const PlanSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      maxLength: 255,
+      maxLength: [255, 'Description max length is 255'],
+      required: [true, 'Provide description'],
     },
     images: {
       type: [String],
       default: [],
+      required: [true, 'Provide at least one image url'],
     },
     type: {
       type: String,
@@ -39,21 +41,17 @@ const PlanSchema = new mongoose.Schema(
     },
     startLocation: {
       type: [Number, Number],
-      required: [true, 'Provide start location'],
     },
     finishLocation: {
       type: [Number, Number],
-      required: [true, 'Provide finish location'],
     },
     distance: {
       type: Number,
       default: 0,
-      required: [true, 'Provide distance'],
     },
     duration: {
       type: Number,
       default: 0,
-      required: [true, 'Provide duration'],
     },
     categoryId: {
       type: mongoose.Types.ObjectId,
@@ -66,4 +64,4 @@ const PlanSchema = new mongoose.Schema(
   }
 )
 
-module.exports = mongoose.model('Plan', PlanSchema)
+export default mongoose.model('Plan', PlanSchema)

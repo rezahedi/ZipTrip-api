@@ -25,6 +25,7 @@ const StopSchema = new mongoose.Schema(
     imageURL: {
       type: String,
       default: '',
+      required: [true, 'Provide image URL'],
     },
     address: {
       type: String,
@@ -33,12 +34,10 @@ const StopSchema = new mongoose.Schema(
     },
     location: {
       type: [Number, Number],
-      required: [true, 'Provide location'],
     },
     sequence: {
       type: Number,
       default: 0,
-      required: [true, 'Provide sequence'],
     },
   },
   {
@@ -46,4 +45,4 @@ const StopSchema = new mongoose.Schema(
   }
 )
 
-module.exports = mongoose.model('Stop', StopSchema)
+export default mongoose.model('Stop', StopSchema)

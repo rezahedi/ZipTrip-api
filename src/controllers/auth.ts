@@ -5,7 +5,7 @@ import BadRequestError from '../errors/bad_request'
 import UnauthenticatedError from '../errors/unauthentication_error'
 import NotFoundError from '../errors/not_found'
 import sendEmail from '../utils/email'
-import User from '../models/user'
+import User from '../models/Users'
 
 interface RegisterRequestBody {
   firstName: string

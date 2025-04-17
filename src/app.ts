@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import favicon from 'express-favicon'
 import logger from 'morgan'
-import userRouter from './routes/user'
+import authRouter from './routes/auth'
 import plansRouter from './routes/plans'
 import accountRouter from './routes/account'
 import swaggerUI from 'swagger-ui-express'
@@ -23,7 +23,7 @@ app.use(favicon(__dirname + '/public/favicon.ico'))
 
 // routes
 app.use('/api/v1/plans', plansRouter)
-app.use('/api/v1/user', userRouter)
+app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/account/plans', authMiddleware, accountRouter)
 
 // TODO: Add not found middleware
