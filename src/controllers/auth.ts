@@ -127,7 +127,7 @@ const requestPasswordReset = async (req: Request, res: Response) => {
 }
 
 const resetPassword = async (req: Request, res: Response) => {
-  const { resetToken, newPassword } = req.body.resetToken ? req.body : req.query
+  const { resetToken, newPassword } = req.body
   if (!resetToken || !newPassword) {
     throw new BadRequestError('Please provide a valid token and new password.')
   }
