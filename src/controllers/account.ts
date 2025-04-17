@@ -5,7 +5,7 @@ import StopSchema, { IStop } from '../models/Stops'
 import mongoose from 'mongoose'
 
 const fetchAllPlans = async (req: Request, res: Response) => {
-  if (!req.user) throw new Error('Authentication Invalid')
+  if (!req.user) throw new Error('Not authorized to access.')
 
   const filters = {
     userId: req.user.userId,
@@ -27,7 +27,7 @@ const fetchAllPlans = async (req: Request, res: Response) => {
 //   }
 // }
 const createNewPlan = async (req: Request, res: Response) => {
-  if (!req.user) throw new Error('Authentication Invalid')
+  if (!req.user) throw new Error('Not authorized to access.')
 
   const userId: string = req.user.userId
   let { stops, ...plan } = req.body
@@ -53,7 +53,7 @@ const createNewPlan = async (req: Request, res: Response) => {
 }
 
 const fetchPlan = async (req: Request, res: Response) => {
-  if (!req.user) throw new Error('Authentication Invalid')
+  if (!req.user) throw new Error('Not authorized to access.')
 
   const userId = req.user.userId
   const planId = req.params.planId
@@ -80,7 +80,7 @@ const fetchPlan = async (req: Request, res: Response) => {
 }
 
 const updatePlan = async (req: Request, res: Response) => {
-  if (!req.user) throw new Error('Authentication Invalid')
+  if (!req.user) throw new Error('Not authorized to access.')
 
   const userId: string = req.user.userId
   const planId = req.params.planId
@@ -106,7 +106,7 @@ const updatePlan = async (req: Request, res: Response) => {
 }
 
 const deletePlan = async (req: Request, res: Response) => {
-  if (!req.user) throw new Error('Authentication Invalid')
+  if (!req.user) throw new Error('Not authorized to access.')
 
   const userId = req.user.userId
   const planId = req.params.planId
