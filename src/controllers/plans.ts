@@ -3,7 +3,6 @@ import { StatusCodes } from 'http-status-codes'
 import PlanSchema from '../models/Plans'
 import UserSchema, { IUser } from '../models/Users'
 import CategorySchema, { ICategory } from '../models/Categories'
-import NotFoundError from '../errors/not_found'
 
 import dummyData from '../dummyData.json'
 import { categoryType, planType, stopType, userType } from '../dummyDataTypes'
@@ -50,10 +49,6 @@ const fetchUserWithPlans = async (req: Request, res: Response) => {
   const pageNumber: number = (parseInt(page as string) - 1) * pageSize
 
   const user: IUser | null = await UserSchema.findById(userId).select('-password').lean()
-
-  if (!user) {
-    throw new NotFoundError(`User with id ${userId} not found`)
-  }
 
   const filters = {
     userId,
