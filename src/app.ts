@@ -1,3 +1,4 @@
+import 'express-async-errors'
 import express from 'express'
 import cors from 'cors'
 import favicon from 'express-favicon'
@@ -9,7 +10,6 @@ import accountRouter from './routes/account'
 import swaggerUI from 'swagger-ui-express'
 import YAML from 'yamljs'
 import authMiddleware from './middlewares/authMiddleware'
-import 'express-async-errors'
 import errorHandlerMiddleware from './middlewares/errorHandlerMiddleware'
 
 const app = express()
