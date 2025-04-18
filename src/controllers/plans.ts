@@ -6,14 +6,6 @@ import StopSchema from '../models/Stops'
 import CategorySchema, { ICategory } from '../models/Categories'
 import NotFoundError from '../errors/not_found'
 
-import dummyData from '../dummyData.json'
-import { categoryType, planType, stopType, userType } from '../dummyDataTypes'
-
-const dummyPlans: planType[] = dummyData.plans
-const dummyStops: stopType[] = dummyData.stops
-const dummyCategories: categoryType[] = dummyData.categories
-const dummyUsers: userType[] = dummyData.users
-
 const PAGE_SIZE = 10
 
 const fetchAllPlans = async (req: Request, res: Response) => {
