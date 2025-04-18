@@ -1,6 +1,8 @@
 import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import PlanSchema from '../models/Plans'
+import UserSchema, { IUser } from '../models/Users'
+import NotFoundError from '../errors/not_found'
 
 import dummyData from '../dummyData.json'
 import { categoryType, planType, stopType, userType } from '../dummyDataTypes'
@@ -39,39 +41,36 @@ const fetchAllPlans = async (req: Request, res: Response) => {
   })
 }
 
-const fetchUserWithPlans = (req: Request, res: Response) => {
-  const { userId, page = 1, size = PAGE_SIZE } = req.params
+const fetchUserWithPlans = async (req: Request, res: Response) => {
+  const { userId } = req.params
+  const { page = 1, size = PAGE_SIZE } = req.query
 
-  const user = dummyUsers.find((user: userType) => {
-    return user.userId === userId
-  })
+  const pageSize: number = parseInt(size as string)
+  const pageNumber: number = (parseInt(page as string) - 1) * pageSize
+
+  const user: IUser | null = await UserSchema.findById(userId).select('-password').lean()
+  console.log(user)
 
   if (!user) {
-    res.status(404).json({
-      error: `User with id ${userId} not found`,
-    })
-    return
+    throw new NotFoundError(`User with id ${userId} not found`)
   }
 
-  let resultPlans: planType[] = dummyPlans
-  resultPlans = resultPlans.filter((plan: planType) => {
-    return plan.userId === userId
-  })
+  const filters = {
+    userId,
+  }
 
-  // Pagination
-  const pageNumber = parseInt(page as string)
-  const pageSize = parseInt(size as string)
-  resultPlans = resultPlans.slice((pageNumber - 1) * pageSize, pageNumber * pageSize)
+  const plans = await PlanSchema.find(filters)
+    .populate('categoryId', 'name')
+    .populate('userId', 'name')
+    .skip(pageNumber)
+    .limit(pageSize)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { password, ...userWithoutPassword } = user
-
-  res.json({
-    ...userWithoutPassword,
+  res.status(StatusCodes.OK).json({
+    ...user,
     plans: {
       page: pageNumber,
       size: pageSize,
-      items: resultPlans,
+      items: plans,
     },
   })
 }
