@@ -1,4 +1,7 @@
 import { Request, Response } from 'express'
+import { StatusCodes } from 'http-status-codes'
+import PlanSchema from '../models/Plans'
+
 import dummyData from '../dummyData.json'
 import { categoryType, planType, stopType, userType } from '../dummyDataTypes'
 
@@ -9,27 +12,30 @@ const dummyUsers: userType[] = dummyData.users
 
 const PAGE_SIZE = 10
 
-const fetchAllPlans = (req: Request, res: Response) => {
-  const { categoryId, page = 1, size = PAGE_SIZE } = req.query
+const fetchAllPlans = async (req: Request, res: Response) => {
+  const { search, categoryId, page = 1, size = PAGE_SIZE } = req.query
 
-  let resultPlans: planType[] = dummyPlans
-
-  if (categoryId) {
-    resultPlans = resultPlans.filter((plan: planType) => {
-      return plan.categoryId === categoryId
-    })
+  const filters = {
+    ...(search && {
+      title: { $regex: search, $options: 'i' },
+    }),
+    ...(categoryId && { categoryId }),
   }
 
-  // Pagination
-  const pageNumber = parseInt(page as string)
-  const pageSize = parseInt(size as string)
-  resultPlans = resultPlans.slice((pageNumber - 1) * pageSize, pageNumber * pageSize)
+  const pageSize: number = parseInt(size as string)
+  const pageNumber: number = (parseInt(page as string) - 1) * pageSize
 
-  res.json({
-    ...(categoryId && { categoryId }),
-    page: pageNumber,
-    size: pageSize,
-    items: resultPlans,
+  const plans = await PlanSchema.find(filters)
+    .populate('categoryId', 'name')
+    .populate('userId', 'name')
+    .skip(pageNumber)
+    .limit(pageSize)
+
+  res.status(StatusCodes.OK).json({
+    ...{ search, categoryId },
+    page: 1,
+    size: 10,
+    items: plans,
   })
 }
 
