@@ -50,7 +50,10 @@ const fetchUserWithPlans = async (req: Request, res: Response) => {
   const pageSize: number = parseInt(size as string)
   const pageNumber: number = (parseInt(page as string) - 1) * pageSize
 
-  const user: IUser | null = await UserSchema.findById(userId).select('-password').lean()
+  const user: IUser | null = await UserSchema.findById(userId)
+    .orFail(new NotFoundError(`Item not found with the id: ${userId}`))
+    .select('-password')
+    .lean()
 
   const filters = {
     userId,
@@ -79,7 +82,9 @@ const fetchCategoryWithPlans = async (req: Request, res: Response) => {
   const pageSize: number = parseInt(size as string)
   const pageNumber: number = (parseInt(page as string) - 1) * pageSize
 
-  const category: ICategory | null = await CategorySchema.findById(categoryId).lean()
+  const category: ICategory | null = await CategorySchema.findById(categoryId)
+    .orFail(new NotFoundError(`Item not found with the id: ${categoryId}`))
+    .lean()
 
   const filters = {
     categoryId,
