@@ -126,7 +126,7 @@ const resetPassword = async (req: Request, res: Response) => {
     passwordResetExpires: { $gt: Date.now() },
   })
   if (!user) {
-    throw new NotFoundError('Invalid or expired password reset token.')
+    throw new UnauthenticatedError('Invalid or expired password reset token.')
   }
   console.log('User found, resetting password...')
 
