@@ -1,8 +1,10 @@
 import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import PlanSchema from '../models/Plans'
+import PlanSchema, { IPlan } from '../models/Plans'
 import UserSchema, { IUser } from '../models/Users'
+import StopSchema from '../models/Stops'
 import CategorySchema, { ICategory } from '../models/Categories'
+import NotFoundError from '../errors/not_found'
 
 import dummyData from '../dummyData.json'
 import { categoryType, planType, stopType, userType } from '../dummyDataTypes'
@@ -99,25 +101,20 @@ const fetchCategoryWithPlans = async (req: Request, res: Response) => {
   })
 }
 
-const fetchPlan = (req: Request, res: Response) => {
+const fetchPlan = async (req: Request, res: Response) => {
   const { planId } = req.params
 
-  const plan = dummyPlans.find((plan: planType) => {
-    return plan.planId === planId
-  })
+  const plan: IPlan | null = await PlanSchema.findById(planId)
+    .orFail(new NotFoundError(`Item not found with the id: ${planId}`))
+    .populate('categoryId', 'name')
+    .populate('userId', 'name')
+    .lean()
 
-  if (!plan) {
-    res.status(400).json({
-      error: `Plan with id ${planId} not found`,
-    })
-    return
-  }
+  const stops = await StopSchema.find({ planId })
 
-  res.json({
+  res.status(StatusCodes.OK).json({
     ...plan,
-    stops: dummyStops.filter((stop: stopType) => {
-      return stop.planId === planId
-    }),
+    stops,
   })
 }
 
