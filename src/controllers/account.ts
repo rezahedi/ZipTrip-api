@@ -39,6 +39,9 @@ const createNewPlan = async (req: Request, res: Response) => {
 
   if (!createdPlan) throw new Error('Failed to create plan')
 
+  await createdPlan.populate('categoryId', 'name')
+  await createdPlan.populate('userId', 'name')
+
   if (stops.length) {
     stops = stops.map((stop: IStop) => ({
       ...stop,
@@ -63,7 +66,9 @@ const fetchPlan = async (req: Request, res: Response) => {
   const plan: IPlan | null = await PlanSchema.findOne({
     userId,
     _id: planId,
-  }).populate('categoryId', 'title')
+  })
+    .populate('categoryId', 'name')
+    .populate('userId', 'name')
 
   if (!plan) {
     throw new Error(`No plan with id ${planId}`)
@@ -97,12 +102,18 @@ const updatePlan = async (req: Request, res: Response) => {
       runValidators: true,
     }
   )
+    .populate('categoryId', 'name')
+    .populate('userId', 'name')
 
   if (!updatedPlan) throw new Error('Failed to create plan')
 
   // TODO: Update multiple stops logic here
 
-  res.status(StatusCodes.CREATED).json({ plan: updatedPlan, stops })
+  const plansStops = await StopSchema.find({
+    planId,
+  })
+
+  res.status(StatusCodes.CREATED).json({ plan: updatedPlan, stops: plansStops })
 }
 
 const deletePlan = async (req: Request, res: Response) => {
