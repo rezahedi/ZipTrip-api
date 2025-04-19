@@ -89,6 +89,8 @@ const updatePlan = async (req: Request, res: Response) => {
 
   const userId: string = req.user.userId
   const planId = req.params.planId
+  // TODO: I will use stops later
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let { stops, ...plan } = req.body
 
   const updatedPlan: IPlan | null = await PlanSchema.findByIdAndUpdate(
