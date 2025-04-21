@@ -1,35 +1,35 @@
 import { Request, Response, NextFunction } from 'express'
+import dotenv from 'dotenv'
+import UserSchema, { IUser } from '../models/Users'
+import jwt, { JwtPayload } from 'jsonwebtoken'
+import UnauthenticatedError from '../errors/unauthentication_error'
+
+dotenv.config()
+interface MyJwtPayload extends JwtPayload {
+  userId: string
+  name: string
+}
 
 const authMiddleware = async (request: Request, response: Response, next: NextFunction) => {
   const authHeader = request.headers.authorization
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    // FIXME: Replace below response with custom error handler
-    response.status(401).json({ error: 'Authentication not provided' })
-    return
+    throw new UnauthenticatedError('Authentication invalid, please provide a valid token')
   }
 
   const token = authHeader.split(' ')[1]
 
-  if (token !== 'fake-temporary-token') {
-    // FIXME: Replace below response with custom error handler
-    response.status(401).json({ error: 'Invalid token' })
-    return
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET_KEY as string) as MyJwtPayload
+
+    // Attach the user to the authorized route
+    const user: IUser = await UserSchema.findById(payload.userId)
+      .orFail(new UnauthenticatedError('User not found, please login again'))
+      .select('-password')
+    request.user = { userId: user._id, name: user.name, email: user.email, token }
+    next()
+  } catch {
+    throw new UnauthenticatedError('Authentication invalid, please provide a valid token')
   }
-
-  // TODO: Get payload out of token
-  // TODO: Fetch user's detail from database
-  // TODO: Return user's detail as request.user
-
-  // FIXME: This below code should replace with real user's data
-  // Populated request.user with fake user for now
-  request.user = {
-    userId: '67fdfdfcd9c143f362fb9701',
-    name: 'Reza',
-    email: 'reza@example.com',
-    token: 'fake-temporary-token',
-  }
-
-  next()
 }
 
 export default authMiddleware
