@@ -538,6 +538,78 @@ paths:
           description: 'No Content'
           headers: {}
       deprecated: false
+  /account/categories:
+    get:
+      tags:
+        - Account
+      summary: Retrieve list of all categories
+      security:
+        - bearerAuth: []
+      operationId: AccountGetAllCategories
+      parameters: []
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                [
+                  {
+                      "_id": "68052f7098902ebc8b61c474",
+                      "name": "City Exploration",
+                      "description": "Explore the urban landscapes and cultural landmarks of cities.",
+                      "imageURL": "http://example.com/city-exploration.jpg",
+                      "createdAt": "2025-04-20T17:31:28.435Z",
+                      "updatedAt": "2025-04-20T17:31:28.435Z"
+                  },
+                  {
+                      "_id": "6805ca1998902ebc8b61c478",
+                      "name": "Nature and History",
+                      "description": "Discover the rich history and art collections in museums.",
+                      "imageURL": "http://example.com/museums.jpg",
+                      "createdAt": "2025-04-21T04:31:21.333Z",
+                      "updatedAt": "2025-04-21T04:31:21.333Z"
+                  }
+                ]
+          headers: {}
+      deprecated: false
+    post:
+      tags:
+        - Account
+      summary: Create new Category
+      security:
+        - bearerAuth: []
+      operationId: CreateCategory
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountCategoryRequestBody'
+            example: |
+              {
+                "name": "City Exploration",
+                "description": "Explore the urban landscapes and cultural landmarks of cities.",
+                "imageURL": "http://example.com/city-exploration.jpg"
+              }
+        required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                {
+                  "_id": "68052f7098902ebc8b61c474",
+                  "name": "City Exploration",
+                  "description": "Explore the urban landscapes and cultural landmarks of cities.",
+                  "imageURL": "http://example.com/city-exploration.jpg",
+                  "createdAt": "2025-04-20T17:31:28.435Z",
+                  "updatedAt": "2025-04-20T17:31:28.435Z"
+                }
+          headers: {}
+      deprecated: false
 components:
   securitySchemes:
     bearerAuth:
@@ -617,6 +689,18 @@ components:
                   type: number
               sequence:
                 type: number
+    AccountCategoryRequestBody:
+      title: Category's Object
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        imageURL:
+          type: string
   parameters:
     CategoryIdParam:
       name: categoryId
