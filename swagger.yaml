@@ -61,7 +61,7 @@ paths:
                 }
           headers: {}
       deprecated: false
-  /plans/plan/{planId}:
+  /plans/{planId}:
     parameters:
       - in: path
         name: planId
