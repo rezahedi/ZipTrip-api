@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import PlanSchema, { IPlan } from '../models/Plans'
-import StopSchema, { IStop } from '../models/Stops'
+import PlanSchema, { IPlan } from '../../models/Plans'
+import StopSchema, { IStop } from '../../models/Stops'
 import mongoose from 'mongoose'
 
 const fetchAllPlans = async (req: Request, res: Response) => {
