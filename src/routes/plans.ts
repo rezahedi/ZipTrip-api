@@ -4,8 +4,10 @@ import { fetchAllPlans, fetchPlan, fetchUserWithPlans, fetchCategoryWithPlans } 
 const router = express.Router()
 
 router.route('/').get(fetchAllPlans)
-router.route('/plan/:planId').get(fetchPlan)
+// Specific routes first
 router.route('/user/:userId').get(fetchUserWithPlans)
 router.route('/category/:categoryId').get(fetchCategoryWithPlans)
+// Generic route last to avoid conflicts
+router.route('/:planId').get(fetchPlan)
 
 export default router

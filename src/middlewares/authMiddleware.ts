@@ -13,24 +13,22 @@ interface MyJwtPayload extends JwtPayload {
 const authMiddleware = async (request: Request, response: Response, next: NextFunction) => {
   const authHeader = request.headers.authorization
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    throw new UnauthenticatedError('Authentication not provided')
+    throw new UnauthenticatedError('Authentication invalid, please provide a valid token')
   }
 
   const token = authHeader.split(' ')[1]
-  console.log('token', token)
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET_KEY as string) as MyJwtPayload
-    console.log('payload', payload)
 
     // Attach the user to the authorized route
     const user: IUser = await UserSchema.findById(payload.userId)
-      .orFail(new UnauthenticatedError('User not found'))
+      .orFail(new UnauthenticatedError('User not found, please login again'))
       .select('-password')
     request.user = { userId: user._id, name: user.name, email: user.email, token }
     next()
   } catch {
-    throw new UnauthenticatedError('Invalid authentication')
+    throw new UnauthenticatedError('Authentication invalid, please provide a valid token')
   }
 }
 
