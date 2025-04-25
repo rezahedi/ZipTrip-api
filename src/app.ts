@@ -28,7 +28,7 @@ app.use(favicon(__dirname + '/public/favicon.ico'))
 app.use('/api/v1', router)
 app.use('/api/v1/plans', plansRouter)
 app.use('/api/v1/auth', authRouter)
-app.use('/api/v1/account/plans', authMiddleware, accountRouter)
+app.use('/api/v1/account', authMiddleware, accountRouter)
 
 // TODO: Add not found middleware
 app.use(errorHandlerMiddleware)
