@@ -259,7 +259,7 @@ paths:
                 "password": "secret"
               }
         required: true
-      responses:
+      responses: Successful response
         '200':
           description: ''
           content:
@@ -292,7 +292,7 @@ paths:
                 "password": "secret"
               }
         required: true
-      responses:
+      responses: Successful response
         '200':
           description: ''
           content:
@@ -305,6 +305,71 @@ paths:
                 }
           headers: {}
       deprecated: false
+      security: []
+  /auth/request-reset-password:
+    post:
+      tags:
+        - Auth 
+      summary: (Draft) User request to reset up password
+      operationId: RequestResetPassword
+      parameters: []
+      requestBody:
+        description: ''
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestResetPasswordObject'
+            example: |
+              {
+                "email": "bob@example.com"
+              }
+        required: true 
+      responses: Successful response
+        '200':
+          description: ''
+          content: 
+            application/json:
+              example: |
+                  {
+                    "email": "bob@example.com",
+                    "message": "Password reset request has been sent to bob@example.com"
+                  }
+          headers: {}
+      deprecated: false 
+      security: []
+  /auth/reset-password:
+    post:
+      tags:
+        - Auth 
+      summary: (Draft) Reset auth's login password 
+      operationId: ResetPassword
+      parameters: [] 
+      requestBody: 
+        description: ''
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordObject'
+            example: |
+              {
+                "email": "bob@example.com",
+                "resetToken": "example-token-daff05f70ce0af67a32e31346300051cf7c415af",
+                "newPassword": "newPasswordExample"
+              }
+        required: true 
+      responses: Successful response
+        '200':
+          description: ''
+          content:
+            application/json:
+              example: |
+                {
+                  "email": "bob@example.com",
+                  "newPassword": "newPasswordExample",
+                  "message": "Your password has been reset successfully."
+                }
+          headers: {}
+      deprecated: false 
       security: []
   /account/plans:
     get:
@@ -770,6 +835,32 @@ components:
           type: string
         password:
           type: string
+    RequestResetPasswordObject:
+      type: object 
+      properties:
+        email: 
+          type: string 
+          format: email 
+          example: bob@example.com
+      required:
+        - email 
+    ResetPasswordObject:
+      type: object 
+      properties:
+        email: 
+          type: string 
+          format: email 
+          example: bob@example.com
+        resetToken:
+          type: string 
+          example: example-token-daff05f70ce0af67a32e31346300051cf7c415af
+        newPassword:
+          type: string 
+          example: newPasswordExample
+        required:
+          - email 
+          - resetToken 
+          - newPassword 
     AccountPlanRequestBody:
       title: Plan's Object
       required:
