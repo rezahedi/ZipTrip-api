@@ -46,4 +46,22 @@ const bookmarkPlan = async (req: Request, res: Response) => {
   res.status(StatusCodes.CREATED).end()
 }
 
-export { fetchAllBookmarkedPlans, bookmarkPlan }
+const unBookmarkPlan = async (req: Request, res: Response) => {
+  if (!req.user) throw new CustomAPIError('Not authorized to access.', StatusCodes.UNAUTHORIZED)
+
+  const userId = req.user.userId
+  const { planId } = req.params
+
+  const result = await BookmarkSchema.findOneAndDelete({
+    userId,
+    planId,
+  })
+
+  if (!result) {
+    throw new CustomAPIError(`No bookmarked plan with id ${planId}`, StatusCodes.NOT_FOUND)
+  }
+
+  res.status(StatusCodes.NO_CONTENT).end()
+}
+
+export { fetchAllBookmarkedPlans, bookmarkPlan, unBookmarkPlan }
