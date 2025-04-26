@@ -652,6 +652,90 @@ paths:
                 }
           headers: {}
       deprecated: false
+  /account/bookmarks:
+    get:
+      tags:
+        - Bookmark
+      summary: Fetch all plans bookmarked by the currently logged-in user
+      security:
+        - bearerAuth: []
+      operationId: AccountGetUserBookmarks
+      parameters: []
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                {
+                  "page": 1,
+                  "size": 10,
+                  "items": [
+                    {
+                      "_id": "san-francisco-day-tour",
+                      "title": "San Francisco Day Tour",
+                      "description": "A one-day tour exploring San Francisco's iconic sites, parks, museums, and dining establishments.",
+                      "images": [
+                        "https://dummyimage.com/390x265/2196F3/fff.png",
+                        "https://dummyimage.com/390x265/FF9800/fff.png"
+                      ],
+                      "type": "Full day",
+                      "stopCount": 5,
+                      "rating": 4.8,
+                      "reviewCount": 120,
+                      "startLocation": [37.7955, -122.3937],
+                      "finishLocation": [37.7879, -122.4074],
+                      "distance": 5,
+                      "duration": "8 hours",
+                      "userId": {
+                        "_id": "67fdfdfcd9c143f362fb9701",
+                        "name": "Reza"
+                      },
+                      "categoryId":  {
+                        "_id": "67fdfe49d9c143f362fb9702",
+                        "name": "My first cat"
+                      },
+                      "createdAt": "2025-04-04T16:50:54Z",
+                      "updatedAt": "2025-04-04T16:50:54Z"
+                    }
+                  ]
+                }
+          headers: {}
+      deprecated: false
+  /account/bookmarks/{planId}:
+    parameters:
+      - in: path
+        name: planId
+        schema:
+          type: string
+        required: true
+        description: The plan ID
+    post:
+      tags:
+        - Bookmark
+      summary: Add a plan to the authenticated user's list of bookmarks
+      security:
+        - bearerAuth: []
+      operationId: AccountAddBookmark
+      parameters: []
+      responses:
+        '201':
+          description: Successful Response with No Content
+          headers: {}
+      deprecated: false
+    delete:
+      tags:
+        - Bookmark
+      summary: Remove a plan from the authenticated user's list of bookmarks
+      security:
+        - bearerAuth: []
+      operationId: AccountRemoveBookmark
+      parameters: []
+      responses:
+        '204':
+          description: 'No Content'
+          headers: {}
+      deprecated: false
 components:
   securitySchemes:
     bearerAuth:
@@ -786,3 +870,5 @@ tags:
     description: Simple user authentication with email & password
   - name: Account
     description: Logged in user operation for user's dashboard
+  - name: Bookmark
+    description: Allows the authenticated user to list, add, or remove bookmarked plans
