@@ -6,6 +6,8 @@ info:
 servers:
   - url: http://localhost:8000/api/v1
     variables: {}
+  - url: https://ii-practicum-team-5-back-1.onrender.com/api/v1
+    variables: {}
 paths:
   /plans:
     get:
