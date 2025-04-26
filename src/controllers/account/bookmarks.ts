@@ -2,9 +2,10 @@ import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import BookmarkSchema from '../../models/Bookmarks'
 import PlanSchema from '../../models/Plans'
+import CustomAPIError from '../../errors/custom_error'
 
 const fetchAllBookmarkedPlans = async (req: Request, res: Response) => {
-  if (!req.user) throw new Error('Not authorized to access.')
+  if (!req.user) throw new CustomAPIError('Not authorized to access.', StatusCodes.UNAUTHORIZED)
 
   const userId = req.user.userId
 
@@ -28,7 +29,7 @@ const fetchAllBookmarkedPlans = async (req: Request, res: Response) => {
 }
 
 const bookmarkPlan = async (req: Request, res: Response) => {
-  if (!req.user) throw new Error('Not authorized to access.')
+  if (!req.user) throw new CustomAPIError('Not authorized to access.', StatusCodes.UNAUTHORIZED)
 
   const userId = req.user.userId
   const { planId } = req.params
