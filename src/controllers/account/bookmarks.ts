@@ -1,15 +1,17 @@
 import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import BookmarkSchema, { IBookmark } from '../../models/Bookmarks'
+import BookmarkSchema from '../../models/Bookmarks'
 import PlanSchema from '../../models/Plans'
 
 const fetchAllBookmarkedPlans = async (req: Request, res: Response) => {
   if (!req.user) throw new Error('Not authorized to access.')
 
+  const userId = req.user.userId
+
   const filters = {
     _id: {
       $in: await BookmarkSchema.find({
-        userId: req.user.userId,
+        userId,
       }).distinct('planId'),
     },
   }
@@ -28,6 +30,7 @@ const fetchAllBookmarkedPlans = async (req: Request, res: Response) => {
 const bookmarkPlan = async (req: Request, res: Response) => {
   if (!req.user) throw new Error('Not authorized to access.')
 
+  const userId = req.user.userId
   const { planId } = req.params
 
   // Check if the plan exists
@@ -35,7 +38,7 @@ const bookmarkPlan = async (req: Request, res: Response) => {
 
   // Create a new bookmark
   await BookmarkSchema.create({
-    userId: req.user.userId,
+    userId,
     planId,
   })
 
