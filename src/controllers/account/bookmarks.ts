@@ -28,7 +28,7 @@ const fetchAllBookmarkedPlans = async (req: Request, res: Response) => {
   })
 }
 
-const bookmarkPlan = async (req: Request, res: Response) => {
+const addBookmark = async (req: Request, res: Response) => {
   if (!req.user) throw new CustomAPIError('Not authorized to access.', StatusCodes.UNAUTHORIZED)
 
   const userId = req.user.userId
@@ -46,7 +46,7 @@ const bookmarkPlan = async (req: Request, res: Response) => {
   res.status(StatusCodes.CREATED).end()
 }
 
-const unBookmarkPlan = async (req: Request, res: Response) => {
+const removeBookmark = async (req: Request, res: Response) => {
   if (!req.user) throw new CustomAPIError('Not authorized to access.', StatusCodes.UNAUTHORIZED)
 
   const userId = req.user.userId
@@ -64,4 +64,4 @@ const unBookmarkPlan = async (req: Request, res: Response) => {
   res.status(StatusCodes.NO_CONTENT).end()
 }
 
-export { fetchAllBookmarkedPlans, bookmarkPlan, unBookmarkPlan }
+export { fetchAllBookmarkedPlans, addBookmark, removeBookmark }
