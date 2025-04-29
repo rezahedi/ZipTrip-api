@@ -11,7 +11,7 @@ const fetchAllPlans = async (req: Request, res: Response) => {
     userId: req.user.userId,
   }
 
-  console.log("filters", filters);
+  console.log('filters', filters)
 
   // TODO: Add pagination support later
 
