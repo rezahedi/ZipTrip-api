@@ -11,6 +11,8 @@ const fetchAllPlans = async (req: Request, res: Response) => {
     userId: req.user.userId,
   }
 
+  console.log('filters', filters)
+
   // TODO: Add pagination support later
 
   const plans = await PlanSchema.find(filters).populate('categoryId', 'name').populate('userId', 'name')

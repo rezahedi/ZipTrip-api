@@ -74,10 +74,14 @@ UserSchema.methods.createJWT = function (): string {
   if (!secretKey) {
     throw new Error('JWT_SECRET_KEY is not defined in the environment variable.')
   }
-
-  const expiresIn = process.env.JWT_LIFETIME ? parseInt(process.env.JWT_LIFETIME) : 3600 // Default to 1 hour (3600 seconds)
+  // previous code with error
+  // const expiresIn = process.env.JWT_LIFETIME ? parseInt(process.env.JWT_LIFETIME) : 3600 // Default to 1 hour (3600 seconds)
+  // const options: SignOptions = {
+  //   expiresIn,
+  // }
+  const expiresIn = process.env.JWT_LIFETIME || '1d'
   const options: SignOptions = {
-    expiresIn,
+    expiresIn: expiresIn as SignOptions['expiresIn'],
   }
 
   return jwt.sign({ userId: this._id, name: this.name }, secretKey, options)
