@@ -4,8 +4,12 @@ import BookmarkSchema from '../../models/Bookmarks'
 import PlanSchema from '../../models/Plans'
 import CustomAPIError from '../../errors/custom_error'
 
+const PAGE_SIZE = 10
+
 const fetchAllBookmarkedPlans = async (req: Request, res: Response) => {
   if (!req.user) throw new CustomAPIError('Not authorized to access.', StatusCodes.UNAUTHORIZED)
+
+  const { page = 1, size = PAGE_SIZE } = req.query
 
   const userId = req.user.userId
 
@@ -17,13 +21,22 @@ const fetchAllBookmarkedPlans = async (req: Request, res: Response) => {
     },
   }
 
-  // TODO: Add pagination support later
+  const pageSize: number = parseInt(size as string)
+  const pageNumber: number = (parseInt(page as string) - 1) * pageSize
 
-  const bookmarkedPlans = await PlanSchema.find(filters).populate('categoryId', 'name').populate('userId', 'name')
+  const totalItems = await PlanSchema.countDocuments(filters)
+  const pagesCount = Math.ceil(totalItems / pageSize)
+
+  const bookmarkedPlans = await PlanSchema.find(filters)
+    .populate('categoryId', 'name')
+    .populate('userId', 'name')
+    .skip(pageNumber)
+    .limit(pageSize)
 
   res.status(StatusCodes.OK).json({
-    page: 1,
-    size: 10,
+    page: pageNumber,
+    size: pageSize,
+    pagesCount,
     items: bookmarkedPlans,
   })
 }
