@@ -10,7 +10,7 @@ const PAGE_SIZE = 10
 const fetchAllBookmarkedPlans = async (req: Request, res: Response) => {
   if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
 
-  const { page = 1, size = PAGE_SIZE } = req.query
+  const { page = '1', size = PAGE_SIZE } = req.query
 
   const userId = req.user.userId
 
@@ -35,7 +35,7 @@ const fetchAllBookmarkedPlans = async (req: Request, res: Response) => {
     .limit(pageSize)
 
   res.status(StatusCodes.OK).json({
-    page: pageNumber,
+    page: parseInt(page as string),
     size: pageSize,
     pagesCount,
     items: bookmarkedPlans,
