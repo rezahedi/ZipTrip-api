@@ -12,7 +12,7 @@ const PAGE_SIZE = 10
 const fetchAllPlans = async (req: Request, res: Response) => {
   if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
 
-  const { page = 1, size = PAGE_SIZE } = req.query
+  const { page = '1', size = PAGE_SIZE } = req.query
 
   const filters = {
     userId: req.user.userId,
@@ -31,7 +31,7 @@ const fetchAllPlans = async (req: Request, res: Response) => {
     .limit(pageSize)
 
   res.status(StatusCodes.OK).json({
-    page: pageNumber,
+    page: parseInt(page as string),
     size: pageSize,
     pagesCount,
     items: plans,
@@ -46,6 +46,7 @@ const createNewPlan = async (req: Request, res: Response) => {
 
   const createdPlan: IPlan = await PlanSchema.create({
     ...plan,
+    stopCount: stops.length,
     userId,
   })
 
@@ -55,8 +56,9 @@ const createNewPlan = async (req: Request, res: Response) => {
   await createdPlan.populate('userId', 'name')
 
   if (stops.length) {
-    stops = stops.map((stop: IStop) => ({
+    stops = stops.map((stop: IStop, index: number) => ({
       ...stop,
+      sequence: index,
       planId: createdPlan._id,
       userId: new mongoose.Types.ObjectId(userId),
     }))
@@ -101,8 +103,7 @@ const updatePlan = async (req: Request, res: Response) => {
 
   const userId: string = req.user.userId
   const planId = req.params.planId
-  // TODO: I will use stops later
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   let { stops, ...plan } = req.body
 
   const updatedPlan: IPlan | null = await PlanSchema.findByIdAndUpdate(
@@ -110,7 +111,10 @@ const updatePlan = async (req: Request, res: Response) => {
       _id: planId,
       userId,
     },
-    plan,
+    {
+      ...plan,
+      stopCount: stops.length,
+    },
     {
       new: true,
       runValidators: true,
@@ -121,13 +125,49 @@ const updatePlan = async (req: Request, res: Response) => {
 
   if (!updatedPlan) throw new CustomAPIError('Failed to update the plan', StatusCodes.INTERNAL_SERVER_ERROR)
 
-  // TODO: Update multiple stops logic here
+  let stopIDs: string[] = []
+  stops.forEach(async (stop: IStop, index: number) => {
+    // Update stops that have ID
+    if (stop._id) {
+      await StopSchema.findByIdAndUpdate(
+        stop._id,
+        {
+          ...stop,
+          sequence: index,
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      )
+      stopIDs.push(stop._id)
+      return
+    }
 
-  const plansStops = await StopSchema.find({
+    // Create stops that don't have ID
+    const createdStop = await StopSchema.create({
+      ...stop,
+      sequence: index,
+      planId,
+      userId: new mongoose.Types.ObjectId(userId),
+    })
+    stopIDs.push(createdStop._id)
+  })
+
+  // Delete stops that its ID doesn't exist on passed array of stops
+  const currentStops = await StopSchema.find({
+    planId,
+  })
+  currentStops.forEach((stop) => {
+    if (stopIDs.includes(stop._id)) return
+    StopSchema.findByIdAndDelete(stop._id)
+  })
+
+  const planStops = await StopSchema.find({
     planId,
   })
 
-  res.status(StatusCodes.CREATED).json({ plan: updatedPlan, stops: plansStops })
+  res.status(StatusCodes.CREATED).json({ plan: updatedPlan, stops: planStops })
 }
 
 const deletePlan = async (req: Request, res: Response) => {
