@@ -21,6 +21,9 @@ const fetchAllPlans = async (req: Request, res: Response) => {
   const pageSize: number = parseInt(size as string)
   const pageNumber: number = (parseInt(page as string) - 1) * pageSize
 
+  const totalItems = await PlanSchema.countDocuments(filters)
+  const pagesCount = Math.ceil(totalItems / pageSize)
+
   const plans = await PlanSchema.find(filters)
     .populate('categoryId', 'name')
     .populate('userId', 'name')
@@ -29,8 +32,9 @@ const fetchAllPlans = async (req: Request, res: Response) => {
 
   res.status(StatusCodes.OK).json({
     ...{ search, categoryId },
-    page: 1,
-    size: 10,
+    page: pageNumber,
+    size: pageSize,
+    pagesCount: pagesCount,
     items: plans,
   })
 }
