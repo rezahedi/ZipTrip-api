@@ -46,6 +46,7 @@ const createNewPlan = async (req: Request, res: Response) => {
 
   const createdPlan: IPlan = await PlanSchema.create({
     ...plan,
+    stopCount: stops.length,
     userId,
   })
 
@@ -55,8 +56,9 @@ const createNewPlan = async (req: Request, res: Response) => {
   await createdPlan.populate('userId', 'name')
 
   if (stops.length) {
-    stops = stops.map((stop: IStop) => ({
+    stops = stops.map((stop: IStop, index: number) => ({
       ...stop,
+      sequence: index,
       planId: createdPlan._id,
       userId: new mongoose.Types.ObjectId(userId),
     }))
@@ -109,7 +111,10 @@ const updatePlan = async (req: Request, res: Response) => {
       _id: planId,
       userId,
     },
-    plan,
+    {
+      ...plan,
+      stopCount: stops.length,
+    },
     {
       new: true,
       runValidators: true,
@@ -121,13 +126,20 @@ const updatePlan = async (req: Request, res: Response) => {
   if (!updatedPlan) throw new CustomAPIError('Failed to update the plan', StatusCodes.INTERNAL_SERVER_ERROR)
 
   let stopIDs: string[] = []
-  stops.forEach(async (stop: IStop) => {
+  stops.forEach(async (stop: IStop, index: number) => {
     // Update stops that have ID
     if (stop._id) {
-      await StopSchema.findByIdAndUpdate(stop._id, stop, {
-        new: true,
-        runValidators: true,
-      })
+      await StopSchema.findByIdAndUpdate(
+        stop._id,
+        {
+          ...stop,
+          sequence: index,
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      )
       stopIDs.push(stop._id)
       return
     }
@@ -135,6 +147,7 @@ const updatePlan = async (req: Request, res: Response) => {
     // Create stops that don't have ID
     const createdStop = await StopSchema.create({
       ...stop,
+      sequence: index,
       planId,
       userId: new mongoose.Types.ObjectId(userId),
     })
