@@ -3,11 +3,14 @@ import { StatusCodes } from 'http-status-codes'
 import PlanSchema, { IPlan } from '../../models/Plans'
 import StopSchema, { IStop } from '../../models/Stops'
 import mongoose from 'mongoose'
+import CustomAPIError from '../../errors/custom_error'
+import NotFoundError from '../../errors/not_found'
+import UnauthenticatedError from '../../errors/unauthentication_error'
 
 const PAGE_SIZE = 10
 
 const fetchAllPlans = async (req: Request, res: Response) => {
-  if (!req.user) throw new Error('Not authorized to access.')
+  if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
 
   const { page = 1, size = PAGE_SIZE } = req.query
 
@@ -36,7 +39,7 @@ const fetchAllPlans = async (req: Request, res: Response) => {
 }
 
 const createNewPlan = async (req: Request, res: Response) => {
-  if (!req.user) throw new Error('Not authorized to access.')
+  if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
 
   const userId: string = req.user.userId
   let { stops, ...plan } = req.body
@@ -46,7 +49,7 @@ const createNewPlan = async (req: Request, res: Response) => {
     userId,
   })
 
-  if (!createdPlan) throw new Error('Failed to create plan')
+  if (!createdPlan) throw new CustomAPIError('Failed to create plan', StatusCodes.INTERNAL_SERVER_ERROR)
 
   await createdPlan.populate('categoryId', 'name')
   await createdPlan.populate('userId', 'name')
@@ -65,7 +68,7 @@ const createNewPlan = async (req: Request, res: Response) => {
 }
 
 const fetchPlan = async (req: Request, res: Response) => {
-  if (!req.user) throw new Error('Not authorized to access.')
+  if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
 
   const userId = req.user.userId
   const planId = req.params.planId
@@ -80,7 +83,7 @@ const fetchPlan = async (req: Request, res: Response) => {
     .populate('userId', 'name')
 
   if (!plan) {
-    throw new Error(`No plan with id ${planId}`)
+    throw new NotFoundError(`No plan with id ${planId}`)
   }
 
   const stops = await StopSchema.find({
@@ -94,7 +97,7 @@ const fetchPlan = async (req: Request, res: Response) => {
 }
 
 const updatePlan = async (req: Request, res: Response) => {
-  if (!req.user) throw new Error('Not authorized to access.')
+  if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
 
   const userId: string = req.user.userId
   const planId = req.params.planId
@@ -116,7 +119,7 @@ const updatePlan = async (req: Request, res: Response) => {
     .populate('categoryId', 'name')
     .populate('userId', 'name')
 
-  if (!updatedPlan) throw new Error('Failed to create plan')
+  if (!updatedPlan) throw new CustomAPIError('Failed to update the plan', StatusCodes.INTERNAL_SERVER_ERROR)
 
   // TODO: Update multiple stops logic here
 
@@ -128,7 +131,7 @@ const updatePlan = async (req: Request, res: Response) => {
 }
 
 const deletePlan = async (req: Request, res: Response) => {
-  if (!req.user) throw new Error('Not authorized to access.')
+  if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
 
   const userId = req.user.userId
   const planId = req.params.planId
@@ -139,7 +142,7 @@ const deletePlan = async (req: Request, res: Response) => {
   })
 
   if (!result) {
-    throw new Error(`No plan with id ${planId}`)
+    throw new NotFoundError(`No plan with id ${planId}`)
   }
 
   await StopSchema.deleteMany({

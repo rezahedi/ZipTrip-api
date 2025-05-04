@@ -2,12 +2,13 @@ import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import BookmarkSchema from '../../models/Bookmarks'
 import PlanSchema from '../../models/Plans'
-import CustomAPIError from '../../errors/custom_error'
+import NotFoundError from '../../errors/not_found'
+import UnauthenticatedError from '../../errors/unauthentication_error'
 
 const PAGE_SIZE = 10
 
 const fetchAllBookmarkedPlans = async (req: Request, res: Response) => {
-  if (!req.user) throw new CustomAPIError('Not authorized to access.', StatusCodes.UNAUTHORIZED)
+  if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
 
   const { page = 1, size = PAGE_SIZE } = req.query
 
@@ -42,7 +43,7 @@ const fetchAllBookmarkedPlans = async (req: Request, res: Response) => {
 }
 
 const addBookmark = async (req: Request, res: Response) => {
-  if (!req.user) throw new CustomAPIError('Not authorized to access.', StatusCodes.UNAUTHORIZED)
+  if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
 
   const userId = req.user.userId
   const { planId } = req.params
@@ -60,7 +61,7 @@ const addBookmark = async (req: Request, res: Response) => {
 }
 
 const removeBookmark = async (req: Request, res: Response) => {
-  if (!req.user) throw new CustomAPIError('Not authorized to access.', StatusCodes.UNAUTHORIZED)
+  if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
 
   const userId = req.user.userId
   const { planId } = req.params
@@ -71,7 +72,7 @@ const removeBookmark = async (req: Request, res: Response) => {
   })
 
   if (!result) {
-    throw new CustomAPIError(`No bookmarked plan with id ${planId}`, StatusCodes.NOT_FOUND)
+    throw new NotFoundError(`No bookmarked plan with id ${planId}`)
   }
 
   res.status(StatusCodes.NO_CONTENT).end()
