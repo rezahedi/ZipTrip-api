@@ -4,30 +4,37 @@ import PlanSchema, { IPlan } from '../../models/Plans'
 import StopSchema, { IStop } from '../../models/Stops'
 import mongoose from 'mongoose'
 
+const PAGE_SIZE = 10
+
 const fetchAllPlans = async (req: Request, res: Response) => {
   if (!req.user) throw new Error('Not authorized to access.')
+
+  const { page = 1, size = PAGE_SIZE } = req.query
 
   const filters = {
     userId: req.user.userId,
   }
 
-  console.log('filters', filters)
+  const pageSize: number = parseInt(size as string)
+  const pageNumber: number = (parseInt(page as string) - 1) * pageSize
 
-  // TODO: Add pagination support later
+  const totalItems = await PlanSchema.countDocuments(filters)
+  const pagesCount = Math.ceil(totalItems / pageSize)
 
-  const plans = await PlanSchema.find(filters).populate('categoryId', 'name').populate('userId', 'name')
+  const plans = await PlanSchema.find(filters)
+    .populate('categoryId', 'name')
+    .populate('userId', 'name')
+    .skip(pageNumber)
+    .limit(pageSize)
 
   res.status(StatusCodes.OK).json({
-    page: 1,
-    size: 10,
+    page: pageNumber,
+    size: pageSize,
+    pagesCount,
     items: plans,
   })
 }
-// interface createNewPlanBodyType {
-//   body: IPlan & {
-//     stops: IStop[]
-//   }
-// }
+
 const createNewPlan = async (req: Request, res: Response) => {
   if (!req.user) throw new Error('Not authorized to access.')
 
