@@ -34,7 +34,7 @@ const fetchAllPlans = async (req: Request, res: Response) => {
     ...{ search, categoryId },
     page: pageNumber,
     size: pageSize,
-    pagesCount: pagesCount,
+    pagesCount,
     items: plans,
   })
 }
@@ -61,11 +61,15 @@ const fetchUserWithPlans = async (req: Request, res: Response) => {
     .skip(pageNumber)
     .limit(pageSize)
 
+  const totalItems = await PlanSchema.countDocuments(filters)
+  const pagesCount = Math.ceil(totalItems / pageSize)
+
   res.status(StatusCodes.OK).json({
     ...user,
     plans: {
       page: pageNumber,
       size: pageSize,
+      pagesCount,
       items: plans,
     },
   })
@@ -92,11 +96,15 @@ const fetchCategoryWithPlans = async (req: Request, res: Response) => {
     .skip(pageNumber)
     .limit(pageSize)
 
+  const totalItems = await PlanSchema.countDocuments(filters)
+  const pagesCount = Math.ceil(totalItems / pageSize)
+
   res.status(StatusCodes.OK).json({
     ...category,
     plans: {
       page: pageNumber,
       size: pageSize,
+      pagesCount,
       items: plans,
     },
   })
