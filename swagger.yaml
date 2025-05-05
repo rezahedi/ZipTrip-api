@@ -148,6 +148,7 @@ paths:
                 {
                   "_id": "alice-johnson",
                   "name": "Alice Johnson",
+                  "imageURL": "http://example.com/alice.jpg",
                   "email": "alice.johnson@example.com",
                   "plans": {
                     "page": 1,
