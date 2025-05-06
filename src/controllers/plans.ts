@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import PlanSchema, { IPlan } from '../models/Plans'
+import BookmarkSchema from '../models/Bookmarks'
 import UserSchema, { IUser } from '../models/Users'
 import StopSchema from '../models/Stops'
 import CategorySchema, { ICategory } from '../models/Categories'
@@ -21,11 +22,35 @@ const fetchAllPlans = async (req: Request, res: Response) => {
   const pageSize: number = parseInt(size as string)
   const pageNumber: number = (parseInt(page as string) - 1) * pageSize
 
-  const plans = await PlanSchema.find(filters)
+  let plans = await PlanSchema.find(filters)
     .populate('categoryId', 'name')
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)
+    .lean()
+
+  const loggedInUser = req.user || null
+  if (loggedInUser) {
+    // Extract only plan IDs
+    const planIds = plans.map((plan) => plan._id)
+
+    // Get plan IDs from bookmarks collection based on userId
+    const bookmarks = await BookmarkSchema.find({
+      userId: loggedInUser.userId,
+      planId: { $in: planIds },
+    }).select('planId')
+
+    // Create a Set for fast lookup
+    const bookmarkedPlanIds = new Set(bookmarks.map((b) => b.planId.toString()))
+
+    // Attach isBookmarked state to each plan
+    const plansWithBookmarkFlag = plans.map((plan) => ({
+      ...plan,
+      isBookmarked: bookmarkedPlanIds.has(plan._id.toString()),
+    }))
+
+    plans = plansWithBookmarkFlag
+  }
 
   res.status(StatusCodes.OK).json({
     ...{ search, categoryId },
