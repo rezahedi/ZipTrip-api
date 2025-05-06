@@ -33,4 +33,25 @@ const authMiddleware = async (request: Request, response: Response, next: NextFu
   }
 }
 
+export const optionalAuthMiddleware = async (request: Request, response: Response, next: NextFunction) => {
+  const authHeader = request.headers.authorization
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1]
+
+    try {
+      const payload = jwt.verify(token, process.env.JWT_SECRET_KEY as string) as MyJwtPayload
+      console.log('payload', payload)
+
+      // Attach the user to the authorized route
+      const user: IUser = await UserSchema.findById(payload.userId).select('-password')
+      if (user) {
+        request.user = { userId: user._id, name: user.name, email: user.email, token }
+      }
+    } catch {
+      // do nothing
+    }
+  }
+  next()
+}
+
 export default authMiddleware
