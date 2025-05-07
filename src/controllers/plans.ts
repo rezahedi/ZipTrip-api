@@ -22,20 +22,21 @@ const fetchAllPlans = async (req: Request, res: Response) => {
   const pageSize: number = parseInt(size as string)
   const pageNumber: number = (parseInt(page as string) - 1) * pageSize
 
-  let plans = await PlanSchema.find(filters)
+  const plans = await PlanSchema.find(filters)
     .populate('categoryId', 'name')
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)
     .lean()
 
-  const loggedInUser = req.user || null
+  const authenticatedUserId = req.user ? req.user.userId : ''
+  const plansWithBookmarksStatus = await attachBookmarkFlagToPlans(plans, authenticatedUserId)
 
   res.status(StatusCodes.OK).json({
     ...{ search, categoryId },
     page: 1,
     size: 10,
-    items: loggedInUser ? await attachBookmarkFlagToPlans(plans, loggedInUser.userId) : plans,
+    items: plansWithBookmarksStatus,
   })
 }
 
@@ -62,14 +63,15 @@ const fetchUserWithPlans = async (req: Request, res: Response) => {
     .limit(pageSize)
     .lean()
 
-  const loggedInUser = req.user || null
+  const authenticatedUserId = req.user ? req.user.userId : ''
+  const plansWithBookmarksStatus = await attachBookmarkFlagToPlans(plans, authenticatedUserId)
 
   res.status(StatusCodes.OK).json({
     ...user,
     plans: {
       page: pageNumber,
       size: pageSize,
-      items: loggedInUser ? await attachBookmarkFlagToPlans(plans, loggedInUser.userId) : plans,
+      items: plansWithBookmarksStatus,
     },
   })
 }
@@ -96,14 +98,15 @@ const fetchCategoryWithPlans = async (req: Request, res: Response) => {
     .limit(pageSize)
     .lean()
 
-  const loggedInUser = req.user || null
+  const authenticatedUserId = req.user ? req.user.userId : ''
+  const plansWithBookmarksStatus = await attachBookmarkFlagToPlans(plans, authenticatedUserId)
 
   res.status(StatusCodes.OK).json({
     ...category,
     plans: {
       page: pageNumber,
       size: pageSize,
-      items: loggedInUser ? await attachBookmarkFlagToPlans(plans, loggedInUser.userId) : plans,
+      items: plansWithBookmarksStatus,
     },
   })
 }
@@ -139,6 +142,12 @@ const fetchPlan = async (req: Request, res: Response) => {
 }
 
 const attachBookmarkFlagToPlans = async (plans: IPlan[], userId: string) => {
+  if (!userId)
+    return plans.map((plan) => ({
+      ...plan,
+      isBookmarked: false,
+    }))
+
   // Extract only plan IDs
   const planIds = plans.map((plan) => plan._id)
 
