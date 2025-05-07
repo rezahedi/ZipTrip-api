@@ -120,15 +120,20 @@ const fetchPlan = async (req: Request, res: Response) => {
   const stops = await StopSchema.find({ planId })
 
   const loggedInUser = req.user || null
+  let isBookmarked: boolean = false
+  if (loggedInUser) {
+    const res = await BookmarkSchema.exists({
+      userId: loggedInUser.userId,
+      planId,
+    }).lean()
+    if (res) {
+      isBookmarked = true
+    }
+  }
 
   res.status(StatusCodes.OK).json({
     ...plan,
-    isBookmarked: loggedInUser
-      ? await BookmarkSchema.exists({
-          userId: loggedInUser.userId,
-          planId,
-        }).lean()
-      : false,
+    isBookmarked,
     stops,
   })
 }
