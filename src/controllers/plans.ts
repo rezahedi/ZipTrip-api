@@ -30,34 +30,33 @@ const fetchAllPlans = async (req: Request, res: Response) => {
     .lean()
 
   const loggedInUser = req.user || null
-  if (loggedInUser) {
-    // Extract only plan IDs
-    const planIds = plans.map((plan) => plan._id)
-
-    // Get plan IDs from bookmarks collection based on userId
-    const bookmarks = await BookmarkSchema.find({
-      userId: loggedInUser.userId,
-      planId: { $in: planIds },
-    }).select('planId')
-
-    // Create a Set for fast lookup
-    const bookmarkedPlanIds = new Set(bookmarks.map((b) => b.planId.toString()))
-
-    // Attach isBookmarked state to each plan
-    const plansWithBookmarkFlag = plans.map((plan) => ({
-      ...plan,
-      isBookmarked: bookmarkedPlanIds.has(plan._id.toString()),
-    }))
-
-    plans = plansWithBookmarkFlag
-  }
 
   res.status(StatusCodes.OK).json({
     ...{ search, categoryId },
     page: 1,
     size: 10,
-    items: plans,
+    items: loggedInUser ? await attachBookmarkFlagToPlans(plans, loggedInUser.userId) : plans,
   })
+}
+
+const attachBookmarkFlagToPlans = async (plans: IPlan[], userId: string) => {
+  // Extract only plan IDs
+  const planIds = plans.map((plan) => plan._id)
+
+  // Get plan IDs from bookmarks collection based on userId
+  const bookmarks = await BookmarkSchema.find({
+    userId,
+    planId: { $in: planIds },
+  }).select('planId')
+
+  // Create a Set for fast lookup
+  const bookmarkedPlanIds = new Set(bookmarks.map((b) => b.planId.toString()))
+
+  // Attach isBookmarked state to each plan
+  return plans.map((plan) => ({
+    ...plan,
+    isBookmarked: bookmarkedPlanIds.has(plan._id.toString()),
+  }))
 }
 
 const fetchUserWithPlans = async (req: Request, res: Response) => {
