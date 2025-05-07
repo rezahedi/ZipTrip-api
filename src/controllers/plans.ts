@@ -60,13 +60,16 @@ const fetchUserWithPlans = async (req: Request, res: Response) => {
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)
+    .lean()
+
+  const loggedInUser = req.user || null
 
   res.status(StatusCodes.OK).json({
     ...user,
     plans: {
       page: pageNumber,
       size: pageSize,
-      items: plans,
+      items: loggedInUser ? await attachBookmarkFlagToPlans(plans, loggedInUser.userId) : plans,
     },
   })
 }
@@ -91,13 +94,16 @@ const fetchCategoryWithPlans = async (req: Request, res: Response) => {
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)
+    .lean()
+
+  const loggedInUser = req.user || null
 
   res.status(StatusCodes.OK).json({
     ...category,
     plans: {
       page: pageNumber,
       size: pageSize,
-      items: plans,
+      items: loggedInUser ? await attachBookmarkFlagToPlans(plans, loggedInUser.userId) : plans,
     },
   })
 }
@@ -113,8 +119,16 @@ const fetchPlan = async (req: Request, res: Response) => {
 
   const stops = await StopSchema.find({ planId })
 
+  const loggedInUser = req.user || null
+
   res.status(StatusCodes.OK).json({
     ...plan,
+    isBookmarked: loggedInUser
+      ? await BookmarkSchema.exists({
+          userId: loggedInUser.userId,
+          planId,
+        }).lean()
+      : false,
     stops,
   })
 }

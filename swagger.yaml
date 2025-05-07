@@ -56,6 +56,7 @@ paths:
                         "_id": "67fdfe49d9c143f362fb9702",
                         "name": "My first cat"
                       },
+                      "isBookmarked": false,
                       "createdAt": "2025-04-04T16:50:54Z",
                       "updatedAt": "2025-04-04T16:50:54Z"
                     }
@@ -105,6 +106,7 @@ paths:
                     "_id": "67fdfe49d9c143f362fb9702",
                     "name": "My first cat"
                   },
+                  "isBookmarked": false,
                   "createdAt": "2025-04-04T16:50:54Z",
                   "updatedAt": "2025-04-04T16:50:54Z",
                   "stops": [
@@ -175,6 +177,7 @@ paths:
                           "_id": "67fdfe49d9c143f362fb9702",
                           "name": "My first cat"
                         },
+                        "isBookmarked": false,
                         "createdAt": "2025-04-04T17:00:54Z",
                         "updatedAt": "2025-04-04T17:00:54Z"
                       }
@@ -234,6 +237,7 @@ paths:
                           "_id": "67fdfe49d9c143f362fb9702",
                           "name": "My first cat"
                         },
+                        "isBookmarked": false,
                         "createdAt": "2025-04-04T17:00:54Z",
                         "updatedAt": "2025-04-04T17:00:54Z"
                       }
