@@ -39,26 +39,6 @@ const fetchAllPlans = async (req: Request, res: Response) => {
   })
 }
 
-const attachBookmarkFlagToPlans = async (plans: IPlan[], userId: string) => {
-  // Extract only plan IDs
-  const planIds = plans.map((plan) => plan._id)
-
-  // Get plan IDs from bookmarks collection based on userId
-  const bookmarks = await BookmarkSchema.find({
-    userId,
-    planId: { $in: planIds },
-  }).select('planId')
-
-  // Create a Set for fast lookup
-  const bookmarkedPlanIds = new Set(bookmarks.map((b) => b.planId.toString()))
-
-  // Attach isBookmarked state to each plan
-  return plans.map((plan) => ({
-    ...plan,
-    isBookmarked: bookmarkedPlanIds.has(plan._id.toString()),
-  }))
-}
-
 const fetchUserWithPlans = async (req: Request, res: Response) => {
   const { userId } = req.params
   const { page = 1, size = PAGE_SIZE } = req.query
@@ -137,6 +117,26 @@ const fetchPlan = async (req: Request, res: Response) => {
     ...plan,
     stops,
   })
+}
+
+const attachBookmarkFlagToPlans = async (plans: IPlan[], userId: string) => {
+  // Extract only plan IDs
+  const planIds = plans.map((plan) => plan._id)
+
+  // Get plan IDs from bookmarks collection based on userId
+  const bookmarks = await BookmarkSchema.find({
+    userId,
+    planId: { $in: planIds },
+  }).select('planId')
+
+  // Create a Set for fast lookup
+  const bookmarkedPlanIds = new Set(bookmarks.map((b) => b.planId.toString()))
+
+  // Attach isBookmarked state to each plan
+  return plans.map((plan) => ({
+    ...plan,
+    isBookmarked: bookmarkedPlanIds.has(plan._id.toString()),
+  }))
 }
 
 export { fetchAllPlans, fetchPlan, fetchUserWithPlans, fetchCategoryWithPlans }
