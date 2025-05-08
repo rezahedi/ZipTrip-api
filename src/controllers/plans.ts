@@ -141,6 +141,11 @@ const fetchPlan = async (req: Request, res: Response) => {
   })
 }
 
+const fetchAllCategories = async (req: Request, res: Response) => {
+  const categories = await CategorySchema.find().lean()
+  res.status(StatusCodes.OK).json(categories)
+}
+
 const attachBookmarkFlagToPlans = async (plans: IPlan[], userId: string) => {
   if (!userId)
     return plans.map((plan) => ({
@@ -167,4 +172,4 @@ const attachBookmarkFlagToPlans = async (plans: IPlan[], userId: string) => {
   }))
 }
 
-export { fetchAllPlans, fetchPlan, fetchUserWithPlans, fetchCategoryWithPlans }
+export { fetchAllPlans, fetchPlan, fetchUserWithPlans, fetchCategoryWithPlans, fetchAllCategories }
