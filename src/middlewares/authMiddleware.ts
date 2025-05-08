@@ -25,7 +25,7 @@ const authMiddleware = async (request: Request, response: Response, next: NextFu
     // Attach the user to the authorized route
     const user: IUser = await UserSchema.findById(payload.userId)
       .orFail(new UnauthenticatedError('User not found, please login again'))
-      .select('-password')
+      .select('name imageURL email')
     request.user = { userId: user._id, name: user.name, email: user.email, token }
     next()
   } catch {
@@ -43,7 +43,7 @@ export const optionalAuthMiddleware = async (request: Request, response: Respons
       console.log('payload', payload)
 
       // Attach the user to the authorized route
-      const user: IUser = await UserSchema.findById(payload.userId).select('-password')
+      const user: IUser = await UserSchema.findById(payload.userId).select('name imageURL email')
       if (user) {
         request.user = { userId: user._id, name: user.name, email: user.email, token }
       }

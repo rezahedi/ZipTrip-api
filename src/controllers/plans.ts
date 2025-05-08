@@ -49,7 +49,7 @@ const fetchUserWithPlans = async (req: Request, res: Response) => {
 
   const user: IUser | null = await UserSchema.findById(userId)
     .orFail(new NotFoundError(`Item not found with the id: ${userId}`))
-    .select('-password')
+    .select('name imageURL')
     .lean()
 
   const filters = {
