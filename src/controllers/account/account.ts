@@ -125,11 +125,10 @@ const updatePlan = async (req: Request, res: Response) => {
 
   if (!updatedPlan) throw new CustomAPIError('Failed to update the plan', StatusCodes.INTERNAL_SERVER_ERROR)
 
-  let stopIDs: string[] = []
-  stops.forEach(async (stop: IStop, index: number) => {
+  const operations = stops.map(async (stop: IStop, index: number) => {
     // Update stops that have ID
     if (stop._id) {
-      await StopSchema.findByIdAndUpdate(
+      const updatedStop = await StopSchema.findByIdAndUpdate(
         stop._id,
         {
           ...stop,
@@ -140,28 +139,28 @@ const updatePlan = async (req: Request, res: Response) => {
           runValidators: true,
         }
       )
-      stopIDs.push(stop._id)
-      return
+      if (updatedStop) return updatedStop._id.toString()
+    } else {
+      // Create stops that don't have ID
+      const createdStop = await StopSchema.create({
+        ...stop,
+        sequence: index,
+        planId,
+        userId: new mongoose.Types.ObjectId(userId),
+      })
+      if (createdStop) return createdStop._id.toString()
     }
-
-    // Create stops that don't have ID
-    const createdStop = await StopSchema.create({
-      ...stop,
-      sequence: index,
-      planId,
-      userId: new mongoose.Types.ObjectId(userId),
-    })
-    stopIDs.push(createdStop._id)
   })
+  const stopIDs = await Promise.all(operations)
 
   // Delete stops that its ID doesn't exist on passed array of stops
   const currentStops = await StopSchema.find({
     planId,
   })
-  currentStops.forEach((stop) => {
-    if (stopIDs.includes(stop._id)) return
-    StopSchema.findByIdAndDelete(stop._id)
-  })
+  const idsToDelete = currentStops.filter((stop) => !stopIDs.includes(stop._id.toString())).map((stop) => stop._id)
+  if (idsToDelete.length > 0) {
+    await StopSchema.deleteMany({ _id: { $in: idsToDelete } })
+  }
 
   const planStops = await StopSchema.find({
     planId,
