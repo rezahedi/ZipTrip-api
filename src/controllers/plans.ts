@@ -128,8 +128,8 @@ const fetchPlan = async (req: Request, res: Response) => {
 
   const plan: IPlan | null = await PlanSchema.findById(planId)
     .orFail(new NotFoundError(`Item not found with the id: ${planId}`))
-    .populate('categoryId', 'name')
-    .populate('userId', 'name')
+    .populate('categoryId', 'name imageURL')
+    .populate('userId', 'name imageURL')
     .lean()
 
   const stops = await StopSchema.find({ planId })
