@@ -100,11 +100,13 @@ paths:
                   "duration": "8 hours",
                   "userId": {
                     "_id": "67fdfdfcd9c143f362fb9701",
-                    "name": "Reza"
+                    "name": "Reza",
+                    "imageURL": "http://example.com/bob.jpg"
                   },
                   "categoryId":  {
                     "_id": "67fdfe49d9c143f362fb9702",
-                    "name": "My first cat"
+                    "name": "My first cat",
+                    "imageURL": "http://example.com/category-image.jpg"
                   },
                   "isBookmarked": false,
                   "createdAt": "2025-04-04T16:50:54Z",
