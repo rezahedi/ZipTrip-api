@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import PlanSchema, { IPlan } from '../models/Plans'
+import BookmarkSchema from '../models/Bookmarks'
 import UserSchema, { IUser } from '../models/Users'
 import StopSchema from '../models/Stops'
 import CategorySchema, { ICategory } from '../models/Categories'
@@ -29,13 +30,17 @@ const fetchAllPlans = async (req: Request, res: Response) => {
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)
+    .lean()
+
+  const authenticatedUserId = req.user ? req.user.userId : ''
+  const plansWithBookmarksStatus = await attachBookmarkFlagToPlans(plans, authenticatedUserId)
 
   res.status(StatusCodes.OK).json({
     ...{ search, categoryId },
     page: parseInt(page as string),
     size: pageSize,
     pagesCount,
-    items: plans,
+    items: plansWithBookmarksStatus,
   })
 }
 
@@ -48,7 +53,7 @@ const fetchUserWithPlans = async (req: Request, res: Response) => {
 
   const user: IUser | null = await UserSchema.findById(userId)
     .orFail(new NotFoundError(`Item not found with the id: ${userId}`))
-    .select('-password')
+    .select('name imageURL')
     .lean()
 
   const filters = {
@@ -60,6 +65,10 @@ const fetchUserWithPlans = async (req: Request, res: Response) => {
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)
+    .lean()
+
+  const authenticatedUserId = req.user ? req.user.userId : ''
+  const plansWithBookmarksStatus = await attachBookmarkFlagToPlans(plans, authenticatedUserId)
 
   const totalItems = await PlanSchema.countDocuments(filters)
   const pagesCount = Math.ceil(totalItems / pageSize)
@@ -70,7 +79,7 @@ const fetchUserWithPlans = async (req: Request, res: Response) => {
       page: parseInt(page as string),
       size: pageSize,
       pagesCount,
-      items: plans,
+      items: plansWithBookmarksStatus,
     },
   })
 }
@@ -95,6 +104,10 @@ const fetchCategoryWithPlans = async (req: Request, res: Response) => {
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)
+    .lean()
+
+  const authenticatedUserId = req.user ? req.user.userId : ''
+  const plansWithBookmarksStatus = await attachBookmarkFlagToPlans(plans, authenticatedUserId)
 
   const totalItems = await PlanSchema.countDocuments(filters)
   const pagesCount = Math.ceil(totalItems / pageSize)
@@ -105,7 +118,7 @@ const fetchCategoryWithPlans = async (req: Request, res: Response) => {
       page: parseInt(page as string),
       size: pageSize,
       pagesCount,
-      items: plans,
+      items: plansWithBookmarksStatus,
     },
   })
 }
@@ -121,10 +134,54 @@ const fetchPlan = async (req: Request, res: Response) => {
 
   const stops = await StopSchema.find({ planId })
 
+  const loggedInUser = req.user || null
+  let isBookmarked: boolean = false
+  if (loggedInUser) {
+    const res = await BookmarkSchema.exists({
+      userId: loggedInUser.userId,
+      planId,
+    }).lean()
+    if (res) {
+      isBookmarked = true
+    }
+  }
+
   res.status(StatusCodes.OK).json({
     ...plan,
+    isBookmarked,
     stops,
   })
 }
 
-export { fetchAllPlans, fetchPlan, fetchUserWithPlans, fetchCategoryWithPlans }
+const fetchAllCategories = async (req: Request, res: Response) => {
+  const categories = await CategorySchema.find().lean()
+  res.status(StatusCodes.OK).json(categories)
+}
+
+const attachBookmarkFlagToPlans = async (plans: IPlan[], userId: string) => {
+  if (!userId)
+    return plans.map((plan) => ({
+      ...plan,
+      isBookmarked: false,
+    }))
+
+  // Extract only plan IDs
+  const planIds = plans.map((plan) => plan._id)
+
+  // Get plan IDs from bookmarks collection based on userId
+  const bookmarks = await BookmarkSchema.find({
+    userId,
+    planId: { $in: planIds },
+  }).select('planId')
+
+  // Create a Set for fast lookup
+  const bookmarkedPlanIds = new Set(bookmarks.map((b) => b.planId.toString()))
+
+  // Attach isBookmarked state to each plan
+  return plans.map((plan) => ({
+    ...plan,
+    isBookmarked: bookmarkedPlanIds.has(plan._id.toString()),
+  }))
+}
+
+export { fetchAllPlans, fetchPlan, fetchUserWithPlans, fetchCategoryWithPlans, fetchAllCategories }

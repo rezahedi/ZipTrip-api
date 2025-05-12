@@ -56,6 +56,7 @@ paths:
                         "_id": "67fdfe49d9c143f362fb9702",
                         "name": "My first cat"
                       },
+                      "isBookmarked": false,
                       "createdAt": "2025-04-04T16:50:54Z",
                       "updatedAt": "2025-04-04T16:50:54Z"
                     }
@@ -105,6 +106,7 @@ paths:
                     "_id": "67fdfe49d9c143f362fb9702",
                     "name": "My first cat"
                   },
+                  "isBookmarked": false,
                   "createdAt": "2025-04-04T16:50:54Z",
                   "updatedAt": "2025-04-04T16:50:54Z",
                   "stops": [
@@ -175,12 +177,47 @@ paths:
                           "_id": "67fdfe49d9c143f362fb9702",
                           "name": "My first cat"
                         },
+                        "isBookmarked": false,
                         "createdAt": "2025-04-04T17:00:54Z",
                         "updatedAt": "2025-04-04T17:00:54Z"
                       }
                     ]
                   }
                 }
+          headers: {}
+      deprecated: false
+  /plans/category:
+    get:
+      tags:
+        - Plans
+      summary: Get list of all categories
+      parameters: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                [
+                  {
+                    "_id": "680819f66e7cdbc049ab3f57",
+                    "name": "City Exploration",
+                    "description": "Explore the city's landmarks, parks, museums, and dining spots.",
+                    "imageURL": "https://example.com/city-exploration.jpg"
+                  },
+                  {
+                    "_id": "68081b006e7cdbc049ab3f58",
+                    "name": "Urban Adventure",
+                    "description": "Discover the vibrant city life, parks, museums, and culinary delights.",
+                    "imageURL": "https://example.com/urban-adventure.jpg"
+                  },
+                  {
+                    "_id": "68081b546e7cdbc049ab3f59",
+                    "name": "Food and Drink Gems",
+                    "description": "Restaurants, Bars and Cafes",
+                    "imageURL": "https://example.com/food-and-drink-gems.jpg"
+                  }
+                ]
           headers: {}
       deprecated: false
   /plans/category/{categoryId}:
@@ -234,6 +271,7 @@ paths:
                           "_id": "67fdfe49d9c143f362fb9702",
                           "name": "My first cat"
                         },
+                        "isBookmarked": false,
                         "createdAt": "2025-04-04T17:00:54Z",
                         "updatedAt": "2025-04-04T17:00:54Z"
                       }
