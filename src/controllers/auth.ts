@@ -100,7 +100,7 @@ const requestPasswordReset = async (req: Request, res: Response) => {
   const isProduction = process.env.NODE_ENV === 'production'
   console.log(`Running in ${process.env.NODE_ENV} mode `)
   const resetUrl = isProduction
-    ? 'https://production-domain.com/resetPassword/'
+    ? 'https://production-domain.com/resetpassword/'
     : 'http://localhost:5173/resetpassword/'
   const message = `Click the following link to reset your password: ${resetUrl}${resetToken}`
   try {
