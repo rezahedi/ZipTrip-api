@@ -184,4 +184,10 @@ const attachBookmarkFlagToPlans = async (plans: IPlan[], userId: string) => {
   }))
 }
 
-export { fetchAllPlans, fetchPlan, fetchUserWithPlans, fetchCategoryWithPlans, fetchAllCategories }
+const fetchAllNearbyPlans = async (req: Request, res: Response) => {
+  // TODO: get bounding box details from params
+  // TODO: query and get plans inside the bounding box geo location
+  res.status(StatusCodes.OK).json({ count: 0, items: [] })
+}
+
+export { fetchAllPlans, fetchPlan, fetchUserWithPlans, fetchCategoryWithPlans, fetchAllCategories, fetchAllNearbyPlans }
