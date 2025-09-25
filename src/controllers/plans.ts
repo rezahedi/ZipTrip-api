@@ -187,7 +187,43 @@ const attachBookmarkFlagToPlans = async (plans: IPlan[], userId: string) => {
 const fetchAllNearbyPlans = async (req: Request, res: Response) => {
   // TODO: get bounding box details from params
   // TODO: query and get plans inside the bounding box geo location
-  res.status(StatusCodes.OK).json({ count: 0, items: [] })
+
+
+  const { latmin, lngmin, latmax, lngmax } = req.query
+
+  const withinBoundingBox = {
+    type: 'Polygon',
+    coordinates: [
+      [
+        [lngmin, latmin],
+        [lngmin, latmax],
+        [lngmax, latmax],
+        [lngmax, latmin],
+        [lngmin, latmin], // close the square
+      ],
+    ],
+  }
+
+  const plans = await PlanSchema.find({
+    startLocation: {
+      $geoWithin: {
+        $geometry: withinBoundingBox,
+      },
+    },
+  })
+    .populate('categoryId', 'name')
+    .populate('userId', 'name')
+    .lean()
+
+  const authenticatedUserId = req.user ? req.user.userId : ''
+  const plansWithBookmarksStatus = await attachBookmarkFlagToPlans(plans, authenticatedUserId)
+
+  res.status(StatusCodes.OK).json({
+    count: plans.length,
+    items: plansWithBookmarksStatus,
+  })
+
+  // res.status(StatusCodes.OK).json({ count: 0, items: [] })
 }
 
 export { fetchAllPlans, fetchPlan, fetchUserWithPlans, fetchCategoryWithPlans, fetchAllCategories, fetchAllNearbyPlans }
