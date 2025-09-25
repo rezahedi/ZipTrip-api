@@ -7,11 +7,26 @@ export interface IStop extends Document {
   description?: string
   imageURL: string
   address: string
-  location: [number, number]
+  location: {
+    type: 'Point'
+    coordinates: [number, number]
+  }
   sequence: number
   createdAt?: Date
   updatedAt?: Date
 }
+
+const pointSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ['Point'],
+    required: true,
+  },
+  coordinates: {
+    type: [Number],
+    required: true,
+  },
+})
 
 const StopSchema: Schema<IStop> = new Schema(
   {
@@ -46,7 +61,8 @@ const StopSchema: Schema<IStop> = new Schema(
       required: [true, 'Provide address'],
     },
     location: {
-      type: [Number, Number],
+      type: pointSchema,
+      required: true,
     },
     sequence: {
       type: Number,
@@ -57,5 +73,7 @@ const StopSchema: Schema<IStop> = new Schema(
     timestamps: true,
   }
 )
+
+StopSchema.index({ location: '2dsphere' })
 
 export default mongoose.model<IStop>('Stop', StopSchema)

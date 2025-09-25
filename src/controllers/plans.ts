@@ -132,7 +132,7 @@ const fetchPlan = async (req: Request, res: Response) => {
     .populate('userId', 'name imageURL')
     .lean()
 
-  const stops = await StopSchema.find({ planId })
+  const stops = await StopSchema.find({ planId }).lean()
 
   const loggedInUser = req.user || null
   let isBookmarked: boolean = false
@@ -149,7 +149,11 @@ const fetchPlan = async (req: Request, res: Response) => {
   res.status(StatusCodes.OK).json({
     ...plan,
     isBookmarked,
-    stops,
+    // Convert geojson to [lat, lng] coordinate pair
+    stops: stops.map((item) => ({
+      ...item,
+      location: [item?.location.coordinates[1], item?.location.coordinates[0]],
+    })),
   })
 }
 
