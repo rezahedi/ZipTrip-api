@@ -11,14 +11,32 @@ export interface IPlan extends Document {
   stopCount: number
   rate: number
   reviewCount: number
-  startLocation: [number, number]
-  finishLocation: [number, number]
+  startLocation: {
+    type: 'Point'
+    coordinates: [number, number]
+  }
+  finishLocation: {
+    type: 'Point'
+    coordinates: [number, number]
+  }
   distance: number
   duration: number
   categoryId: Types.ObjectId
   createdAt?: Date
   updatedAt?: Date
 }
+
+const pointSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ['Point'],
+    required: true,
+  },
+  coordinates: {
+    type: [Number],
+    required: true,
+  },
+})
 
 const PlanSchema: Schema<IPlan> = new Schema(
   {
@@ -59,10 +77,12 @@ const PlanSchema: Schema<IPlan> = new Schema(
       default: 0,
     },
     startLocation: {
-      type: [Number, Number],
+      type: pointSchema,
+      required: true,
     },
     finishLocation: {
-      type: [Number, Number],
+      type: pointSchema,
+      required: true,
     },
     distance: {
       type: Number,
@@ -82,5 +102,8 @@ const PlanSchema: Schema<IPlan> = new Schema(
     timestamps: true,
   }
 )
+
+PlanSchema.index({ startLocation: '2dsphere' })
+PlanSchema.index({ finishLocation: '2dsphere' })
 
 export default mongoose.model<IPlan>('Plan', PlanSchema)

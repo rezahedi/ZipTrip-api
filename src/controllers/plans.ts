@@ -6,6 +6,7 @@ import UserSchema, { IUser } from '../models/Users'
 import StopSchema from '../models/Stops'
 import CategorySchema, { ICategory } from '../models/Categories'
 import NotFoundError from '../errors/not_found'
+import { geoJsonToCoords } from '../utils/location'
 
 const PAGE_SIZE = 10
 
@@ -132,7 +133,7 @@ const fetchPlan = async (req: Request, res: Response) => {
     .populate('userId', 'name imageURL')
     .lean()
 
-  const stops = await StopSchema.find({ planId })
+  const stops = await StopSchema.find({ planId }).lean()
 
   const loggedInUser = req.user || null
   let isBookmarked: boolean = false
@@ -149,7 +150,10 @@ const fetchPlan = async (req: Request, res: Response) => {
   res.status(StatusCodes.OK).json({
     ...plan,
     isBookmarked,
-    stops,
+    stops: stops.map((item) => ({
+      ...item,
+      location: geoJsonToCoords(item.location),
+    })),
   })
 }
 
@@ -184,4 +188,47 @@ const attachBookmarkFlagToPlans = async (plans: IPlan[], userId: string) => {
   }))
 }
 
-export { fetchAllPlans, fetchPlan, fetchUserWithPlans, fetchCategoryWithPlans, fetchAllCategories }
+const fetchAllNearbyPlans = async (req: Request, res: Response) => {
+  // TODO: get bounding box details from params
+  // TODO: query and get plans inside the bounding box geo location
+
+  const { latmin, lngmin, latmax, lngmax } = req.query
+
+  const withinBoundingBox = {
+    type: 'Polygon',
+    coordinates: [
+      [
+        [lngmin, latmin],
+        [lngmin, latmax],
+        [lngmax, latmax],
+        [lngmax, latmin],
+        [lngmin, latmin], // close the square
+      ],
+    ],
+  }
+
+  const plans = await PlanSchema.find({
+    startLocation: {
+      $geoWithin: {
+        $geometry: withinBoundingBox,
+      },
+    },
+  })
+    .populate('categoryId', 'name')
+    .populate('userId', 'name')
+    .lean()
+
+  const authenticatedUserId = req.user ? req.user.userId : ''
+  const plansWithBookmarksStatus = await attachBookmarkFlagToPlans(plans, authenticatedUserId)
+
+  res.status(StatusCodes.OK).json({
+    count: plansWithBookmarksStatus.length,
+    items: plansWithBookmarksStatus.map((item) => ({
+      ...item,
+      startLocation: geoJsonToCoords(item.startLocation),
+      finishLocation: geoJsonToCoords(item.finishLocation),
+    })),
+  })
+}
+
+export { fetchAllPlans, fetchPlan, fetchUserWithPlans, fetchCategoryWithPlans, fetchAllCategories, fetchAllNearbyPlans }
