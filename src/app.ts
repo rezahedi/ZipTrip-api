@@ -33,7 +33,7 @@ app.use('/api/v1/places', optionalAuthMiddleware, placesRouter)
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/account', authMiddleware, accountRouter)
 
-const swaggerDocument = YAML.load('./swagger.yaml')
+const swaggerDocument = YAML.load('./public/swagger.yaml')
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument))
 
 app.use(notFoundMiddleware)
