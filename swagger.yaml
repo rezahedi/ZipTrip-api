@@ -333,6 +333,36 @@ paths:
                 }
           headers: {}
       deprecated: false
+  /Places/nearby:
+    get:
+      tags:
+        - Places
+      summary: Get list of Places filter by geo location bounding box
+      parameters:
+        - $ref: '#/components/parameters/LatMin'
+        - $ref: '#/components/parameters/LngMin'
+        - $ref: '#/components/parameters/LatMax'
+        - $ref: '#/components/parameters/LngMax'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                {
+                  "count": 1,
+                  "items": [
+                    {
+                      "_id": "stop-001",
+                      "name": "Ferry Building Marketplace",
+                      "imageURL": "https://dummyimage.com/390x265/2196F3/fff.png",
+                      "address": "1 Ferry Building, San Francisco, CA 94111",
+                      "location": [37.7955, -122.3937]
+                    }
+                  ]
+                }
+          headers: {}
+      deprecated: false
   /auth/register:
     post:
       tags:
@@ -1078,6 +1108,8 @@ components:
 tags:
   - name: Plans
     description: Fetching plans for public views
+  - name: Places
+    description: Fetching places for public views
   - name: Auth
     description: Simple user authentication with email & password
   - name: Account
