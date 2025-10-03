@@ -49,6 +49,7 @@ const PlaceSchema: Schema<IPlace> = new Schema(
       required: [true, 'Provide address'],
     },
     location: {
+      _id: false,
       type: pointSchema,
       required: true,
     },

@@ -31,34 +31,31 @@ paths:
                   "categoryId": "city-exploration",
                   "page": 1,
                   "size": 10,
+                  "pagesCount": 2,
                   "items": [
                     {
-                      "_id": "san-francisco-day-tour",
-                      "title": "San Francisco Day Tour",
-                      "description": "A one-day tour exploring San Francisco's iconic sites, parks, museums, and dining establishments.",
-                      "images": [
-                        "https://dummyimage.com/390x265/2196F3/fff.png",
-                        "https://dummyimage.com/390x265/FF9800/fff.png"
-                      ],
-                      "type": "Full day",
-                      "stopCount": 5,
-                      "rating": 4.8,
-                      "reviewCount": 120,
-                      "startLocation": [37.7955, -122.3937],
-                      "finishLocation": [37.7879, -122.4074],
-                      "distance": 5,
-                      "duration": "8 hours",
+                      "_id": "plan-id-sdfsde",
                       "userId": {
-                        "_id": "67fdfdfcd9c143f362fb9701",
+                        "_id": "user-id-sdfdsf",
                         "name": "Reza"
                       },
-                      "categoryId":  {
-                        "_id": "67fdfe49d9c143f362fb9702",
-                        "name": "My first cat"
+                      "title": "New York City Essentials Tour",
+                      "images": [
+                        "https://example.com/image1.jpg",
+                        "https://example.com/image2.jpg",
+                      ],
+                      "stopCount": 2,
+                      "reviewCount": 83,
+                      "startLocation": [40.7924939, -73.95190889999999],
+                      "finishLocation": [40.7614327, -73.97762159999999],
+                      "distance": 8.3,
+                      "duration": 4,
+                      "categoryId": {
+                          "_id": "category-id-sdfsd",
+                          "name": "City Exploration"
                       },
-                      "isBookmarked": false,
-                      "createdAt": "2025-04-04T16:50:54Z",
-                      "updatedAt": "2025-04-04T16:50:54Z"
+                      "type": "Half day",
+                      "isBookmarked": false
                     }
                   ]
                 }
@@ -70,7 +67,7 @@ paths:
         name: planId
         schema:
           type: string
-          example: san-francisco-day-tour
+          example: plan-id-sdfsdf
         required: true
         description: The plan ID
     get:
@@ -86,45 +83,43 @@ paths:
             application/json:
               example: |
                 {
-                  "_id": "san-francisco-day-tour",
-                  "title": "San Francisco Day Tour",
-                  "description": "A one-day tour exploring San Francisco's iconic sites, parks, museums, and dining establishments.",
-                  "images": ["https://dummyimage.com/390x265/2196F3/fff.png"],
-                  "type": "Full day",
-                  "stopCount": 1,
-                  "rating": 4.8,
-                  "reviewCount": 120,
-                  "startLocation": [37.7955, -122.3937],
-                  "finishLocation": [37.7879, -122.4074],
-                  "distance": 5,
-                  "duration": "8 hours",
+                  "_id": "plan-id-sdfsdf",
                   "userId": {
-                    "_id": "67fdfdfcd9c143f362fb9701",
+                    "_id": "user-id-sdfdsf",
                     "name": "Reza",
-                    "imageURL": "http://example.com/bob.jpg"
+                    "imageURL": "http://example.com/reza.jpg"
                   },
-                  "categoryId":  {
-                    "_id": "67fdfe49d9c143f362fb9702",
-                    "name": "My first cat",
-                    "imageURL": "http://example.com/category-image.jpg"
+                  "title": "New York City Essentials Tour",
+                  "description": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                  "images": [
+                    "https://example.com/image1.jpg",
+                    "https://example.com/image2.jpg"
+                  ],
+                  "stopCount": 1,
+                  "reviewCount": 83,
+                  "startLocation": [40.7924939, -73.95190889999999],
+                  "finishLocation": [40.7614327, -73.97762159999999],
+                  "distance": 8.3,
+                  "duration": 4,
+                  "categoryId": {
+                    "_id": "category-id-sadfsdf",
+                    "name": "City Exploration",
+                    "imageURL": "https://example.com/city-exploration.jpg"
                   },
-                  "isBookmarked": false,
-                  "createdAt": "2025-04-04T16:50:54Z",
-                  "updatedAt": "2025-04-04T16:50:54Z",
+                  "createdAt": "2025-04-22T23:54:08.160Z",
+                  "updatedAt": "2025-09-16T22:23:47.445Z",
+                  "type": "Half day",
                   "stops": [
                     {
-                        "_id": "stop-001",
-                        "planId": "san-francisco-day-tour",
-                        "name": "Ferry Building Marketplace",
-                        "imageURL": "https://dummyimage.com/390x265/2196F3/fff.png",
-                        "address": "1 Ferry Building, San Francisco, CA 94111",
-                        "description": "A historic building offering a variety of food vendors, shops, and a farmers market.",
-                        "location": [37.7955, -122.3937],
-                        "sequence": 1,
-                        "createdAt": "2025-04-04T16:50:54Z",
-                        "updatedAt": "2025-04-04T16:50:54Z"
+                      "placeId": "place-id-sdfsdf",
+                      "name": "Museum of the City of New York",
+                      "description": "",
+                      "imageURL": "example.com/museum.jpg",
+                      "address": "1220 5th Ave, New York, NY 10029, USA",
+                      "location": [40.7924939, -73.95190889999999]
                     }
-                  ]
+                  ],
+                  "isBookmarked": false
                 }
           headers: {}
       deprecated: false
@@ -134,7 +129,7 @@ paths:
         name: userId
         schema:
           type: string
-          example: alice-johnson
+          example: user-id-sdfsd
         required: true
         description: The user ID
     get:
@@ -150,38 +145,37 @@ paths:
             application/json:
               example: |
                 {
-                  "_id": "alice-johnson",
+                  "_id": "user-id-sdfsdf",
                   "name": "Alice Johnson",
                   "imageURL": "http://example.com/alice.jpg",
                   "email": "alice.johnson@example.com",
                   "plans": {
                     "page": 1,
                     "size": 10,
+                    "pagesCount": 1,
                     "items": [
                       {
-                        "_id": "berkeley-highlights-tour",
-                        "title": "Berkeley Highlights Tour",
-                        "description": "A day exploring the University of California, Berkeley campus and surrounding cultural spots.",
-                        "images": ["https://dummyimage.com/390x265/673AB7/fff.png"],
-                        "type": "Evening",
-                        "stopCount": 4,
-                        "rating": 4.9,
-                        "reviewCount": 95,
-                        "startLocation": [37.8719, -122.2585],
-                        "finishLocation": [37.8793, -122.2698],
-                        "distance": 3,
-                        "duration": "6 hours",
+                        "_id": "plan-id-sdfds",
                         "userId": {
-                          "_id": "67fdfdfcd9c143f362fb9701",
-                          "name": "Reza"
+                          "_id": "user-id-sdfds",
+                          "name": "Meesha"
                         },
-                        "categoryId":  {
-                          "_id": "67fdfe49d9c143f362fb9702",
-                          "name": "My first cat"
+                        "title": "Detroit in a Day: Art, Cars & Coney Dogs",
+                        "images": [
+                          "https://example.com/image1.jpg"
+                        ],
+                        "type": "Full day",
+                        "stopCount": 2,
+                        "reviewCount": 58,
+                        "startLocation": [42.303600729743586, -83.23413192891658],
+                        "finishLocation": [42.35953514344295, -83.06453360524505],
+                        "distance": 3,
+                        "duration": 2,
+                        "categoryId": {
+                          "_id": "category-id-sdfsdf",
+                          "name": "City Exploration"
                         },
-                        "isBookmarked": false,
-                        "createdAt": "2025-04-04T17:00:54Z",
-                        "updatedAt": "2025-04-04T17:00:54Z"
+                        "isBookmarked": false
                       }
                     ]
                   }
@@ -202,19 +196,19 @@ paths:
               example: |
                 [
                   {
-                    "_id": "680819f66e7cdbc049ab3f57",
+                    "_id": "category-id-sdfdsf",
                     "name": "City Exploration",
                     "description": "Explore the city's landmarks, parks, museums, and dining spots.",
                     "imageURL": "https://example.com/city-exploration.jpg"
                   },
                   {
-                    "_id": "68081b006e7cdbc049ab3f58",
+                    "_id": "category-id-sdfdsf",
                     "name": "Urban Adventure",
                     "description": "Discover the vibrant city life, parks, museums, and culinary delights.",
                     "imageURL": "https://example.com/urban-adventure.jpg"
                   },
                   {
-                    "_id": "68081b546e7cdbc049ab3f59",
+                    "_id": "category-id-ssdfdf",
                     "name": "Food and Drink Gems",
                     "description": "Restaurants, Bars and Cafes",
                     "imageURL": "https://example.com/food-and-drink-gems.jpg"
@@ -228,7 +222,7 @@ paths:
         name: categoryId
         schema:
           type: string
-          example: nature-and-history
+          example: category-id-sdfsd
         required: true
         description: The category ID
     get:
@@ -251,31 +245,30 @@ paths:
                   "plans": {
                     "page": 1,
                     "size": 10,
+                    "pagesCount": 1,
                     "items": [
                       {
-                        "_id": "berkeley-nature-history-tour",
-                        "title": "Berkeley Nature & History Tour",
-                        "description": "A day exploring Berkeley's natural beauty, parks, and historical sites.",
-                        "images": ["https://dummyimage.com/390x265/8BC34A/fff.png"],
-                        "type": "Night",
-                        "stopCount": 5,
-                        "rating": 4.8,
-                        "reviewCount": 62,
-                        "startLocation": [37.8747, -122.2627],
-                        "finishLocation": [37.8712, -122.3021],
-                        "distance": 5.5,
-                        "duration": "7 hours",
+                        "_id": "plan-id-sdfds",
                         "userId": {
-                          "_id": "67fdfdfcd9c143f362fb9701",
-                          "name": "Reza"
+                          "_id": "user-id-sdfds",
+                          "name": "Meesha"
                         },
-                        "categoryId":  {
-                          "_id": "67fdfe49d9c143f362fb9702",
-                          "name": "My first cat"
+                        "title": "Detroit in a Day: Art, Cars & Coney Dogs",
+                        "images": [
+                          "https://example.com/image1.jpg"
+                        ],
+                        "type": "Full day",
+                        "stopCount": 2,
+                        "reviewCount": 58,
+                        "startLocation": [42.303600729743586, -83.23413192891658],
+                        "finishLocation": [42.35953514344295, -83.06453360524505],
+                        "distance": 3,
+                        "duration": 2,
+                        "categoryId": {
+                          "_id": "category-id-sdfsdf",
+                          "name": "City Exploration"
                         },
-                        "isBookmarked": false,
-                        "createdAt": "2025-04-04T17:00:54Z",
-                        "updatedAt": "2025-04-04T17:00:54Z"
+                        "isBookmarked": false
                       }
                     ]
                   }
@@ -302,32 +295,28 @@ paths:
                   "count": 1,
                   "items": [
                     {
-                      "_id": "san-francisco-day-tour",
-                      "title": "San Francisco Day Tour",
-                      "description": "A one-day tour exploring San Francisco's iconic sites, parks, museums, and dining establishments.",
-                      "images": [
-                        "https://dummyimage.com/390x265/2196F3/fff.png",
-                        "https://dummyimage.com/390x265/FF9800/fff.png"
-                      ],
-                      "type": "Full day",
-                      "stopCount": 5,
-                      "rating": 4.8,
-                      "reviewCount": 120,
-                      "startLocation": [37.7955, -122.3937],
-                      "finishLocation": [37.7879, -122.4074],
-                      "distance": 5,
-                      "duration": "8 hours",
+                      "_id": "plan-id-sdfsdf",
                       "userId": {
-                        "_id": "67fdfdfcd9c143f362fb9701",
+                        "_id": "user-id-sdfsdf",
                         "name": "Reza"
                       },
-                      "categoryId":  {
-                        "_id": "67fdfe49d9c143f362fb9702",
-                        "name": "My first cat"
+                      "title": "Golden Gate to Chinatown: Your Cultural Tour",
+                      "images": [
+                        "https://example.com/image1.jpg",
+                        "https://example.com/image2.jpg"
+                      ],
+                      "stopCount": 7,
+                      "reviewCount": 0,
+                      "startLocation": [37.7938363, -122.408787],
+                      "finishLocation": [37.7897395, -122.3961656],
+                      "distance": 12,
+                      "duration": 9,
+                      "categoryId": {
+                        "_id": "category-id-sdfds",
+                        "name": "Sightseeing & Attractions"
                       },
-                      "isBookmarked": false,
-                      "createdAt": "2025-04-04T16:50:54Z",
-                      "updatedAt": "2025-04-04T16:50:54Z"
+                      "type": "Full day",
+                      "isBookmarked": false
                     }
                   ]
                 }
@@ -353,9 +342,9 @@ paths:
                   "count": 1,
                   "items": [
                     {
-                      "_id": "stop-001",
+                      "_id": "place-id-sdfsdf",
                       "name": "Ferry Building Marketplace",
-                      "imageURL": "https://dummyimage.com/390x265/2196F3/fff.png",
+                      "imageURL": "https://example.com/ferry-building.jpg",
                       "address": "1 Ferry Building, San Francisco, CA 94111",
                       "location": [37.7955, -122.3937]
                     }
@@ -510,33 +499,30 @@ paths:
                 {
                   "page": 1,
                   "size": 10,
+                  "pagesCount": 1,
                   "items": [
                     {
-                      "_id": "san-francisco-day-tour",
-                      "title": "San Francisco Day Tour",
-                      "description": "A one-day tour exploring San Francisco's iconic sites, parks, museums, and dining establishments.",
-                      "images": [
-                        "https://dummyimage.com/390x265/2196F3/fff.png",
-                        "https://dummyimage.com/390x265/FF9800/fff.png"
-                      ],
-                      "type": "Full day",
-                      "stopCount": 5,
-                      "rating": 4.8,
-                      "reviewCount": 120,
-                      "startLocation": [37.7955, -122.3937],
-                      "finishLocation": [37.7879, -122.4074],
-                      "distance": 5,
-                      "duration": "8 hours",
+                      "_id": "plan-id-sdfsd",
                       "userId": {
-                        "_id": "67fdfdfcd9c143f362fb9701",
-                        "name": "Reza"
+                          "_id": "user-id-sdfsd",
+                          "name": "Reza"
                       },
-                      "categoryId":  {
-                        "_id": "67fdfe49d9c143f362fb9702",
-                        "name": "My first cat"
+                      "title": "New York City Essentials Tour",
+                      "images": [
+                          "https://example.com/image1.jpg"
+                      ],
+                      "stopCount": 8,
+                      "rate": 4.1,
+                      "reviewCount": 83,
+                      "startLocation": [40.7924939, -73.95190889999999],
+                      "finishLocation": [40.7614327, -73.97762159999999],
+                      "distance": 8.3,
+                      "duration": 4,
+                      "categoryId": {
+                        "_id": "category-id-sdfsd",
+                        "name": "City Exploration"
                       },
-                      "createdAt": "2025-04-04T16:50:54Z",
-                      "updatedAt": "2025-04-04T16:50:54Z"
+                      "type": "Half day"
                     }
                   ]
                 }
@@ -564,9 +550,17 @@ paths:
                 "categoryId": "city-exploration",
                 "stops": [
                   {
+                    "placeId": "stop-001",
                     "name": "Ferry Building Marketplace",
                     "imageURL": "https://dummyimage.com/390x265/2196F3/fff.png",
-                    "address": "1 Ferry Building, San Francisco, CA 94111"
+                    "address": "1 Ferry Building, San Francisco, CA 94111",
+                    "location": [37.7955, -122.3937]
+                  },
+                  {
+                    "name": "Some Place",
+                    "imageURL": "https://example.com/image.jpg",
+                    "address": "Address of the place",
+                    "location": [35, -101.32676]
                   }
                 ]
               }
@@ -578,42 +572,38 @@ paths:
             application/json:
               example: |
                 {
-                  "_id": "san-francisco-day-tour",
-                  "title": "San Francisco Day Tour",
-                  "description": "A one-day tour exploring San Francisco's iconic sites, parks, museums, and dining establishments.",
-                  "images": ["https://dummyimage.com/390x265/2196F3/fff.png"],
-                  "type": "Full day",
-                  "stopCount": 0,
-                  "rating": 0,
-                  "reviewCount": 0,
-                  "startLocation": [0, 0],
-                  "finishLocation": [0, 0],
-                  "distance": 0,
-                  "duration": "",
+                  "_id": "plan-id-sdfds",
                   "userId": {
-                    "_id": "67fdfdfcd9c143f362fb9701",
+                    "_id": "user-id-sdfsd",
                     "name": "Reza"
                   },
-                  "categoryId":  {
-                    "_id": "67fdfe49d9c143f362fb9702",
-                    "name": "My first cat"
-                  },
-                  "createdAt": "2025-04-04T16:50:54Z",
-                  "updatedAt": "2025-04-04T16:50:54Z",
+                  "title": "San Francisco Day Tour",
+                  "description": "A one-day tour exploring San Francisco's iconic sites.",
+                  "images": [
+                    "https://example.com/image1.jpg"
+                  ],
+                  "stopCount": 1,
                   "stops": [
                     {
-                      "_id": "stop-001",
-                      "planId": "san-francisco-day-tour",
-                      "name": "Ferry Building Marketplace",
-                      "imageURL": "https://dummyimage.com/390x265/2196F3/fff.png",
+                      "placeId": "place-id-sdfdsf",
+                      "name": "Place Name",
+                      "imageURL": "http://example.com/image.jpg",
                       "address": "1 Ferry Building, San Francisco, CA 94111",
-                      "description": "",
-                      "location": [0, 0],
-                      "sequence": 1,
-                      "createdAt": "2025-04-04T16:50:54Z",
-                      "updatedAt": "2025-04-04T16:50:54Z"
+                      "location": [0, 0]
                     }
-                  ]
+                  ],
+                  "rate": 0,
+                  "reviewCount": 0,
+                  "startLocation":  [0, 0],
+                  "finishLocation":  [0, 0],
+                  "distance": 0,
+                  "duration": 0,
+                  "categoryId":  {
+                    "_id": "category-id-sdfsd",
+                    "name": "My first cat"
+                  },
+                  "createdAt": "2025-10-03T21:27:45.420Z",
+                  "updatedAt": "2025-10-03T21:27:45.420Z",
                 }
           headers: {}
       deprecated: false
@@ -623,7 +613,7 @@ paths:
         name: planId
         schema:
           type: string
-          example: san-francisco-day-tour
+          example: plan-id-sdfsd
         required: true
         description: The plan ID
     get:
@@ -641,40 +631,38 @@ paths:
             application/json:
               example: |
                 {
-                  "_id": "plan-id-sdfdsfkjhweiuhfsdkjfh",
-                  "title": "San Francisco Day Tour",
-                  "description": "A one-day tour exploring San Francisco's iconic sites, parks, museums, and dining establishments.",
-                  "images": ["https://dummyimage.com/390x265/2196F3/fff.png"],
-                  "type": "Full day",
-                  "stopCount": 1,
-                  "rating": 4.8,
-                  "reviewCount": 120,
-                  "startLocation": [37.7955, -122.3937],
-                  "finishLocation": [37.7879, -122.4074],
-                  "distance": 5,
-                  "duration": "8 hours",
+                  "_id": "plan-id-sdfds",
                   "userId": {
-                    "_id": "67fdfdfcd9c143f362fb9701",
+                    "_id": "user-id-sdfdsf",
                     "name": "Reza"
                   },
-                  "categoryId":  {
-                    "_id": "67fdfe49d9c143f362fb9702",
-                    "name": "My first cat"
+                  "title": "A Day Around Lake Merritt: Nature, Culture & Good Eats",
+                  "description": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                  "images": [
+                    "https://example.com/image1.jpg"
+                  ],
+                  "type": "Full day",
+                  "stopCount": 1,
+                  "rate": 2.9,
+                  "reviewCount": 95,
+                  "startLocation": [37.80940406629325, -122.25985216557562],
+                  "finishLocation": [37.8098488, -122.2610236],
+                  "distance": 4,
+                  "duration": 5,
+                  "categoryId": {
+                    "_id": "category-id-sdfsd",
+                    "name": "Nature Explore"
                   },
-                  "createdAt": "2025-04-04T16:50:54Z",
-                  "updatedAt": "2025-04-04T16:50:54Z",
+                  "createdAt": "2025-05-14T05:36:21.948Z",
+                  "updatedAt": "2025-09-16T22:33:36.732Z",
                   "stops": [
                     {
-                      "_id": "stop-001",
-                      "planId": "san-francisco-day-tour",
-                      "name": "Ferry Building Marketplace",
-                      "imageURL": "https://dummyimage.com/390x265/2196F3/fff.png",
-                      "address": "1 Ferry Building, San Francisco, CA 94111",
-                      "description": "A historic building offering a variety of food vendors, shops, and a farmers market.",
-                      "location": [37.7955, -122.3937],
-                      "sequence": 1,
-                      "createdAt": "2025-04-04T16:50:54Z",
-                      "updatedAt": "2025-04-04T16:50:54Z"
+                      "placeId": "place-id-sdfds",
+                      "name": "Children's Fairyland",
+                      "description": "",
+                      "imageURL": "https://example.com/children-fairyland.jpg",
+                      "address": "699 Bellevue Ave Oakland, CA 94610",
+                      "location": [37.80940406629325, -122.25985216557562]
                     }
                   ]
                 }
@@ -702,9 +690,17 @@ paths:
                 "categoryId": "city-exploration",
                 "stops": [
                   {
+                    "placeId": "stop-001",
                     "name": "Ferry Building Marketplace",
                     "imageURL": "https://dummyimage.com/390x265/2196F3/fff.png",
-                    "address": "1 Ferry Building, San Francisco, CA 94111"
+                    "address": "1 Ferry Building, San Francisco, CA 94111",
+                    "location": [37.7955, -122.3937]
+                  },
+                  {
+                    "name": "Some Place",
+                    "imageURL": "https://example.com/image.jpg",
+                    "address": "Address of the place",
+                    "location": [35, -101.32676]
                   }
                 ]
               }
@@ -716,42 +712,38 @@ paths:
             application/json:
               example: |
                 {
-                  "_id": "san-francisco-day-tour",
-                  "title": "San Francisco Day Tour",
-                  "description": "A one-day tour exploring San Francisco's iconic sites, parks, museums, and dining establishments.",
-                  "images": ["https://dummyimage.com/390x265/2196F3/fff.png"],
-                  "type": "Full day",
-                  "stopCount": 0,
-                  "rating": 0,
-                  "reviewCount": 0,
-                  "startLocation": [0, 0],
-                  "finishLocation": [0, 0],
-                  "distance": 0,
-                  "duration": "",
+                  "_id": "plan-id-sdfds",
                   "userId": {
-                    "_id": "67fdfdfcd9c143f362fb9701",
+                    "_id": "user-id-sdfsd",
                     "name": "Reza"
                   },
-                  "categoryId":  {
-                    "_id": "67fdfe49d9c143f362fb9702",
-                    "name": "My first cat"
-                  },
-                  "createdAt": "2025-04-04T16:50:54Z",
-                  "updatedAt": "2025-04-04T16:50:54Z",
+                  "title": "San Francisco Day Tour",
+                  "description": "A one-day tour exploring San Francisco's iconic sites.",
+                  "images": [
+                    "https://example.com/image1.jpg"
+                  ],
+                  "stopCount": 1,
                   "stops": [
                     {
-                      "_id": "stop-001",
-                      "planId": "san-francisco-day-tour",
-                      "name": "Ferry Building Marketplace",
-                      "imageURL": "https://dummyimage.com/390x265/2196F3/fff.png",
+                      "placeId": "place-id-sdfdsf",
+                      "name": "Place Name",
+                      "imageURL": "http://example.com/image.jpg",
                       "address": "1 Ferry Building, San Francisco, CA 94111",
-                      "description": "",
-                      "location": [0, 0],
-                      "sequence": 1,
-                      "createdAt": "2025-04-04T16:50:54Z",
-                      "updatedAt": "2025-04-04T16:50:54Z"
+                      "location": [0, 0]
                     }
-                  ]
+                  ],
+                  "rate": 0,
+                  "reviewCount": 0,
+                  "startLocation":  [0, 0],
+                  "finishLocation":  [0, 0],
+                  "distance": 0,
+                  "duration": 0,
+                  "categoryId":  {
+                    "_id": "category-id-sdfsd",
+                    "name": "My first cat"
+                  },
+                  "createdAt": "2025-10-03T21:27:45.420Z",
+                  "updatedAt": "2025-10-03T21:27:45.420Z",
                 }
           headers: {}
       deprecated: false
@@ -785,20 +777,10 @@ paths:
               example: |
                 [
                   {
-                      "_id": "68052f7098902ebc8b61c474",
-                      "name": "City Exploration",
-                      "description": "Explore the urban landscapes and cultural landmarks of cities.",
-                      "imageURL": "http://example.com/city-exploration.jpg",
-                      "createdAt": "2025-04-20T17:31:28.435Z",
-                      "updatedAt": "2025-04-20T17:31:28.435Z"
-                  },
-                  {
-                      "_id": "6805ca1998902ebc8b61c478",
-                      "name": "Nature and History",
-                      "description": "Discover the rich history and art collections in museums.",
-                      "imageURL": "http://example.com/museums.jpg",
-                      "createdAt": "2025-04-21T04:31:21.333Z",
-                      "updatedAt": "2025-04-21T04:31:21.333Z"
+                    "_id": "category-id-sdfds",
+                    "name": "City Exploration",
+                    "description": "Explore the urban landscapes and cultural landmarks of cities.",
+                    "imageURL": "http://example.com/city-exploration.jpg",
                   }
                 ]
           headers: {}
@@ -858,33 +840,29 @@ paths:
                 {
                   "page": 1,
                   "size": 10,
+                  "pagesCount": 1,
                   "items": [
                     {
-                      "_id": "san-francisco-day-tour",
-                      "title": "San Francisco Day Tour",
-                      "description": "A one-day tour exploring San Francisco's iconic sites, parks, museums, and dining establishments.",
-                      "images": [
-                        "https://dummyimage.com/390x265/2196F3/fff.png",
-                        "https://dummyimage.com/390x265/FF9800/fff.png"
-                      ],
-                      "type": "Full day",
-                      "stopCount": 5,
-                      "rating": 4.8,
-                      "reviewCount": 120,
-                      "startLocation": [37.7955, -122.3937],
-                      "finishLocation": [37.7879, -122.4074],
-                      "distance": 5,
-                      "duration": "8 hours",
+                      "_id": "plan-id-sdfds",
                       "userId": {
-                        "_id": "67fdfdfcd9c143f362fb9701",
-                        "name": "Reza"
+                        "_id": "user-id-sdfsd",
+                        "name": "Nihal"
                       },
-                      "categoryId":  {
-                        "_id": "67fdfe49d9c143f362fb9702",
-                        "name": "My first cat"
-                      },
-                      "createdAt": "2025-04-04T16:50:54Z",
-                      "updatedAt": "2025-04-04T16:50:54Z"
+                      "title": "One Night in Vegas: Lights, Views, and a Bite",
+                      "images": [
+                        "https://example.com/image1.jpg"
+                      ],
+                      "stopCount": 0,
+                      "rate": 36,
+                      "reviewCount": 36,
+                      "startLocation": [2343243, -234234],
+                      "finishLocation": [2343243, -234234],
+                      "distance": 7,
+                      "duration": 2,
+                      "categoryId": {
+                        "_id": "category-id-sdfsd",
+                        "name": "Food and Drink"
+                      }
                     }
                   ]
                 }

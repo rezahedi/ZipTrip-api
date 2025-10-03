@@ -1,11 +1,13 @@
 import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import PlanSchema, { IPlan } from '../../models/Plans'
-import StopSchema, { IStop } from '../../models/Stops'
+import BookmarkSchema from '../../models/Bookmarks'
+import PlaceSchema from '../../models/Places'
 import mongoose from 'mongoose'
 import CustomAPIError from '../../errors/custom_error'
 import NotFoundError from '../../errors/not_found'
 import UnauthenticatedError from '../../errors/unauthentication_error'
+import { coordsToGeoJson, geoJsonToCoords } from '../../utils/location'
 
 const PAGE_SIZE = 10
 
@@ -25,16 +27,23 @@ const fetchAllPlans = async (req: Request, res: Response) => {
   const pagesCount = Math.ceil(totalItems / pageSize)
 
   const plans = await PlanSchema.find(filters)
+    .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
     .populate('categoryId', 'name')
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)
+    .lean()
 
   res.status(StatusCodes.OK).json({
     page: parseInt(page as string),
     size: pageSize,
     pagesCount,
-    items: plans,
+    // TODO: it's not efficient, may combine with attachBookmarkFlagToPlans loop!
+    items: plans.map((item) => ({
+      ...item,
+      startLocation: geoJsonToCoords(item.startLocation),
+      finishLocation: geoJsonToCoords(item.finishLocation),
+    })),
   })
 }
 
@@ -44,9 +53,33 @@ const createNewPlan = async (req: Request, res: Response) => {
   const userId: string = req.user.userId
   let { stops, ...plan } = req.body
 
+  if (!stops || !stops.length) throw new CustomAPIError('At least one stop is required', StatusCodes.BAD_REQUEST)
+
+  for (const [index, stop] of stops.entries()) {
+    if (!stop.placeId) {
+      if (!stop.location || stop.location.length !== 2)
+        throw new CustomAPIError('Provide valid coordinates for each stop', StatusCodes.INTERNAL_SERVER_ERROR)
+
+      // create the new place in Places collection
+      const createdPlace = await PlaceSchema.create({
+        name: stop.name,
+        imageURL: stop.imageURL,
+        address: stop.address,
+        location: coordsToGeoJson(stop.location),
+        userId: new mongoose.Types.ObjectId(userId),
+      })
+      stops[index].placeId = createdPlace._id
+    }
+  }
+
+  const startLocation = coordsToGeoJson(stops[0]?.location || [0, 0])
+  const finishLocation = coordsToGeoJson(stops[stops.length - 1]?.location || [0, 0])
   const createdPlan: IPlan = await PlanSchema.create({
     ...plan,
+    startLocation,
+    finishLocation,
     stopCount: stops.length,
+    stops: stops,
     userId,
   })
 
@@ -55,18 +88,11 @@ const createNewPlan = async (req: Request, res: Response) => {
   await createdPlan.populate('categoryId', 'name')
   await createdPlan.populate('userId', 'name')
 
-  if (stops.length) {
-    stops = stops.map((stop: IStop, index: number) => ({
-      ...stop,
-      sequence: index,
-      planId: createdPlan._id,
-      userId: new mongoose.Types.ObjectId(userId),
-    }))
-  }
-
-  const createdStops = await StopSchema.create(stops)
-
-  res.status(StatusCodes.CREATED).json({ plan: createdPlan, stops: createdStops })
+  res.status(StatusCodes.CREATED).json({
+    ...createdPlan.toJSON(),
+    startLocation: geoJsonToCoords(createdPlan.startLocation),
+    finishLocation: geoJsonToCoords(createdPlan.finishLocation),
+  })
 }
 
 const fetchPlan = async (req: Request, res: Response) => {
@@ -74,27 +100,23 @@ const fetchPlan = async (req: Request, res: Response) => {
 
   const userId = req.user.userId
   const planId = req.params.planId
-  console.log('userId', userId)
-  console.log('planId', planId)
 
   const plan: IPlan | null = await PlanSchema.findOne({
     userId,
     _id: planId,
   })
+    .orFail(new NotFoundError(`No plan with id ${planId}`))
+    .select(
+      'title description images stopCount stops type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
+    )
     .populate('categoryId', 'name')
     .populate('userId', 'name')
-
-  if (!plan) {
-    throw new NotFoundError(`No plan with id ${planId}`)
-  }
-
-  const stops = await StopSchema.find({
-    planId,
-  })
+    .lean()
 
   res.status(StatusCodes.OK).json({
-    ...plan.toJSON(),
-    stops,
+    ...plan,
+    startLocation: geoJsonToCoords(plan?.startLocation),
+    finishLocation: geoJsonToCoords(plan?.finishLocation),
   })
 }
 
@@ -106,6 +128,27 @@ const updatePlan = async (req: Request, res: Response) => {
 
   let { stops, ...plan } = req.body
 
+  if (!stops || !stops.length) throw new CustomAPIError('At least one stop is required', StatusCodes.BAD_REQUEST)
+
+  for (const [index, stop] of stops.entries()) {
+    if (!stop.placeId) {
+      if (!stop.location || stop.location.length !== 2)
+        throw new CustomAPIError('Provide valid coordinates for each stop', StatusCodes.INTERNAL_SERVER_ERROR)
+
+      // create the new place in Places collection
+      const createdPlace = await PlaceSchema.create({
+        name: stop.name,
+        imageURL: stop.imageURL,
+        address: stop.address,
+        location: coordsToGeoJson(stop.location),
+        userId: new mongoose.Types.ObjectId(userId),
+      })
+      stops[index].placeId = createdPlace._id
+    }
+  }
+
+  const startLocation = coordsToGeoJson(stops[0]?.location || [0, 0])
+  const finishLocation = coordsToGeoJson(stops[stops.length - 1]?.location || [0, 0])
   const updatedPlan: IPlan | null = await PlanSchema.findByIdAndUpdate(
     {
       _id: planId,
@@ -113,7 +156,10 @@ const updatePlan = async (req: Request, res: Response) => {
     },
     {
       ...plan,
+      startLocation,
+      finishLocation,
       stopCount: stops.length,
+      stops,
     },
     {
       new: true,
@@ -125,48 +171,11 @@ const updatePlan = async (req: Request, res: Response) => {
 
   if (!updatedPlan) throw new CustomAPIError('Failed to update the plan', StatusCodes.INTERNAL_SERVER_ERROR)
 
-  const operations = stops.map(async (stop: IStop, index: number) => {
-    // Update stops that have ID
-    if (stop._id) {
-      const updatedStop = await StopSchema.findByIdAndUpdate(
-        stop._id,
-        {
-          ...stop,
-          sequence: index,
-        },
-        {
-          new: true,
-          runValidators: true,
-        }
-      )
-      if (updatedStop) return updatedStop._id.toString()
-    } else {
-      // Create stops that don't have ID
-      const createdStop = await StopSchema.create({
-        ...stop,
-        sequence: index,
-        planId,
-        userId: new mongoose.Types.ObjectId(userId),
-      })
-      if (createdStop) return createdStop._id.toString()
-    }
+  res.status(StatusCodes.CREATED).json({
+    ...updatedPlan.toJSON(),
+    startLocation: geoJsonToCoords(updatedPlan.startLocation),
+    finishLocation: geoJsonToCoords(updatedPlan.finishLocation),
   })
-  const stopIDs = await Promise.all(operations)
-
-  // Delete stops that its ID doesn't exist on passed array of stops
-  const currentStops = await StopSchema.find({
-    planId,
-  })
-  const idsToDelete = currentStops.filter((stop) => !stopIDs.includes(stop._id.toString())).map((stop) => stop._id)
-  if (idsToDelete.length > 0) {
-    await StopSchema.deleteMany({ _id: { $in: idsToDelete } })
-  }
-
-  const planStops = await StopSchema.find({
-    planId,
-  })
-
-  res.status(StatusCodes.CREATED).json({ plan: updatedPlan, stops: planStops })
 }
 
 const deletePlan = async (req: Request, res: Response) => {
@@ -184,7 +193,8 @@ const deletePlan = async (req: Request, res: Response) => {
     throw new NotFoundError(`No plan with id ${planId}`)
   }
 
-  await StopSchema.deleteMany({
+  // Remove all related records in bookmarks collection too
+  await BookmarkSchema.deleteMany({
     planId,
   })
 

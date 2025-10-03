@@ -4,6 +4,7 @@ import BookmarkSchema from '../../models/Bookmarks'
 import PlanSchema from '../../models/Plans'
 import NotFoundError from '../../errors/not_found'
 import UnauthenticatedError from '../../errors/unauthentication_error'
+import { geoJsonToCoords } from '../../utils/location'
 
 const PAGE_SIZE = 10
 
@@ -29,16 +30,23 @@ const fetchAllBookmarkedPlans = async (req: Request, res: Response) => {
   const pagesCount = Math.ceil(totalItems / pageSize)
 
   const bookmarkedPlans = await PlanSchema.find(filters)
+    .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
     .populate('categoryId', 'name')
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)
+    .lean()
 
   res.status(StatusCodes.OK).json({
     page: parseInt(page as string),
     size: pageSize,
     pagesCount,
-    items: bookmarkedPlans,
+    // TODO: it's not efficient, may combine with attachBookmarkFlagToPlans loop!
+    items: bookmarkedPlans.map((item) => ({
+      ...item,
+      startLocation: geoJsonToCoords(item.startLocation),
+      finishLocation: geoJsonToCoords(item.finishLocation),
+    })),
   })
 }
 
