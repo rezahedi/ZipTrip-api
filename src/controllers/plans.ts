@@ -9,6 +9,7 @@ import NotFoundError from '../errors/not_found'
 import { geoJsonToCoords } from '../utils/location'
 
 const PAGE_SIZE = 10
+const PLANS_MAX_LIMIT = 40
 
 const fetchAllPlans = async (req: Request, res: Response) => {
   const { search, categoryId, page = '1', size = PAGE_SIZE } = req.query
@@ -214,6 +215,7 @@ const fetchAllNearbyPlans = async (req: Request, res: Response) => {
       },
     },
   })
+    .limit(PLANS_MAX_LIMIT)
     .populate('categoryId', 'name')
     .populate('userId', 'name')
     .lean()

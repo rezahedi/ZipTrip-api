@@ -3,6 +3,8 @@ import { StatusCodes } from 'http-status-codes'
 import PlaceSchema, { IPlace } from '../models/Places'
 import { geoJsonToCoords } from '../utils/location'
 
+const PLACES_MAX_LIMIT = 50
+
 const fetchAllPlaces = async (req: Request, res: Response) => {
   res.status(StatusCodes.OK).json({})
 }
@@ -38,6 +40,7 @@ const fetchAllNearbyPlaces = async (req: Request, res: Response) => {
     },
   })
     .select('name imageURL address location')
+    .limit(PLACES_MAX_LIMIT)
     .lean()
 
   res.status(StatusCodes.OK).json({
