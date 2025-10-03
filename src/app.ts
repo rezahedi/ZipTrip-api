@@ -6,6 +6,7 @@ import logger from 'morgan'
 import router from './routes/mainRouter'
 import authRouter from './routes/auth'
 import plansRouter from './routes/plans'
+import placesRouter from './routes/places'
 import accountRouter from './routes/account'
 import swaggerUI from 'swagger-ui-express'
 import YAML from 'yamljs'
@@ -28,6 +29,7 @@ app.use(favicon(__dirname + '/public/favicon.ico'))
 // routes
 app.use('/api/v1', router)
 app.use('/api/v1/plans', optionalAuthMiddleware, plansRouter)
+app.use('/api/v1/places', optionalAuthMiddleware, placesRouter)
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/account', authMiddleware, accountRouter)
 

@@ -3,12 +3,12 @@ import { StatusCodes } from 'http-status-codes'
 import PlanSchema, { IPlan } from '../models/Plans'
 import BookmarkSchema from '../models/Bookmarks'
 import UserSchema, { IUser } from '../models/Users'
-import StopSchema from '../models/Stops'
 import CategorySchema, { ICategory } from '../models/Categories'
 import NotFoundError from '../errors/not_found'
 import { geoJsonToCoords } from '../utils/location'
 
 const PAGE_SIZE = 10
+const PLANS_MAX_LIMIT = 40
 
 const fetchAllPlans = async (req: Request, res: Response) => {
   const { search, categoryId, page = '1', size = PAGE_SIZE } = req.query
@@ -27,6 +27,7 @@ const fetchAllPlans = async (req: Request, res: Response) => {
   const pagesCount = Math.ceil(totalItems / pageSize)
 
   const plans = await PlanSchema.find(filters)
+    .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
     .populate('categoryId', 'name')
     .populate('userId', 'name')
     .skip(pageNumber)
@@ -41,7 +42,12 @@ const fetchAllPlans = async (req: Request, res: Response) => {
     page: parseInt(page as string),
     size: pageSize,
     pagesCount,
-    items: plansWithBookmarksStatus,
+    // TODO: it's not efficient, may combine with attachBookmarkFlagToPlans loop!
+    items: plansWithBookmarksStatus.map((item) => ({
+      ...item,
+      startLocation: geoJsonToCoords(item.startLocation),
+      finishLocation: geoJsonToCoords(item.finishLocation),
+    })),
   })
 }
 
@@ -62,6 +68,7 @@ const fetchUserWithPlans = async (req: Request, res: Response) => {
   }
 
   const plans = await PlanSchema.find(filters)
+    .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
     .populate('categoryId', 'name')
     .populate('userId', 'name')
     .skip(pageNumber)
@@ -80,7 +87,12 @@ const fetchUserWithPlans = async (req: Request, res: Response) => {
       page: parseInt(page as string),
       size: pageSize,
       pagesCount,
-      items: plansWithBookmarksStatus,
+      // TODO: it's not efficient, may combine with attachBookmarkFlagToPlans loop!
+      items: plansWithBookmarksStatus.map((item) => ({
+        ...item,
+        startLocation: geoJsonToCoords(item.startLocation),
+        finishLocation: geoJsonToCoords(item.finishLocation),
+      })),
     },
   })
 }
@@ -101,6 +113,7 @@ const fetchCategoryWithPlans = async (req: Request, res: Response) => {
   }
 
   const plans = await PlanSchema.find(filters)
+    .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
     .populate('categoryId', 'name')
     .populate('userId', 'name')
     .skip(pageNumber)
@@ -119,7 +132,12 @@ const fetchCategoryWithPlans = async (req: Request, res: Response) => {
       page: parseInt(page as string),
       size: pageSize,
       pagesCount,
-      items: plansWithBookmarksStatus,
+      // TODO: it's not efficient, may combine with attachBookmarkFlagToPlans loop!
+      items: plansWithBookmarksStatus.map((item) => ({
+        ...item,
+        startLocation: geoJsonToCoords(item.startLocation),
+        finishLocation: geoJsonToCoords(item.finishLocation),
+      })),
     },
   })
 }
@@ -129,11 +147,14 @@ const fetchPlan = async (req: Request, res: Response) => {
 
   const plan: IPlan | null = await PlanSchema.findById(planId)
     .orFail(new NotFoundError(`Item not found with the id: ${planId}`))
+    .select(
+      'title description images stopCount stops type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
+    )
     .populate('categoryId', 'name imageURL')
     .populate('userId', 'name imageURL')
     .lean()
 
-  const stops = await StopSchema.find({ planId }).lean()
+  // if (!plan) return new NotFoundError(`Item not found with the id: ${planId}`)
 
   const loggedInUser = req.user || null
   let isBookmarked: boolean = false
@@ -150,10 +171,8 @@ const fetchPlan = async (req: Request, res: Response) => {
   res.status(StatusCodes.OK).json({
     ...plan,
     isBookmarked,
-    stops: stops.map((item) => ({
-      ...item,
-      location: geoJsonToCoords(item.location),
-    })),
+    startLocation: geoJsonToCoords(plan?.startLocation),
+    finishLocation: geoJsonToCoords(plan?.finishLocation),
   })
 }
 
@@ -214,6 +233,8 @@ const fetchAllNearbyPlans = async (req: Request, res: Response) => {
       },
     },
   })
+    .limit(PLANS_MAX_LIMIT)
+    .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
     .populate('categoryId', 'name')
     .populate('userId', 'name')
     .lean()

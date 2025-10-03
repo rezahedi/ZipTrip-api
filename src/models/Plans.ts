@@ -2,6 +2,14 @@ import mongoose, { Schema, Document, Types } from 'mongoose'
 import './Categories'
 import './Users'
 
+export interface IPlanStop {
+  placeId: Types.ObjectId
+  name: string
+  description?: string
+  imageURL: string
+  address: string
+  location: [number]
+}
 export interface IPlan extends Document {
   userId: Types.ObjectId
   title: string
@@ -9,6 +17,7 @@ export interface IPlan extends Document {
   images: string[]
   type?: 'Full day' | 'Half day' | 'Night'
   stopCount: number
+  stops: IPlanStop[]
   rate: number
   reviewCount: number
   startLocation: {
@@ -35,6 +44,24 @@ const pointSchema = new mongoose.Schema({
   coordinates: {
     type: [Number],
     required: true,
+  },
+})
+
+const stopSchema = new mongoose.Schema({
+  placeId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Place',
+  },
+  name: {
+    type: String,
+    required: [true, 'Provide name between 3 to 200 char length'],
+  },
+  description: String,
+  imageURL: String,
+  address: String,
+  location: {
+    type: [Number, Number],
+    required: [true, 'Provide location coordinates for each stop'],
   },
 })
 
@@ -68,6 +95,13 @@ const PlanSchema: Schema<IPlan> = new Schema(
       type: Number,
       default: 0,
     },
+    stops: [
+      {
+        _id: false,
+        type: stopSchema,
+        required: true,
+      },
+    ],
     rate: {
       type: Number,
       default: 0,
@@ -77,10 +111,12 @@ const PlanSchema: Schema<IPlan> = new Schema(
       default: 0,
     },
     startLocation: {
+      _id: false,
       type: pointSchema,
       required: true,
     },
     finishLocation: {
+      _id: false,
       type: pointSchema,
       required: true,
     },
@@ -103,6 +139,7 @@ const PlanSchema: Schema<IPlan> = new Schema(
   }
 )
 
+PlanSchema.index({ 'stops.placeId': 1 })
 PlanSchema.index({ startLocation: '2dsphere' })
 PlanSchema.index({ finishLocation: '2dsphere' })
 
