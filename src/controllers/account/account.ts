@@ -79,7 +79,7 @@ const createNewPlan = async (req: Request, res: Response) => {
     startLocation,
     finishLocation,
     stopCount: stops.length,
-    stops: stops,
+    stops,
     userId,
   })
 
