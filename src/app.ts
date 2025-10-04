@@ -34,7 +34,7 @@ app.use('/api/v1/places', optionalAuthMiddleware, placesRouter)
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/account', authMiddleware, accountRouter)
 
-const swaggerPath = path.join(process.cwd(), 'public', 'swagger.yaml');
+const swaggerPath = path.join(process.cwd(), 'public', 'swagger.yaml')
 const swaggerDocument = YAML.load(swaggerPath)
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument))
 
