@@ -322,7 +322,7 @@ paths:
                 }
           headers: {}
       deprecated: false
-  /Places/nearby:
+  /places/nearby:
     get:
       tags:
         - Places
