@@ -2,7 +2,6 @@ import globals from 'globals'
 import js from '@eslint/js'
 import ts from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
-import pluginReact from 'eslint-plugin-react'
 import pluginPrettier from 'eslint-plugin-prettier'
 import configPrettier from 'eslint-config-prettier'
 
@@ -27,11 +26,6 @@ export default [
       ...ts.configs.recommended.rules,
       semi: 'off', // Disable ESLint's semi rule
     },
-  },
-  {
-    files: ['**/*.{js,mjs,cjs,jsx,ts,tsx}'],
-    plugins: { react: pluginReact },
-    rules: pluginReact.configs.flat.recommended.rules,
   },
   {
     files: ['**/*.{js,mjs,cjs,jsx,ts,tsx}'],
