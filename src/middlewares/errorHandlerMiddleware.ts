@@ -1,10 +1,10 @@
-import { NextFunction, Request, Response } from 'express'
+import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import mongoose from 'mongoose'
 import { MongoServerError } from 'mongodb'
 import CustomAPIError from '../errors/custom_error'
 
-const errorHandlerMiddleware = (err: unknown, req: Request, res: Response, next: NextFunction) => {
+const errorHandlerMiddleware = (err: unknown, req: Request, res: Response) => {
   console.log('Error Handler Middleware', err instanceof MongoServerError, err)
   // Set default or set by custom error's values
   let customError = {
@@ -46,7 +46,6 @@ const errorHandlerMiddleware = (err: unknown, req: Request, res: Response, next:
   }
 
   res.status(customError.statusCode).json({ msg: customError.msg })
-  next()
 }
 
 export default errorHandlerMiddleware
