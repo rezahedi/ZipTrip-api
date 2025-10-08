@@ -13,6 +13,7 @@ import YAML from 'yamljs'
 import authMiddleware, { optionalAuthMiddleware } from './middlewares/authMiddleware'
 import errorHandlerMiddleware from './middlewares/errorHandlerMiddleware'
 import notFoundMiddleware from './middlewares/notFoundMiddleware'
+import path from 'path'
 
 const app = express()
 
@@ -33,7 +34,8 @@ app.use('/api/v1/places', optionalAuthMiddleware, placesRouter)
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/account', authMiddleware, accountRouter)
 
-const swaggerDocument = YAML.load('./swagger.yaml')
+const swaggerPath = path.join(process.cwd(), 'public', 'swagger.yaml')
+const swaggerDocument = YAML.load(swaggerPath)
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument))
 
 app.use(notFoundMiddleware)
