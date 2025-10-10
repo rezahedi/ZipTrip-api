@@ -1,7 +1,7 @@
-import mongoose, { Schema, Document, Types } from 'mongoose'
+import mongoose, { Schema, Document } from 'mongoose'
 
 export interface IPlace extends Document {
-  userId: Types.ObjectId
+  placeId: string
   name: string
   imageURL: string
   address: string
@@ -27,10 +27,11 @@ const pointSchema = new mongoose.Schema({
 
 const PlaceSchema: Schema<IPlace> = new Schema(
   {
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: [true, 'Provide user'],
+    placeId: {
+      type: String,
+      unique: true,
+      index: true,
+      required: [true, 'Provide place ID'],
     },
     name: {
       type: String,

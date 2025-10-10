@@ -3,7 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import PlanSchema, { IPlan } from '../models/Plans'
 import BookmarkSchema from '../models/Bookmarks'
 import UserSchema, { IUser } from '../models/Users'
-import CategorySchema, { ICategory } from '../models/Categories'
+// import CategorySchema, { ICategory } from '../models/Categories'
 import NotFoundError from '../errors/not_found'
 import { geoJsonToCoords } from '../utils/location'
 
@@ -28,7 +28,6 @@ const fetchAllPlans = async (req: Request, res: Response) => {
 
   const plans = await PlanSchema.find(filters)
     .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
-    .populate('categoryId', 'name')
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)
@@ -69,7 +68,6 @@ const fetchUserWithPlans = async (req: Request, res: Response) => {
 
   const plans = await PlanSchema.find(filters)
     .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
-    .populate('categoryId', 'name')
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)
@@ -97,7 +95,7 @@ const fetchUserWithPlans = async (req: Request, res: Response) => {
   })
 }
 
-const fetchCategoryWithPlans = async (req: Request, res: Response) => {
+/*const fetchCategoryWithPlans = async (req: Request, res: Response) => {
   const { categoryId } = req.params
   const { page = '1', size = PAGE_SIZE } = req.query
 
@@ -140,7 +138,7 @@ const fetchCategoryWithPlans = async (req: Request, res: Response) => {
       })),
     },
   })
-}
+}*/
 
 const fetchPlan = async (req: Request, res: Response) => {
   const { planId } = req.params
@@ -150,7 +148,6 @@ const fetchPlan = async (req: Request, res: Response) => {
     .select(
       'title description images stopCount stops type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
     )
-    .populate('categoryId', 'name imageURL')
     .populate('userId', 'name imageURL')
     .lean()
 
@@ -176,10 +173,10 @@ const fetchPlan = async (req: Request, res: Response) => {
   })
 }
 
-const fetchAllCategories = async (req: Request, res: Response) => {
-  const categories = await CategorySchema.find().lean()
-  res.status(StatusCodes.OK).json(categories)
-}
+// const fetchAllCategories = async (req: Request, res: Response) => {
+//   const categories = await CategorySchema.find().lean()
+//   res.status(StatusCodes.OK).json(categories)
+// }
 
 const attachBookmarkFlagToPlans = async (plans: IPlan[], userId: string) => {
   if (!userId)
@@ -235,7 +232,6 @@ const fetchAllNearbyPlans = async (req: Request, res: Response) => {
   })
     .limit(PLANS_MAX_LIMIT)
     .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
-    .populate('categoryId', 'name')
     .populate('userId', 'name')
     .lean()
 
@@ -252,4 +248,9 @@ const fetchAllNearbyPlans = async (req: Request, res: Response) => {
   })
 }
 
-export { fetchAllPlans, fetchPlan, fetchUserWithPlans, fetchCategoryWithPlans, fetchAllCategories, fetchAllNearbyPlans }
+export {
+  fetchAllPlans,
+  fetchPlan,
+  fetchUserWithPlans /*, fetchCategoryWithPlans, fetchAllCategories*/,
+  fetchAllNearbyPlans,
+}
