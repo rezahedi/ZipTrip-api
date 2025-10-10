@@ -31,7 +31,6 @@ const fetchAllBookmarkedPlans = async (req: Request, res: Response) => {
 
   const bookmarkedPlans = await PlanSchema.find(filters)
     .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
-    .populate('categoryId', 'name')
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)

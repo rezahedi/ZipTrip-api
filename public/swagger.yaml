@@ -50,10 +50,6 @@ paths:
                       "finishLocation": [40.7614327, -73.97762159999999],
                       "distance": 8.3,
                       "duration": 4,
-                      "categoryId": {
-                          "_id": "category-id-sdfsd",
-                          "name": "City Exploration"
-                      },
                       "type": "Half day",
                       "isBookmarked": false
                     }
@@ -101,11 +97,6 @@ paths:
                   "finishLocation": [40.7614327, -73.97762159999999],
                   "distance": 8.3,
                   "duration": 4,
-                  "categoryId": {
-                    "_id": "category-id-sadfsdf",
-                    "name": "City Exploration",
-                    "imageURL": "https://example.com/city-exploration.jpg"
-                  },
                   "createdAt": "2025-04-22T23:54:08.160Z",
                   "updatedAt": "2025-09-16T22:23:47.445Z",
                   "type": "Half day",
@@ -182,99 +173,6 @@ paths:
                 }
           headers: {}
       deprecated: false
-  /plans/category:
-    get:
-      tags:
-        - Plans
-      summary: Get list of all categories
-      parameters: []
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              example: |
-                [
-                  {
-                    "_id": "category-id-sdfdsf",
-                    "name": "City Exploration",
-                    "description": "Explore the city's landmarks, parks, museums, and dining spots.",
-                    "imageURL": "https://example.com/city-exploration.jpg"
-                  },
-                  {
-                    "_id": "category-id-sdfdsf",
-                    "name": "Urban Adventure",
-                    "description": "Discover the vibrant city life, parks, museums, and culinary delights.",
-                    "imageURL": "https://example.com/urban-adventure.jpg"
-                  },
-                  {
-                    "_id": "category-id-ssdfdf",
-                    "name": "Food and Drink Gems",
-                    "description": "Restaurants, Bars and Cafes",
-                    "imageURL": "https://example.com/food-and-drink-gems.jpg"
-                  }
-                ]
-          headers: {}
-      deprecated: false
-  /plans/category/{categoryId}:
-    parameters:
-      - in: path
-        name: categoryId
-        schema:
-          type: string
-          example: category-id-sdfsd
-        required: true
-        description: The category ID
-    get:
-      tags:
-        - Plans
-      summary: Get a category's detail and its plans
-      operationId: GetCategoryPlans
-      parameters: []
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              example: |
-                {
-                  "_id": "nature-and-history",
-                  "name": "Nature and History",
-                  "description": "Discover the beauty, wonder, and serenity of the great outdoors through our Nature Exploration category.",
-                  "imageURL": "http://example.com/nature.jpg",
-                  "plans": {
-                    "page": 1,
-                    "size": 10,
-                    "pagesCount": 1,
-                    "items": [
-                      {
-                        "_id": "plan-id-sdfds",
-                        "userId": {
-                          "_id": "user-id-sdfds",
-                          "name": "Meesha"
-                        },
-                        "title": "Detroit in a Day: Art, Cars & Coney Dogs",
-                        "images": [
-                          "https://example.com/image1.jpg"
-                        ],
-                        "type": "Full day",
-                        "stopCount": 2,
-                        "reviewCount": 58,
-                        "startLocation": [42.303600729743586, -83.23413192891658],
-                        "finishLocation": [42.35953514344295, -83.06453360524505],
-                        "distance": 3,
-                        "duration": 2,
-                        "categoryId": {
-                          "_id": "category-id-sdfsdf",
-                          "name": "City Exploration"
-                        },
-                        "isBookmarked": false
-                      }
-                    ]
-                  }
-                }
-          headers: {}
-      deprecated: false
   /plans/nearby:
     get:
       tags:
@@ -311,10 +209,6 @@ paths:
                       "finishLocation": [37.7897395, -122.3961656],
                       "distance": 12,
                       "duration": 9,
-                      "categoryId": {
-                        "_id": "category-id-sdfds",
-                        "name": "Sightseeing & Attractions"
-                      },
                       "type": "Full day",
                       "isBookmarked": false
                     }
@@ -343,6 +237,7 @@ paths:
                   "items": [
                     {
                       "_id": "place-id-sdfsdf",
+                      "placeId": "google-place-id-sdfsdf",
                       "name": "Ferry Building Marketplace",
                       "imageURL": "https://example.com/ferry-building.jpg",
                       "address": "1 Ferry Building, San Francisco, CA 94111",
@@ -539,10 +434,6 @@ paths:
                       "finishLocation": [40.7614327, -73.97762159999999],
                       "distance": 8.3,
                       "duration": 4,
-                      "categoryId": {
-                        "_id": "category-id-sdfsd",
-                        "name": "City Exploration"
-                      },
                       "type": "Half day"
                     }
                   ]
@@ -670,10 +561,6 @@ paths:
                   "finishLocation": [37.8098488, -122.2610236],
                   "distance": 4,
                   "duration": 5,
-                  "categoryId": {
-                    "_id": "category-id-sdfsd",
-                    "name": "Nature Explore"
-                  },
                   "createdAt": "2025-05-14T05:36:21.948Z",
                   "updatedAt": "2025-09-16T22:33:36.732Z",
                   "stops": [
@@ -781,68 +668,6 @@ paths:
           description: 'No Content'
           headers: {}
       deprecated: false
-  /account/categories:
-    get:
-      tags:
-        - Account
-      summary: Retrieve list of all categories
-      security:
-        - bearerAuth: []
-      operationId: AccountGetAllCategories
-      parameters: []
-      responses:
-        200:
-          description: Successful response
-          content:
-            application/json:
-              example: |
-                [
-                  {
-                    "_id": "category-id-sdfds",
-                    "name": "City Exploration",
-                    "description": "Explore the urban landscapes and cultural landmarks of cities.",
-                    "imageURL": "http://example.com/city-exploration.jpg",
-                  }
-                ]
-          headers: {}
-      deprecated: false
-    post:
-      tags:
-        - Account
-      summary: Create new Category
-      security:
-        - bearerAuth: []
-      operationId: CreateCategory
-      parameters: []
-      requestBody:
-        description: ''
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AccountCategoryRequestBody'
-            example: |
-              {
-                "name": "City Exploration",
-                "description": "Explore the urban landscapes and cultural landmarks of cities.",
-                "imageURL": "http://example.com/city-exploration.jpg"
-              }
-        required: true
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              example: |
-                {
-                  "_id": "68052f7098902ebc8b61c474",
-                  "name": "City Exploration",
-                  "description": "Explore the urban landscapes and cultural landmarks of cities.",
-                  "imageURL": "http://example.com/city-exploration.jpg",
-                  "createdAt": "2025-04-20T17:31:28.435Z",
-                  "updatedAt": "2025-04-20T17:31:28.435Z"
-                }
-          headers: {}
-      deprecated: false
   /account/bookmarks:
     get:
       tags:
@@ -880,10 +705,6 @@ paths:
                       "finishLocation": [2343243, -234234],
                       "distance": 7,
                       "duration": 2,
-                      "categoryId": {
-                        "_id": "category-id-sdfsd",
-                        "name": "Food and Drink"
-                      }
                     }
                   ]
                 }

@@ -1,5 +1,5 @@
 import { fetchAllPlans, createNewPlan, fetchPlan, updatePlan, deletePlan } from './account'
-import { fetchAllCategories, createNewCategory } from './categories'
+// import { fetchAllCategories, createNewCategory } from './categories'
 import { fetchAllBookmarkedPlans, addBookmark, removeBookmark } from './bookmarks'
 
 export {
@@ -8,8 +8,8 @@ export {
   fetchPlan,
   updatePlan,
   deletePlan,
-  fetchAllCategories,
-  createNewCategory,
+  // fetchAllCategories,
+  // createNewCategory,
   fetchAllBookmarkedPlans,
   addBookmark,
   removeBookmark,

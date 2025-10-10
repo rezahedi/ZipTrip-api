@@ -30,7 +30,6 @@ export interface IPlan extends Document {
   }
   distance: number
   duration: number
-  categoryId?: Types.ObjectId
   createdAt?: Date
   updatedAt?: Date
 }
@@ -124,10 +123,6 @@ const PlanSchema: Schema<IPlan> = new Schema(
     duration: {
       type: Number,
       default: 0,
-    },
-    categoryId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Category',
     },
   },
   {

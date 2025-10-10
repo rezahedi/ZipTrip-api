@@ -31,7 +31,6 @@ const fetchAllPlans = async (req: Request, res: Response) => {
 
   const plans = await PlanSchema.find(filters)
     .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
-    .populate('categoryId', 'name')
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)
@@ -86,7 +85,6 @@ const createNewPlan = async (req: Request, res: Response) => {
 
   if (!createdPlan) throw new CustomAPIError('Failed to create plan', StatusCodes.INTERNAL_SERVER_ERROR)
 
-  await createdPlan.populate('categoryId', 'name')
   await createdPlan.populate('userId', 'name')
 
   res.status(StatusCodes.CREATED).json({
@@ -110,7 +108,6 @@ const fetchPlan = async (req: Request, res: Response) => {
     .select(
       'title description images stopCount stops type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
     )
-    .populate('categoryId', 'name')
     .populate('userId', 'name')
     .lean()
 
@@ -162,9 +159,7 @@ const updatePlan = async (req: Request, res: Response) => {
       new: true,
       runValidators: true,
     }
-  )
-    .populate('categoryId', 'name')
-    .populate('userId', 'name')
+  ).populate('userId', 'name')
 
   if (!updatedPlan) throw new CustomAPIError('Failed to update the plan', StatusCodes.INTERNAL_SERVER_ERROR)
 
