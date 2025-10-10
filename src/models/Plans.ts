@@ -3,7 +3,7 @@ import './Categories'
 import './Users'
 
 export interface IPlanStop {
-  placeId: Types.ObjectId
+  placeId: string
   name: string
   description?: string
   imageURL: string
@@ -20,17 +20,17 @@ export interface IPlan extends Document {
   stops: IPlanStop[]
   rate: number
   reviewCount: number
-  startLocation: {
+  startLocation?: {
     type: 'Point'
     coordinates: [number, number]
   }
-  finishLocation: {
+  finishLocation?: {
     type: 'Point'
     coordinates: [number, number]
   }
   distance: number
   duration: number
-  categoryId: Types.ObjectId
+  categoryId?: Types.ObjectId
   createdAt?: Date
   updatedAt?: Date
 }
@@ -49,8 +49,9 @@ const pointSchema = new mongoose.Schema({
 
 const stopSchema = new mongoose.Schema({
   placeId: {
-    type: Schema.Types.ObjectId,
-    ref: 'Place',
+    type: String,
+    unique: true,
+    // ref: 'Place',
   },
   name: {
     type: String,
@@ -80,7 +81,6 @@ const PlanSchema: Schema<IPlan> = new Schema(
     },
     description: {
       type: String,
-      required: [true, 'Provide description'],
     },
     images: {
       type: [String],
@@ -99,7 +99,6 @@ const PlanSchema: Schema<IPlan> = new Schema(
       {
         _id: false,
         type: stopSchema,
-        required: true,
       },
     ],
     rate: {
@@ -113,12 +112,10 @@ const PlanSchema: Schema<IPlan> = new Schema(
     startLocation: {
       _id: false,
       type: pointSchema,
-      required: true,
     },
     finishLocation: {
       _id: false,
       type: pointSchema,
-      required: true,
     },
     distance: {
       type: Number,
@@ -131,7 +128,6 @@ const PlanSchema: Schema<IPlan> = new Schema(
     categoryId: {
       type: Schema.Types.ObjectId,
       ref: 'Category',
-      required: [true, 'Provide category'],
     },
   },
   {

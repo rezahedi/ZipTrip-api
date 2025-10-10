@@ -42,7 +42,7 @@ const fetchAllNearbyPlaces = async (req: Request, res: Response) => {
       },
     },
   })
-    .select('name imageURL address location')
+    .select('placeId name imageURL address location')
     .limit(PLACES_MAX_LIMIT)
     .lean()
 

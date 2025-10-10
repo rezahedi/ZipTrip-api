@@ -2,12 +2,15 @@ import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import PlanSchema, { IPlan } from '../../models/Plans'
 import BookmarkSchema from '../../models/Bookmarks'
-import PlaceSchema from '../../models/Places'
-import mongoose from 'mongoose'
+import PlaceSchema, { IPlace } from '../../models/Places'
 import CustomAPIError from '../../errors/custom_error'
 import NotFoundError from '../../errors/not_found'
 import UnauthenticatedError from '../../errors/unauthentication_error'
 import { coordsToGeoJson, geoJsonToCoords } from '../../utils/location'
+
+type PlaceDTO = Omit<IPlace, 'location' | 'createdAt' | 'updatedAt'> & {
+  location: [number, number]
+}
 
 const PAGE_SIZE = 10
 
@@ -53,33 +56,31 @@ const createNewPlan = async (req: Request, res: Response) => {
   const userId: string = req.user.userId
   let { stops, ...plan } = req.body
 
-  if (!stops || !stops.length) throw new CustomAPIError('At least one stop is required', StatusCodes.BAD_REQUEST)
+  if (stops && stops.length > 0) {
+    // Insert stops in Places collection if id does not exist
+    const ops = stops.map((stop: PlaceDTO) => ({
+      updateOne: {
+        filter: { placeId: stop.placeId },
+        update: {
+          $setOnInsert: {
+            ...stop,
+            location: coordsToGeoJson(stop.location),
+          },
+        },
+        upsert: true, // only insert if not exist
+      },
+    }))
+    await PlaceSchema.bulkWrite(ops)
 
-  for (const [index, stop] of stops.entries()) {
-    if (!stop.placeId) {
-      if (!stop.location || stop.location.length !== 2)
-        throw new CustomAPIError('Provide valid coordinates for each stop', StatusCodes.INTERNAL_SERVER_ERROR)
+    plan.stops = stops
+    plan.stopCount = stops.length
 
-      // create the new place in Places collection
-      const createdPlace = await PlaceSchema.create({
-        name: stop.name,
-        imageURL: stop.imageURL,
-        address: stop.address,
-        location: coordsToGeoJson(stop.location),
-        userId: new mongoose.Types.ObjectId(userId),
-      })
-      stops[index].placeId = createdPlace._id
-    }
+    plan.startLocation = coordsToGeoJson(stops[0]?.location || [0, 0])
+    plan.finishLocation = coordsToGeoJson(stops[stops.length - 1]?.location || [0, 0])
   }
 
-  const startLocation = coordsToGeoJson(stops[0]?.location || [0, 0])
-  const finishLocation = coordsToGeoJson(stops[stops.length - 1]?.location || [0, 0])
   const createdPlan: IPlan = await PlanSchema.create({
     ...plan,
-    startLocation,
-    finishLocation,
-    stopCount: stops.length,
-    stops,
     userId,
   })
 
@@ -128,39 +129,35 @@ const updatePlan = async (req: Request, res: Response) => {
 
   let { stops, ...plan } = req.body
 
-  if (!stops || !stops.length) throw new CustomAPIError('At least one stop is required', StatusCodes.BAD_REQUEST)
+  if (stops && stops.length > 0) {
+    // Insert stops in Places collection if id does not exist
+    const ops = stops.map((stop: PlaceDTO) => ({
+      updateOne: {
+        filter: { placeId: stop.placeId },
+        update: {
+          $setOnInsert: {
+            ...stop,
+            location: coordsToGeoJson(stop.location),
+          },
+        },
+        upsert: true, // only insert if not exist
+      },
+    }))
+    await PlaceSchema.bulkWrite(ops)
 
-  for (const [index, stop] of stops.entries()) {
-    if (!stop.placeId) {
-      if (!stop.location || stop.location.length !== 2)
-        throw new CustomAPIError('Provide valid coordinates for each stop', StatusCodes.INTERNAL_SERVER_ERROR)
+    plan.stops = stops
+    plan.stopCount = stops.length
 
-      // create the new place in Places collection
-      const createdPlace = await PlaceSchema.create({
-        name: stop.name,
-        imageURL: stop.imageURL,
-        address: stop.address,
-        location: coordsToGeoJson(stop.location),
-        userId: new mongoose.Types.ObjectId(userId),
-      })
-      stops[index].placeId = createdPlace._id
-    }
+    plan.startLocation = coordsToGeoJson(stops[0]?.location || [0, 0])
+    plan.finishLocation = coordsToGeoJson(stops[stops.length - 1]?.location || [0, 0])
   }
 
-  const startLocation = coordsToGeoJson(stops[0]?.location || [0, 0])
-  const finishLocation = coordsToGeoJson(stops[stops.length - 1]?.location || [0, 0])
   const updatedPlan: IPlan | null = await PlanSchema.findByIdAndUpdate(
     {
       _id: planId,
       userId,
     },
-    {
-      ...plan,
-      startLocation,
-      finishLocation,
-      stopCount: stops.length,
-      stops,
-    },
+    plan,
     {
       new: true,
       runValidators: true,
