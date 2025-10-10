@@ -10,12 +10,19 @@ export interface IPlanStop {
   address: string
   location: [number]
 }
+
+interface ICityRef {
+  _id: Types.ObjectId
+  name: string
+}
+
 export interface IPlan extends Document {
   userId: Types.ObjectId
   title: string
   description?: string
   images: string[]
   type?: 'Full day' | 'Half day' | 'Night'
+  cities: ICityRef[]
   stopCount: number
   stops: IPlanStop[]
   rate: number
@@ -33,6 +40,14 @@ export interface IPlan extends Document {
   createdAt?: Date
   updatedAt?: Date
 }
+
+const CitySchema = new mongoose.Schema<ICityRef>(
+  {
+    _id: { type: Schema.Types.ObjectId, ref: 'City', required: true },
+    name: { type: String, required: true },
+  },
+  { _id: false }
+)
 
 const pointSchema = new mongoose.Schema({
   type: {
@@ -90,6 +105,7 @@ const PlanSchema: Schema<IPlan> = new Schema(
       type: String,
       enum: ['Full day', 'Half day', 'Night'],
     },
+    cities: { type: [CitySchema], required: true },
     stopCount: {
       type: Number,
       default: 0,
@@ -130,6 +146,7 @@ const PlanSchema: Schema<IPlan> = new Schema(
   }
 )
 
+PlanSchema.index({ 'cities._id': 1 })
 PlanSchema.index({ 'stops.placeId': 1 })
 PlanSchema.index({ startLocation: '2dsphere' })
 PlanSchema.index({ finishLocation: '2dsphere' })
