@@ -668,6 +668,43 @@ paths:
           description: 'No Content'
           headers: {}
       deprecated: false
+  /account/plans/{planId}/image:
+    parameters:
+      - in: path
+        name: planId
+        schema:
+          type: string
+          example: plan-id-sdfsd
+        required: true
+        description: The plan ID
+    post:
+      tags:
+        - Account
+      summary: Upload an image for a plan
+      security:
+        - bearerAuth: []
+      operationId: AccountUploadImagePlan
+      parameters: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AccountPlanUploadImageRequestBody'
+            encoding:
+              image:
+                contentType: image/*  # optional, restricts allowed MIME types
+        required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                {
+                  "imageURL": "https://example.com/image1.jpg"
+                }
+          headers: {}
+      deprecated: false
   /account/bookmarks:
     get:
       tags:
@@ -797,6 +834,16 @@ components:
       required:
         - resetToken 
         - newPassword 
+    AccountPlanUploadImageRequestBody:
+      title: Image's Object
+      type: object
+      properties:
+        image:
+          type: string
+          format: binary
+          description: The image file to upload
+      required:
+        - image
     AccountPlanRequestBody:
       title: Plan's Object
       required:
