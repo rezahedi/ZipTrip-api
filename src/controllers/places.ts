@@ -4,9 +4,11 @@ import PlaceSchema, { IPlace } from '../models/Places'
 import { geoJsonToCoords } from '../utils/location'
 import GooglePlaceSchema, { IGooglePlace } from '../models/GooglePlaces'
 import CustomAPIError from '../errors/custom_error'
+import { v2 as cloudinary } from 'cloudinary'
 
 const PLACES_MAX_LIMIT = 50
-const GOOGLE_PLACE_FETCH_VERSION = 1
+const GOOGLE_PLACE_FETCH_VERSION = 2
+const PLACE_IMG_UPLOAD_MAX_COUNT = 1
 
 const fetchAllPlaces = async (req: Request, res: Response) => {
   res.status(StatusCodes.OK).json({})
@@ -58,7 +60,10 @@ const fetchAllNearbyPlaces = async (req: Request, res: Response) => {
 const fetchGooglePlace = async (req: Request, res: Response) => {
   // Check if the place is already in our db
   const { googlePlaceId } = req.params
-  const existingPlace: IGooglePlace | null = await GooglePlaceSchema.findOne({ googlePlaceId }).lean()
+  const existingPlace: IGooglePlace | null = await GooglePlaceSchema.findOne({
+    googlePlaceId,
+    version: GOOGLE_PLACE_FETCH_VERSION,
+  }).lean()
   if (existingPlace) {
     res.status(StatusCodes.OK).json(JSON.parse(existingPlace.data))
   } else {
@@ -70,11 +75,37 @@ const fetchGooglePlace = async (req: Request, res: Response) => {
     const response = await fetch(url)
     if (response.ok) {
       const data = await response.json()
-      await GooglePlaceSchema.create({
-        googlePlaceId,
-        version: GOOGLE_PLACE_FETCH_VERSION,
-        data: JSON.stringify(data),
-      })
+
+      if (data.photos.length > 0) {
+        // if exist get maximum 4 images and store it in Cloudinary
+        for (let i = 0; i < data.photos.length && i < PLACE_IMG_UPLOAD_MAX_COUNT; i++) {
+          if ('name' in data.photos[i]) {
+            const imageURL = `https://places.googleapis.com/v1/${data.photos[i].name}/media?maxHeightPx=400&maxWidthPx=400&key=${process.env.GOOGLE_MAPS_API_KEY}`
+            const { secure_url } = await cloudinary.uploader.upload(imageURL, {
+              folder: 'ZipTrip/Places',
+              overwrite: true,
+              invalidate: true,
+            })
+            data.photos[i].imageURL = secure_url
+          }
+        }
+      }
+
+      // Insert if placeId not found
+      // Update if version was different
+      await GooglePlaceSchema.updateOne(
+        {
+          googlePlaceId,
+          version: { $ne: GOOGLE_PLACE_FETCH_VERSION },
+        },
+        {
+          $set: {
+            version: GOOGLE_PLACE_FETCH_VERSION,
+            data: JSON.stringify(data),
+          },
+        },
+        { upsert: true }
+      )
       res.status(StatusCodes.OK).json(data)
     } else {
       throw new CustomAPIError('Failed to fetch place from Google Places API', StatusCodes.INTERNAL_SERVER_ERROR)
