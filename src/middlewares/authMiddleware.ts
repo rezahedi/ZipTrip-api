@@ -1,10 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
-import dotenv from 'dotenv'
 import UserSchema, { IUser } from '../models/Users'
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import UnauthenticatedError from '../errors/unauthentication_error'
 
-dotenv.config()
 interface MyJwtPayload extends JwtPayload {
   userId: string
   name: string

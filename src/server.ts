@@ -1,5 +1,6 @@
-import dotenv from 'dotenv'
-dotenv.config()
+import { loadEnv } from './utils/loadEnv'
+
+loadEnv()
 const { PORT = 8000 } = process.env
 import app from './app'
 import { connectDB } from './db/connection'
