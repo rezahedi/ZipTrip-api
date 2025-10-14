@@ -1,20 +1,14 @@
 import express from 'express'
-import {
-  fetchAllPlans,
-  fetchPlan,
-  fetchUserWithPlans,
-  // fetchCategoryWithPlans,
-  // fetchAllCategories,
-  fetchAllNearbyPlans,
-} from '../controllers/plans'
+import { fetchAllPlans, fetchPlan, fetchUserWithPlans, fetchAllNearbyPlans } from '../controllers/plans'
+import { fetchCityWithPlans, fetchAllCities } from '../controllers/cities'
 
 const router = express.Router()
 
 router.route('/').get(fetchAllPlans)
 // Specific routes first
-// router.route('/category').get(fetchAllCategories)
+router.route('/city').get(fetchAllCities)
+router.route('/city/:cityId').get(fetchCityWithPlans)
 router.route('/user/:userId').get(fetchUserWithPlans)
-// router.route('/category/:categoryId').get(fetchCategoryWithPlans)
 
 router.route('/nearby').get(fetchAllNearbyPlans)
 
