@@ -64,7 +64,6 @@ const pointSchema = new mongoose.Schema({
 const stopSchema = new mongoose.Schema({
   placeId: {
     type: String,
-    unique: true,
     // ref: 'Place',
   },
   name: {
