@@ -13,6 +13,7 @@ export interface IPlanStop {
 
 interface ICityRef {
   _id: Types.ObjectId
+  placeId: string
   name: string
 }
 
@@ -44,6 +45,7 @@ export interface IPlan extends Document {
 const CitySchema = new mongoose.Schema<ICityRef>(
   {
     _id: { type: Schema.Types.ObjectId, ref: 'City', required: true },
+    placeId: { type: String, required: true },
     name: { type: String, required: true },
   },
   { _id: false }
@@ -145,7 +147,7 @@ const PlanSchema: Schema<IPlan> = new Schema(
   }
 )
 
-PlanSchema.index({ 'cities._id': 1 })
+PlanSchema.index({ 'cities.placeId': 1 })
 PlanSchema.index({ 'stops.placeId': 1 })
 PlanSchema.index({ startLocation: '2dsphere' })
 PlanSchema.index({ finishLocation: '2dsphere' })
