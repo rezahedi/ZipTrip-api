@@ -1,6 +1,3 @@
-import dotenv from 'dotenv'
-dotenv.config()
-// import nodemailer from 'nodemailer';
 import sgMail from '@sendgrid/mail'
 import BadRequestError from '../errors/bad_request'
 
