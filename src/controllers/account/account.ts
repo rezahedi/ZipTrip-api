@@ -30,7 +30,7 @@ const fetchAllPlans = async (req: Request, res: Response) => {
   const pagesCount = Math.ceil(totalItems / pageSize)
 
   const plans = await PlanSchema.find(filters)
-    .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
+    .select('title images cities stopCount type rate reviewCount startLocation finishLocation distance duration')
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)
@@ -106,7 +106,7 @@ const fetchPlan = async (req: Request, res: Response) => {
   })
     .orFail(new NotFoundError(`No plan with id ${planId}`))
     .select(
-      'title description images stopCount stops type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
+      'title description images cities stopCount stops type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
     )
     .populate('userId', 'name')
     .lean()
