@@ -26,7 +26,7 @@ const fetchAllPlans = async (req: Request, res: Response) => {
   const pagesCount = Math.ceil(totalItems / pageSize)
 
   const plans = await PlanSchema.find(filters)
-    .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
+    .select('title images cities stopCount type rate reviewCount startLocation finishLocation distance duration')
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)
@@ -66,7 +66,7 @@ const fetchUserWithPlans = async (req: Request, res: Response) => {
   }
 
   const plans = await PlanSchema.find(filters)
-    .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
+    .select('title images cities stopCount type rate reviewCount startLocation finishLocation distance duration')
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)
@@ -100,7 +100,7 @@ const fetchPlan = async (req: Request, res: Response) => {
   const plan: IPlan | null = await PlanSchema.findById(planId)
     .orFail(new NotFoundError(`Item not found with the id: ${planId}`))
     .select(
-      'title description images stopCount stops type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
+      'title description images cities stopCount stops type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
     )
     .populate('userId', 'name imageURL')
     .lean()
@@ -180,7 +180,7 @@ const fetchAllNearbyPlans = async (req: Request, res: Response) => {
     },
   })
     .limit(PLANS_MAX_LIMIT)
-    .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
+    .select('title images cities stopCount type rate reviewCount startLocation finishLocation distance duration')
     .populate('userId', 'name')
     .lean()
 
