@@ -36,6 +36,7 @@ const fetchAllCities = async (req: Request, res: Response) => {
 
   res.status(StatusCodes.OK).json({
     search,
+    sort,
     page: parseInt(page as string),
     size: pageSize,
     pagesCount,
