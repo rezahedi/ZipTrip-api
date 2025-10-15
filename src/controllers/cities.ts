@@ -29,7 +29,7 @@ const fetchAllCities = async (req: Request, res: Response) => {
   const pagesCount = Math.ceil(totalItems / pageSize)
 
   const cities = await CitySchema.find(filters)
-    .select('placeId name imageURL location plans')
+    .select('placeId name state country imageURL plans')
     .skip(pageNumber)
     .limit(pageSize)
     .sort(sort as string)

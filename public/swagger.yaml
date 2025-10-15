@@ -200,9 +200,10 @@ paths:
                       "_id": "item-id-sdfsd",
                       "placeId": "place-id-sdfsdf",
                       "imageURL": "http://example.com/san-leandro.jpg",
-                      "name": "San Leandro, CA, USA",
-                      "plans": 1,
-                      "location": [37.7257, -122.15685]
+                      "name": "San Leandro",
+                      "state": "California",
+                      "country": "United States",
+                      "plans": 1
                     }
                   ]
                 }
@@ -232,9 +233,15 @@ paths:
                 {
                   "_id": "city-doc-id-sdfsdf",
                   "placeId": "google-place-id-sdfsd",
-                  "name": "Oakland, CA",
+                  "name": "Oakland",
+                  "state": "California",
+                  "country": "United States",
                   "imageURL": "http://example.com/oakland-ca.jpg",
                   "location": [37.8094, -122.2598],
+                  "viewport": {
+                    "low": [37.66712, -122.20972],
+                    "high": [37.74280, -122.12250]
+                  },
                   "plans": {
                     "page": 1,
                     "size": 10,
