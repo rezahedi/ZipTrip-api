@@ -10,9 +10,40 @@ import { geoJsonToCoords } from '../utils/location'
 import { v2 as cloudinary } from 'cloudinary'
 
 const PAGE_SIZE = 10
+const SORT = '-plans'
 
 const fetchAllCities = async (req: Request, res: Response) => {
-  res.status(StatusCodes.OK).json({ msg: 'list of cities by different filters' })
+  const { search, page = '1', size = PAGE_SIZE, sort = SORT } = req.query
+
+  const filters = {
+    ...(search && {
+      name: { $regex: search, $options: 'i' },
+    }),
+  }
+
+  const pageSize: number = parseInt(size as string)
+  const pageNumber: number = (parseInt(page as string) - 1) * pageSize
+
+  const totalItems = await CitySchema.countDocuments(filters)
+  const pagesCount = Math.ceil(totalItems / pageSize)
+
+  const cities = await CitySchema.find(filters)
+    .select('placeId name imageURL location plans')
+    .skip(pageNumber)
+    .limit(pageSize)
+    .sort(sort as string)
+    .lean()
+
+  res.status(StatusCodes.OK).json({
+    search,
+    page: parseInt(page as string),
+    size: pageSize,
+    pagesCount,
+    items: cities.map((item) => ({
+      ...item,
+      location: geoJsonToCoords(item.location),
+    })),
+  })
 }
 
 const fetchCityWithPlans = async (req: Request, res: Response) => {
