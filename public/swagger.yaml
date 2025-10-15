@@ -173,6 +173,41 @@ paths:
                 }
           headers: {}
       deprecated: false
+  /plans/city:
+    get:
+      tags:
+        - Plans
+      summary: Get All Cities, filter by search, with pagination of 10 rows by default and also sort
+      operationId: GetAllCities
+      parameters:
+        - $ref: '#/components/parameters/SortParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/SearchParam'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                {
+                  "page": 1,
+                  "size": 10,
+                  "sort": "-plans",
+                  "pagesCount": 1,
+                  "items": [
+                    {
+                      "_id": "item-id-sdfsd",
+                      "placeId": "place-id-sdfsdf",
+                      "imageURL": "http://example.com/san-leandro.jpg",
+                      "name": "San Leandro, CA, USA",
+                      "plans": 1,
+                      "location": [37.7257, -122.15685]
+                    }
+                  ]
+                }
+          headers: {}
+      deprecated: false
   /plans/city/{cityId}:
     parameters:
       - in: path
@@ -972,6 +1007,15 @@ components:
         example: nature-and-history
       required: false
       description: Category ID to filter plans by category (optional)
+
+    SortParam:
+      name: sort
+      in: query
+      schema:
+        type: string
+        default: "-plans"
+      required: false
+      description: Sort the result (optional, default is '-plans')
 
     PageParam:
       name: page
