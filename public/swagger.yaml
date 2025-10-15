@@ -180,6 +180,7 @@ paths:
       summary: Get All Cities, filter by search, with pagination of 10 rows by default and also sort
       operationId: GetAllCities
       parameters:
+        - $ref: '#/components/parameters/CityIdParam'
         - $ref: '#/components/parameters/SortParam'
         - $ref: '#/components/parameters/PageParam'
         - $ref: '#/components/parameters/SizeParam'

@@ -14,12 +14,13 @@ const PAGE_SIZE = 10
 const SORT = '-plans'
 
 const fetchAllCities = async (req: Request, res: Response) => {
-  const { search, page = '1', size = PAGE_SIZE, sort = SORT } = req.query
+  const { search, cityId, page = '1', size = PAGE_SIZE, sort = SORT } = req.query
 
   const filters = {
     ...(search && {
       name: { $regex: search, $options: 'i' },
     }),
+    ...(cityId && { placeId: cityId }),
   }
 
   const pageSize: number = parseInt(size as string)
@@ -36,7 +37,7 @@ const fetchAllCities = async (req: Request, res: Response) => {
     .lean()
 
   res.status(StatusCodes.OK).json({
-    search,
+    ...{ search, cityId },
     sort,
     page: parseInt(page as string),
     size: pageSize,
