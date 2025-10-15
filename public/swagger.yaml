@@ -16,7 +16,7 @@ paths:
       summary: Get All Plans, filter by category or search, with pagination of 10 rows by default
       operationId: GetAllPlans
       parameters:
-        - $ref: '#/components/parameters/CategoryIdParam'
+        - $ref: '#/components/parameters/CityIdParam'
         - $ref: '#/components/parameters/PageParam'
         - $ref: '#/components/parameters/SizeParam'
         - $ref: '#/components/parameters/SearchParam'
@@ -28,7 +28,7 @@ paths:
               example: |
                 {
                   "search": "San Francisco",
-                  "categoryId": "city-exploration",
+                  "cityId": "google-place-city-id-ssdfd",
                   "page": 1,
                   "size": 10,
                   "pagesCount": 2,
@@ -1006,14 +1006,14 @@ components:
         imageURL:
           type: string
   parameters:
-    CategoryIdParam:
-      name: categoryId
+    CityIdParam:
+      name: cityId
       in: query
       schema:
         type: string
-        example: nature-and-history
+        example: google-place-city-id-sdfdsf
       required: false
-      description: Category ID to filter plans by category (optional)
+      description: City ID (Google Place ID) to filter plans by city (optional)
 
     SortParam:
       name: sort

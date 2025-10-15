@@ -36,7 +36,7 @@ const fetchAllPlans = async (req: Request, res: Response) => {
   const plansWithBookmarksStatus = await attachBookmarkFlagToPlans(plans, authenticatedUserId)
 
   res.status(StatusCodes.OK).json({
-    ...{ search, cityId: cityId },
+    ...{ search, cityId },
     page: parseInt(page as string),
     size: pageSize,
     pagesCount,
