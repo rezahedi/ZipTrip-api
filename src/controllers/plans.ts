@@ -10,13 +10,13 @@ const PAGE_SIZE = 10
 const PLANS_MAX_LIMIT = 40
 
 const fetchAllPlans = async (req: Request, res: Response) => {
-  const { search, categoryId, page = '1', size = PAGE_SIZE } = req.query
+  const { search, cityId, page = '1', size = PAGE_SIZE } = req.query
 
   const filters = {
     ...(search && {
       title: { $regex: search, $options: 'i' },
     }),
-    ...(categoryId && { categoryId }),
+    ...(cityId && { 'cities.placeId': cityId }),
   }
 
   const pageSize: number = parseInt(size as string)
@@ -36,7 +36,7 @@ const fetchAllPlans = async (req: Request, res: Response) => {
   const plansWithBookmarksStatus = await attachBookmarkFlagToPlans(plans, authenticatedUserId)
 
   res.status(StatusCodes.OK).json({
-    ...{ search, categoryId },
+    ...{ search, cityId: cityId },
     page: parseInt(page as string),
     size: pageSize,
     pagesCount,
