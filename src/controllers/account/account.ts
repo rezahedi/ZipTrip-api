@@ -7,10 +7,13 @@ import CustomAPIError from '../../errors/custom_error'
 import NotFoundError from '../../errors/not_found'
 import UnauthenticatedError from '../../errors/unauthentication_error'
 import { coordsToGeoJson, geoJsonToCoords } from '../../utils/location'
+import CitySchema, { ICity } from '../../models/Cities'
 
 type PlaceDTO = Omit<IPlace, 'location' | 'createdAt' | 'updatedAt'> & {
   location: [number, number]
 }
+
+type CityDTO = Omit<ICity, 'imageURL' | 'location' | 'plans' | 'createdAt' | 'updatedAt'>
 
 const PAGE_SIZE = 10
 
@@ -30,7 +33,7 @@ const fetchAllPlans = async (req: Request, res: Response) => {
   const pagesCount = Math.ceil(totalItems / pageSize)
 
   const plans = await PlanSchema.find(filters)
-    .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
+    .select('title images cities stopCount type rate reviewCount startLocation finishLocation distance duration')
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)
@@ -53,7 +56,28 @@ const createNewPlan = async (req: Request, res: Response) => {
   if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
 
   const userId: string = req.user.userId
-  let { stops, ...plan } = req.body
+  let { stops, cities, ...plan } = req.body
+
+  // Insert cities in Cities collection if placeId does not exist
+  // Increment plan's count in Cities Collection if placeId exist
+  if (cities && cities.length > 0) {
+    const ops = cities.map((city: CityDTO) => ({
+      updateOne: {
+        filter: { placeId: city.placeId },
+        update: {
+          $inc: { plans: 1 }, // increase plans if exists
+          $setOnInsert: {
+            // only set these when inserting
+            ...city,
+          },
+        },
+        upsert: true, // only insert if not exist
+      },
+    }))
+    await CitySchema.bulkWrite(ops)
+
+    plan.cities = cities
+  }
 
   if (stops && stops.length > 0) {
     // Insert stops in Places collection if id does not exist
@@ -106,7 +130,7 @@ const fetchPlan = async (req: Request, res: Response) => {
   })
     .orFail(new NotFoundError(`No plan with id ${planId}`))
     .select(
-      'title description images stopCount stops type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
+      'title description images cities stopCount stops type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
     )
     .populate('userId', 'name')
     .lean()

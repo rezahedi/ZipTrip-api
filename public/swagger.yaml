@@ -173,6 +173,101 @@ paths:
                 }
           headers: {}
       deprecated: false
+  /plans/city:
+    get:
+      tags:
+        - Plans
+      summary: Get All Cities, filter by search, with pagination of 10 rows by default and also sort
+      operationId: GetAllCities
+      parameters:
+        - $ref: '#/components/parameters/SortParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/SearchParam'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                {
+                  "page": 1,
+                  "size": 10,
+                  "sort": "-plans",
+                  "pagesCount": 1,
+                  "items": [
+                    {
+                      "_id": "item-id-sdfsd",
+                      "placeId": "place-id-sdfsdf",
+                      "imageURL": "http://example.com/san-leandro.jpg",
+                      "name": "San Leandro, CA, USA",
+                      "plans": 1,
+                      "location": [37.7257, -122.15685]
+                    }
+                  ]
+                }
+          headers: {}
+      deprecated: false
+  /plans/city/{cityId}:
+    parameters:
+      - in: path
+        name: cityId
+        schema:
+          type: string
+          example: google-place-id-sdfsd
+        required: true
+        description: The equivalent Google Place ID for the city
+    get:
+      tags:
+        - Plans
+      summary: Get a city's detail and all their plans
+      operationId: GetCityPlans
+      parameters: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                {
+                  "_id": "city-doc-id-sdfsdf",
+                  "placeId": "google-place-id-sdfsd",
+                  "name": "Oakland, CA",
+                  "imageURL": "http://example.com/oakland-ca.jpg",
+                  "location": [37.8094, -122.2598],
+                  "plans": {
+                    "page": 1,
+                    "size": 10,
+                    "pagesCount": 1,
+                    "items": [
+                      {
+                        "_id": "plan-id-sdfds",
+                        "userId": {
+                          "_id": "user-id-sdfds",
+                          "name": "Meesha"
+                        },
+                        "title": "Detroit in a Day: Art, Cars & Coney Dogs",
+                        "images": [
+                          "https://example.com/image1.jpg"
+                        ],
+                        "type": "Full day",
+                        "stopCount": 2,
+                        "reviewCount": 58,
+                        "startLocation": [42.303600729743586, -83.23413192891658],
+                        "finishLocation": [42.35953514344295, -83.06453360524505],
+                        "distance": 3,
+                        "duration": 2,
+                        "cities": [{
+                          "placeId": "google-place-id-sdfsdf",
+                          "name": "Oakland, CA"
+                        }],
+                        "isBookmarked": false
+                      }
+                    ]
+                  }
+                }
+          headers: {}
+      deprecated: false
   /plans/nearby:
     get:
       tags:
@@ -912,6 +1007,15 @@ components:
         example: nature-and-history
       required: false
       description: Category ID to filter plans by category (optional)
+
+    SortParam:
+      name: sort
+      in: query
+      schema:
+        type: string
+        default: "-plans"
+      required: false
+      description: Sort the result (optional, default is '-plans')
 
     PageParam:
       name: page

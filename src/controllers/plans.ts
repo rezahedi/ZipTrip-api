@@ -3,7 +3,6 @@ import { StatusCodes } from 'http-status-codes'
 import PlanSchema, { IPlan } from '../models/Plans'
 import BookmarkSchema from '../models/Bookmarks'
 import UserSchema, { IUser } from '../models/Users'
-// import CategorySchema, { ICategory } from '../models/Categories'
 import NotFoundError from '../errors/not_found'
 import { geoJsonToCoords } from '../utils/location'
 
@@ -11,13 +10,13 @@ const PAGE_SIZE = 10
 const PLANS_MAX_LIMIT = 40
 
 const fetchAllPlans = async (req: Request, res: Response) => {
-  const { search, categoryId, page = '1', size = PAGE_SIZE } = req.query
+  const { search, cityId, page = '1', size = PAGE_SIZE } = req.query
 
   const filters = {
     ...(search && {
       title: { $regex: search, $options: 'i' },
     }),
-    ...(categoryId && { categoryId }),
+    ...(cityId && { 'cities.placeId': cityId }),
   }
 
   const pageSize: number = parseInt(size as string)
@@ -27,7 +26,7 @@ const fetchAllPlans = async (req: Request, res: Response) => {
   const pagesCount = Math.ceil(totalItems / pageSize)
 
   const plans = await PlanSchema.find(filters)
-    .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
+    .select('title images cities stopCount type rate reviewCount startLocation finishLocation distance duration')
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)
@@ -37,7 +36,7 @@ const fetchAllPlans = async (req: Request, res: Response) => {
   const plansWithBookmarksStatus = await attachBookmarkFlagToPlans(plans, authenticatedUserId)
 
   res.status(StatusCodes.OK).json({
-    ...{ search, categoryId },
+    ...{ search, cityId: cityId },
     page: parseInt(page as string),
     size: pageSize,
     pagesCount,
@@ -67,7 +66,7 @@ const fetchUserWithPlans = async (req: Request, res: Response) => {
   }
 
   const plans = await PlanSchema.find(filters)
-    .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
+    .select('title images cities stopCount type rate reviewCount startLocation finishLocation distance duration')
     .populate('userId', 'name')
     .skip(pageNumber)
     .limit(pageSize)
@@ -95,58 +94,13 @@ const fetchUserWithPlans = async (req: Request, res: Response) => {
   })
 }
 
-/*const fetchCategoryWithPlans = async (req: Request, res: Response) => {
-  const { categoryId } = req.params
-  const { page = '1', size = PAGE_SIZE } = req.query
-
-  const pageSize: number = parseInt(size as string)
-  const pageNumber: number = (parseInt(page as string) - 1) * pageSize
-
-  const category: ICategory | null = await CategorySchema.findById(categoryId)
-    .orFail(new NotFoundError(`Item not found with the id: ${categoryId}`))
-    .lean()
-
-  const filters = {
-    categoryId,
-  }
-
-  const plans = await PlanSchema.find(filters)
-    .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
-    .populate('categoryId', 'name')
-    .populate('userId', 'name')
-    .skip(pageNumber)
-    .limit(pageSize)
-    .lean()
-
-  const authenticatedUserId = req.user ? req.user.userId : ''
-  const plansWithBookmarksStatus = await attachBookmarkFlagToPlans(plans, authenticatedUserId)
-
-  const totalItems = await PlanSchema.countDocuments(filters)
-  const pagesCount = Math.ceil(totalItems / pageSize)
-
-  res.status(StatusCodes.OK).json({
-    ...category,
-    plans: {
-      page: parseInt(page as string),
-      size: pageSize,
-      pagesCount,
-      // TODO: it's not efficient, may combine with attachBookmarkFlagToPlans loop!
-      items: plansWithBookmarksStatus.map((item) => ({
-        ...item,
-        startLocation: geoJsonToCoords(item.startLocation),
-        finishLocation: geoJsonToCoords(item.finishLocation),
-      })),
-    },
-  })
-}*/
-
 const fetchPlan = async (req: Request, res: Response) => {
   const { planId } = req.params
 
   const plan: IPlan | null = await PlanSchema.findById(planId)
     .orFail(new NotFoundError(`Item not found with the id: ${planId}`))
     .select(
-      'title description images stopCount stops type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
+      'title description images cities stopCount stops type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
     )
     .populate('userId', 'name imageURL')
     .lean()
@@ -172,11 +126,6 @@ const fetchPlan = async (req: Request, res: Response) => {
     finishLocation: geoJsonToCoords(plan?.finishLocation),
   })
 }
-
-// const fetchAllCategories = async (req: Request, res: Response) => {
-//   const categories = await CategorySchema.find().lean()
-//   res.status(StatusCodes.OK).json(categories)
-// }
 
 const attachBookmarkFlagToPlans = async (plans: IPlan[], userId: string) => {
   if (!userId)
@@ -231,7 +180,7 @@ const fetchAllNearbyPlans = async (req: Request, res: Response) => {
     },
   })
     .limit(PLANS_MAX_LIMIT)
-    .select('title images stopCount type rate reviewCount startLocation finishLocation distance duration')
+    .select('title images cities stopCount type rate reviewCount startLocation finishLocation distance duration')
     .populate('userId', 'name')
     .lean()
 
@@ -248,9 +197,4 @@ const fetchAllNearbyPlans = async (req: Request, res: Response) => {
   })
 }
 
-export {
-  fetchAllPlans,
-  fetchPlan,
-  fetchUserWithPlans /*, fetchCategoryWithPlans, fetchAllCategories*/,
-  fetchAllNearbyPlans,
-}
+export { fetchAllPlans, fetchPlan, fetchUserWithPlans, fetchAllNearbyPlans }
