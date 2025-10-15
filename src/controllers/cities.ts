@@ -1,10 +1,13 @@
+import { coordsToGeoJson } from './../utils/location'
 import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import CitySchema, { ICity } from '../models/Cities'
 import PlanSchema, { IPlan } from '../models/Plans'
 import BookmarkSchema from '../models/Bookmarks'
 import NotFoundError from '../errors/not_found'
+import CustomAPIError from '../errors/custom_error'
 import { geoJsonToCoords } from '../utils/location'
+import { v2 as cloudinary } from 'cloudinary'
 
 const PAGE_SIZE = 10
 
@@ -19,10 +22,42 @@ const fetchCityWithPlans = async (req: Request, res: Response) => {
   const pageSize: number = parseInt(size as string)
   const pageNumber: number = (parseInt(page as string) - 1) * pageSize
 
-  const user: ICity | null = await CitySchema.findOne({ placeId: cityId })
+  const city: ICity | null = await CitySchema.findOne({ placeId: cityId })
     .orFail(new NotFoundError(`Item not found with the id: ${cityId}`))
-    .select('placeId name imageURL locations plans')
+    .select('placeId name imageURL location')
     .lean()
+
+  // Fetch city details from Google Places API for the first time call
+  if (!city?.imageURL && !city?.location) {
+    const apiKey = process.env.GOOGLE_MAPS_API_KEY as string
+    if (!apiKey) throw new CustomAPIError('Google Places API key is not configured', StatusCodes.INTERNAL_SERVER_ERROR)
+    const fields = 'displayName,photos,location'
+    const url = `https://places.googleapis.com/v1/places/${cityId}?fields=${fields}&key=${apiKey}`
+
+    const response = await fetch(url)
+    if (response.ok) {
+      const data = await response.json()
+      let imageURL = ''
+
+      // if data.photos get first one and generate the url
+      if (data.photos.length > 0) {
+        imageURL = `https://places.googleapis.com/v1/${data.photos[0].name}/media?maxHeightPx=400&maxWidthPx=400&key=${process.env.GOOGLE_MAPS_API_KEY}`
+        // Then upload the image on Cloudinary and get back the new image URL
+        const { secure_url } = await cloudinary.uploader.upload(imageURL, {
+          folder: 'ZipTrip/Places',
+          overwrite: true,
+          invalidate: true,
+        })
+        imageURL = secure_url
+      }
+
+      // Then update the city document in Mongodb with new data
+      await CitySchema.updateOne(
+        { placeId: cityId },
+        { $set: { imageURL, location: coordsToGeoJson([data.location.latitude, data.location.longitude]) } }
+      )
+    }
+  }
 
   const filters = {
     'cities.placeId': cityId,
@@ -42,8 +77,8 @@ const fetchCityWithPlans = async (req: Request, res: Response) => {
   const pagesCount = Math.ceil(totalItems / pageSize)
 
   res.status(StatusCodes.OK).json({
-    ...user,
-    location: geoJsonToCoords(user?.location),
+    ...city,
+    location: geoJsonToCoords(city?.location),
     plans: {
       page: parseInt(page as string),
       size: pageSize,
