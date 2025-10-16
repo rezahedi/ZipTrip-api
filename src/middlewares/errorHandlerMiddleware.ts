@@ -5,7 +5,6 @@ import { MongoServerError } from 'mongodb'
 import CustomAPIError from '../errors/custom_error'
 
 const errorHandlerMiddleware = (err: unknown, req: Request, res: Response, next: NextFunction) => {
-  console.log('Error Handler Middleware', err instanceof MongoServerError, err)
   // Set default or set by custom error's values
   let customError = {
     statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
