@@ -16,7 +16,22 @@ const fetchAllPlaces = async (req: Request, res: Response) => {
 }
 
 const fetchPlace = async (req: Request, res: Response) => {
-  res.status(StatusCodes.OK).json({})
+  const { placeId } = req.params
+
+  const place: IPlace | null = await PlaceSchema.findOne({
+    placeId,
+  })
+    .select(
+      'placeId name state country imageURL address location iconURL iconBackground summary reviewSummary rating userRatingCount'
+    )
+    .lean()
+
+  if (!place) throw new CustomAPIError(`No place with id ${placeId}`, StatusCodes.NOT_FOUND)
+
+  res.status(StatusCodes.OK).json({
+    ...place,
+    location: geoJsonToCoords(place.location),
+  })
 }
 
 const fetchAllNearbyPlaces = async (req: Request, res: Response) => {
@@ -45,7 +60,7 @@ const fetchAllNearbyPlaces = async (req: Request, res: Response) => {
       },
     },
   })
-    .select('placeId name imageURL address location')
+    .select('placeId name location iconURL iconBackground')
     .limit(PLACES_MAX_LIMIT)
     .lean()
 
