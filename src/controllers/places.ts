@@ -1,3 +1,4 @@
+import { transformGooglePlaceToSchema } from './../utils/googlePlace'
 import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import PlaceSchema, { IPlace } from '../models/Places'
@@ -7,7 +8,7 @@ import CustomAPIError from '../errors/custom_error'
 import { v2 as cloudinary } from 'cloudinary'
 
 const PLACES_MAX_LIMIT = 50
-const GOOGLE_PLACE_FETCH_VERSION = 2
+const GOOGLE_PLACE_FETCH_VERSION = 3
 const PLACE_IMG_UPLOAD_MAX_COUNT = 1
 
 const fetchAllPlaces = async (req: Request, res: Response) => {
@@ -65,11 +66,13 @@ const fetchGooglePlace = async (req: Request, res: Response) => {
     version: GOOGLE_PLACE_FETCH_VERSION,
   }).lean()
   if (existingPlace) {
-    res.status(StatusCodes.OK).json(JSON.parse(existingPlace.data))
+    const data = JSON.parse(existingPlace.data)
+    res.status(StatusCodes.OK).json(transformGooglePlaceToSchema(data))
   } else {
     const apiKey = process.env.GOOGLE_MAPS_API_KEY as string
     if (!apiKey) throw new CustomAPIError('Google Places API key is not configured', StatusCodes.INTERNAL_SERVER_ERROR)
-    const fields = 'id,displayName,formattedAddress,icon_mask_base_uri,photos,rating'
+    const fields =
+      'id,displayName,shortFormattedAddress,formattedAddress,addressComponents,location,icon_mask_base_uri,photos,iconBackgroundColor,editorialSummary,generativeSummary,reviewSummary,rating,userRatingCount'
     const url = `https://places.googleapis.com/v1/places/${googlePlaceId}?fields=${fields}&key=${apiKey}`
 
     const response = await fetch(url)
@@ -106,7 +109,7 @@ const fetchGooglePlace = async (req: Request, res: Response) => {
         },
         { upsert: true }
       )
-      res.status(StatusCodes.OK).json(data)
+      res.status(StatusCodes.OK).json(transformGooglePlaceToSchema(data))
     } else {
       throw new CustomAPIError('Failed to fetch place from Google Places API', StatusCodes.INTERNAL_SERVER_ERROR)
     }
