@@ -345,6 +345,7 @@ paths:
                   "placeId": "google-place-id-sdfsdf",
                   "address": "3601 Lyon St, San Francisco",
                   "country": "United States",
+                  "type": "sandwich_shop",
                   "iconBackground": "#7B9EB0",
                   "iconURL": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
                   "imageURL": "http://example.com/media_u4sfqv.jpg",
@@ -381,6 +382,7 @@ paths:
                       "_id": "place-id-sdfsdf",
                       "placeId": "google-place-id-sdfsdf",
                       "name": "Ferry Building Marketplace",
+                      "type": "sandwich_shop",
                       "iconBackground": "#7B9EB0",
                       "iconURL": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
                       "location": [37.7955, -122.3937]
@@ -407,7 +409,23 @@ paths:
           description: Successful response
           content:
             application/json:
-              example: A big json object returned from google places api
+              example: |
+                {
+                  "placeId": "google-place-id-sdfsdf",
+                  "name": "Morcom Rose Garden",
+                  "state": "California",
+                  "country": "United States",
+                  "imageURL": "http://example.com/media_dtznfo.jpg",
+                  "address": "700 Jean St, Oakland",
+                  "location": [37.82001, -122.24656],
+                  "type": "garden",
+                  "iconURL": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/tree_pinlet",
+                  "iconBackground": "#4DB546",
+                  "summary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                  "reviewSummary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                  "rating": 4.7,
+                  "userRatingCount": 954
+                }
           headers: {}
       deprecated: false
   /auth/register:

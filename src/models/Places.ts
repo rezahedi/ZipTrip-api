@@ -11,6 +11,7 @@ export interface IPlace extends Document {
     type: 'Point'
     coordinates: [number, number]
   }
+  type: string // primaryType
   iconURL: string // iconMaskBaseUri : type
   iconBackground: string // iconBackgroundColor : category
   summary: string // editorialSummary.text || generativeSummary.overview.text
@@ -66,6 +67,11 @@ const PlaceSchema: Schema<IPlace> = new Schema(
       _id: false,
       type: pointSchema,
       required: true,
+    },
+    type: {
+      type: String,
+      default: '',
+      required: [true, 'Provide place type'],
     },
     iconBackground: {
       type: String,

@@ -10,6 +10,7 @@ type GooglePlace = {
     latitude: number
     longitude: number
   }
+  primaryType: string
   iconMaskBaseUri: string
   iconBackgroundColor: string
   photos: Photo[]
@@ -66,6 +67,9 @@ export const transformGooglePlaceToSchema = (data: GooglePlace) => {
   // Get Location
   const location = [data.location.latitude, data.location.longitude]
 
+  // Get Type
+  const type = data.primaryType || ''
+
   // Get Icon URL
   const iconURL = data.iconMaskBaseUri
 
@@ -92,6 +96,7 @@ export const transformGooglePlaceToSchema = (data: GooglePlace) => {
     imageURL,
     address,
     location,
+    type,
     iconURL,
     iconBackground,
     summary,

@@ -8,7 +8,7 @@ import CustomAPIError from '../errors/custom_error'
 import { v2 as cloudinary } from 'cloudinary'
 
 const PLACES_MAX_LIMIT = 50
-const GOOGLE_PLACE_FETCH_VERSION = 3
+const GOOGLE_PLACE_FETCH_VERSION = 4
 const PLACE_IMG_UPLOAD_MAX_COUNT = 1
 
 const fetchAllPlaces = async (req: Request, res: Response) => {
@@ -22,7 +22,7 @@ const fetchPlace = async (req: Request, res: Response) => {
     placeId,
   })
     .select(
-      'placeId name state country imageURL address location iconURL iconBackground summary reviewSummary rating userRatingCount'
+      'placeId name state country imageURL address location type iconURL iconBackground summary reviewSummary rating userRatingCount'
     )
     .lean()
 
@@ -60,7 +60,7 @@ const fetchAllNearbyPlaces = async (req: Request, res: Response) => {
       },
     },
   })
-    .select('placeId name location iconURL iconBackground')
+    .select('placeId name location type iconURL iconBackground')
     .limit(PLACES_MAX_LIMIT)
     .lean()
 
@@ -87,7 +87,7 @@ const fetchGooglePlace = async (req: Request, res: Response) => {
     const apiKey = process.env.GOOGLE_MAPS_API_KEY as string
     if (!apiKey) throw new CustomAPIError('Google Places API key is not configured', StatusCodes.INTERNAL_SERVER_ERROR)
     const fields =
-      'id,displayName,shortFormattedAddress,formattedAddress,addressComponents,location,icon_mask_base_uri,photos,iconBackgroundColor,editorialSummary,generativeSummary,reviewSummary,rating,userRatingCount'
+      'id,displayName,shortFormattedAddress,formattedAddress,addressComponents,location,icon_mask_base_uri,photos,primaryType,iconBackgroundColor,editorialSummary,generativeSummary,reviewSummary,rating,userRatingCount'
     const url = `https://places.googleapis.com/v1/places/${googlePlaceId}?fields=${fields}&key=${apiKey}`
 
     const response = await fetch(url)
