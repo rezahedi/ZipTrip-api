@@ -157,15 +157,15 @@ paths:
                         ],
                         "type": "Full day",
                         "stopCount": 2,
+                        "cities": [{
+                          "placeId": "google-place-id-sdfsdf",
+                          "name": "Oakland"
+                        }],
                         "reviewCount": 58,
                         "startLocation": [42.303600729743586, -83.23413192891658],
                         "finishLocation": [42.35953514344295, -83.06453360524505],
                         "distance": 3,
                         "duration": 2,
-                        "categoryId": {
-                          "_id": "category-id-sdfsdf",
-                          "name": "City Exploration"
-                        },
                         "isBookmarked": false
                       }
                     ]
