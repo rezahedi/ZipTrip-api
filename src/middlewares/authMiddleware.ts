@@ -37,7 +37,6 @@ export const optionalAuthMiddleware = async (request: Request, response: Respons
 
     try {
       const payload = jwt.verify(token, process.env.JWT_SECRET_KEY as string) as MyJwtPayload
-      console.log('payload', payload)
 
       // Attach the user to the authorized route
       const user: IUser = await UserSchema.findById(payload.userId).select('name imageURL email')

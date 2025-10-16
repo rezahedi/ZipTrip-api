@@ -73,7 +73,6 @@ const login = async (req: Request, res: Response): Promise<void> => {
 
 const requestPasswordReset = async (req: Request, res: Response) => {
   const { email } = req.body.email ? req.body : req.query
-  console.log('Email received:', email)
   if (!email) {
     throw new BadRequestError('Please provide an email address.')
   }
