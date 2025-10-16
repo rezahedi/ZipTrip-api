@@ -319,6 +319,45 @@ paths:
                 }
           headers: {}
       deprecated: false
+  /places/{placeId}:
+    parameters:
+      - in: path
+        name: placeId
+        schema:
+          type: string
+          example: place-id-sdfsdf
+        required: true
+        description: The place ID
+    get:
+      tags:
+        - Places
+      summary: Get Single Place Details
+      operationId: GetPlace
+      parameters: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                {
+                  "_id": "place-id-sdfsdf",
+                  "placeId": "google-place-id-sdfsdf",
+                  "address": "3601 Lyon St, San Francisco",
+                  "country": "United States",
+                  "iconBackground": "#7B9EB0",
+                  "iconURL": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+                  "imageURL": "http://example.com/media_u4sfqv.jpg",
+                  "location": [37.80293, -122.44842],
+                  "name": "Palace of Fine Arts",
+                  "rating": 4.8,
+                  "reviewSummary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                  "state": "California",
+                  "summary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                  "userRatingCount": 2518
+                }
+          headers: {}
+      deprecated: false
   /places/nearby:
     get:
       tags:
@@ -342,8 +381,8 @@ paths:
                       "_id": "place-id-sdfsdf",
                       "placeId": "google-place-id-sdfsdf",
                       "name": "Ferry Building Marketplace",
-                      "imageURL": "https://example.com/ferry-building.jpg",
-                      "address": "1 Ferry Building, San Francisco, CA 94111",
+                      "iconBackground": "#7B9EB0",
+                      "iconURL": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
                       "location": [37.7955, -122.3937]
                     }
                   ]
