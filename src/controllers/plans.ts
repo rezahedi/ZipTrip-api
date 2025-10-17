@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import PlanSchema, { IPlan } from '../models/Plans'
+import PlaceSchema from '../models/Places'
 import BookmarkSchema from '../models/Bookmarks'
 import UserSchema, { IUser } from '../models/Users'
 import NotFoundError from '../errors/not_found'
@@ -105,7 +106,23 @@ const fetchPlan = async (req: Request, res: Response) => {
     .populate('userId', 'name imageURL')
     .lean()
 
-  // if (!plan) return new NotFoundError(`Item not found with the id: ${planId}`)
+  // Get all placeIDs of stops in an array
+  const placeIds = plan?.stops.map((stop) => stop.placeId)
+  // Select all places by the ids
+  const unorderedPlaces = await PlaceSchema.find({
+    placeId: { $in: placeIds },
+  })
+    .select('placeId name state country address summary imageURL location type rating userRatingCount reviewSummary')
+    .lean()
+
+  // Make sure the order of places is the same as plan.stops
+  const places = plan?.stops.map((stop) => {
+    const res = unorderedPlaces.find((place) => stop.placeId === place.placeId)
+    return {
+      ...res,
+      location: geoJsonToCoords(res?.location),
+    }
+  })
 
   const loggedInUser = req.user || null
   let isBookmarked: boolean = false
@@ -121,6 +138,8 @@ const fetchPlan = async (req: Request, res: Response) => {
 
   res.status(StatusCodes.OK).json({
     ...plan,
+    // Replace plan.stops with the new array of places
+    stops: places,
     isBookmarked,
     startLocation: geoJsonToCoords(plan?.startLocation),
     finishLocation: geoJsonToCoords(plan?.finishLocation),

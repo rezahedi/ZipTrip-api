@@ -91,10 +91,14 @@ paths:
                     "https://example.com/image1.jpg",
                     "https://example.com/image2.jpg"
                   ],
+                  cities: [{
+                    "placeId": "google-place-id-sdfsd",
+                    "name": "San Francisco, CA, USA"
+                  }]
                   "stopCount": 1,
                   "reviewCount": 83,
-                  "startLocation": [40.7924939, -73.95190889999999],
-                  "finishLocation": [40.7614327, -73.97762159999999],
+                  "startLocation": [40.7924, -73.9519],
+                  "finishLocation": [40.7614, -73.9776],
                   "distance": 8.3,
                   "duration": 4,
                   "createdAt": "2025-04-22T23:54:08.160Z",
@@ -102,12 +106,19 @@ paths:
                   "type": "Half day",
                   "stops": [
                     {
-                      "placeId": "place-id-sdfsdf",
-                      "name": "Museum of the City of New York",
-                      "description": "",
-                      "imageURL": "example.com/museum.jpg",
-                      "address": "1220 5th Ave, New York, NY 10029, USA",
-                      "location": [40.7924939, -73.95190889999999]
+                      "_id": "place-id-sdfdsf",
+                      "placeId": "google-place-id-sdfsd",
+                      "address": "3601 Lyon St, San Francisco",
+                      "country": "United States",
+                      "imageURL": "http://example.com/media_ctmv1a.jpg",
+                      "location": [37.8029, -122.4484],
+                      "name": "Palace of Fine Arts",
+                      "rating": 4.8,
+                      "reviewSummary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                      "state": "California",
+                      "summary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                      "type": "event_venue",
+                      "userRatingCount": 25183
                     }
                   ],
                   "isBookmarked": false
