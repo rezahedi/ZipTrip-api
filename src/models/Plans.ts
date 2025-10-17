@@ -1,5 +1,4 @@
 import mongoose, { Schema, Document, Types } from 'mongoose'
-import './Categories'
 import './Users'
 
 export interface IPlanStop {

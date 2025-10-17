@@ -91,10 +91,14 @@ paths:
                     "https://example.com/image1.jpg",
                     "https://example.com/image2.jpg"
                   ],
+                  cities: [{
+                    "placeId": "google-place-id-sdfsd",
+                    "name": "San Francisco, CA, USA"
+                  }]
                   "stopCount": 1,
                   "reviewCount": 83,
-                  "startLocation": [40.7924939, -73.95190889999999],
-                  "finishLocation": [40.7614327, -73.97762159999999],
+                  "startLocation": [40.7924, -73.9519],
+                  "finishLocation": [40.7614, -73.9776],
                   "distance": 8.3,
                   "duration": 4,
                   "createdAt": "2025-04-22T23:54:08.160Z",
@@ -102,12 +106,19 @@ paths:
                   "type": "Half day",
                   "stops": [
                     {
-                      "placeId": "place-id-sdfsdf",
-                      "name": "Museum of the City of New York",
-                      "description": "",
-                      "imageURL": "example.com/museum.jpg",
-                      "address": "1220 5th Ave, New York, NY 10029, USA",
-                      "location": [40.7924939, -73.95190889999999]
+                      "_id": "place-id-sdfdsf",
+                      "placeId": "google-place-id-sdfsd",
+                      "address": "3601 Lyon St, San Francisco",
+                      "country": "United States",
+                      "imageURL": "http://example.com/media_ctmv1a.jpg",
+                      "location": [37.8029, -122.4484],
+                      "name": "Palace of Fine Arts",
+                      "rating": 4.8,
+                      "reviewSummary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                      "state": "California",
+                      "summary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                      "type": "event_venue",
+                      "userRatingCount": 25183
                     }
                   ],
                   "isBookmarked": false
@@ -157,15 +168,15 @@ paths:
                         ],
                         "type": "Full day",
                         "stopCount": 2,
+                        "cities": [{
+                          "placeId": "google-place-id-sdfsdf",
+                          "name": "Oakland"
+                        }],
                         "reviewCount": 58,
                         "startLocation": [42.303600729743586, -83.23413192891658],
                         "finishLocation": [42.35953514344295, -83.06453360524505],
                         "distance": 3,
                         "duration": 2,
-                        "categoryId": {
-                          "_id": "category-id-sdfsdf",
-                          "name": "City Exploration"
-                        },
                         "isBookmarked": false
                       }
                     ]
@@ -319,6 +330,46 @@ paths:
                 }
           headers: {}
       deprecated: false
+  /places/{placeId}:
+    parameters:
+      - in: path
+        name: placeId
+        schema:
+          type: string
+          example: place-id-sdfsdf
+        required: true
+        description: The place ID
+    get:
+      tags:
+        - Places
+      summary: Get Single Place Details
+      operationId: GetPlace
+      parameters: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                {
+                  "_id": "place-id-sdfsdf",
+                  "placeId": "google-place-id-sdfsdf",
+                  "address": "3601 Lyon St, San Francisco",
+                  "country": "United States",
+                  "type": "sandwich_shop",
+                  "iconBackground": "#7B9EB0",
+                  "iconURL": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+                  "imageURL": "http://example.com/media_u4sfqv.jpg",
+                  "location": [37.80293, -122.44842],
+                  "name": "Palace of Fine Arts",
+                  "rating": 4.8,
+                  "reviewSummary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                  "state": "California",
+                  "summary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                  "userRatingCount": 2518
+                }
+          headers: {}
+      deprecated: false
   /places/nearby:
     get:
       tags:
@@ -342,8 +393,9 @@ paths:
                       "_id": "place-id-sdfsdf",
                       "placeId": "google-place-id-sdfsdf",
                       "name": "Ferry Building Marketplace",
-                      "imageURL": "https://example.com/ferry-building.jpg",
-                      "address": "1 Ferry Building, San Francisco, CA 94111",
+                      "type": "sandwich_shop",
+                      "iconBackground": "#7B9EB0",
+                      "iconURL": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
                       "location": [37.7955, -122.3937]
                     }
                   ]
@@ -368,7 +420,23 @@ paths:
           description: Successful response
           content:
             application/json:
-              example: A big json object returned from google places api
+              example: |
+                {
+                  "placeId": "google-place-id-sdfsdf",
+                  "name": "Morcom Rose Garden",
+                  "state": "California",
+                  "country": "United States",
+                  "imageURL": "http://example.com/media_dtznfo.jpg",
+                  "address": "700 Jean St, Oakland",
+                  "location": [37.82001, -122.24656],
+                  "type": "garden",
+                  "iconURL": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/tree_pinlet",
+                  "iconBackground": "#4DB546",
+                  "summary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                  "reviewSummary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                  "rating": 4.7,
+                  "userRatingCount": 954
+                }
           headers: {}
       deprecated: false
   /auth/register:

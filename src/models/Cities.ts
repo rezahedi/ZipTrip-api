@@ -48,7 +48,7 @@ const CitySchema: Schema<ICity> = new Schema(
     },
     country: {
       type: String,
-      required: [true, 'Provide city country'],
+      required: [true, 'Provide country'],
     },
     imageURL: {
       type: String,

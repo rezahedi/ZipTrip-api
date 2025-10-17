@@ -3,12 +3,21 @@ import mongoose, { Schema, Document } from 'mongoose'
 export interface IPlace extends Document {
   placeId: string
   name: string
+  state?: string
+  country: string
   imageURL: string
-  address: string
+  address: string // shortFormattedAddress || formattedAddress
   location: {
     type: 'Point'
     coordinates: [number, number]
   }
+  type: string // primaryType
+  iconURL: string // iconMaskBaseUri : type
+  iconBackground: string // iconBackgroundColor : category
+  summary: string // editorialSummary.text || generativeSummary.overview.text
+  reviewSummary: string // reviewSummary.text.text
+  rating: number // rating
+  userRatingCount: number // userRatingCount
   createdAt?: Date
   updatedAt?: Date
 }
@@ -35,9 +44,14 @@ const PlaceSchema: Schema<IPlace> = new Schema(
     },
     name: {
       type: String,
-      required: [true, 'Provide name between 3 to 200 char length'],
-      minLength: [3, 'Name min length is 3'],
-      maxLength: [200, 'Name max length is 200'],
+      required: [true, 'Provide place name'],
+    },
+    state: {
+      type: String,
+    },
+    country: {
+      type: String,
+      required: [true, 'Provide country'],
     },
     imageURL: {
       type: String,
@@ -53,6 +67,39 @@ const PlaceSchema: Schema<IPlace> = new Schema(
       _id: false,
       type: pointSchema,
       required: true,
+    },
+    type: {
+      type: String,
+      default: '',
+      required: [true, 'Provide place type'],
+    },
+    iconBackground: {
+      type: String,
+      default: '',
+      required: [true, 'Provide icon background Color'],
+    },
+    iconURL: {
+      type: String,
+      default: '',
+      required: [true, 'Provide icon URL'],
+    },
+    summary: {
+      type: String,
+      default: '',
+      required: [true, 'Provide editorial summary'],
+    },
+    reviewSummary: {
+      type: String,
+      default: '',
+      required: [true, 'Provide review summary'],
+    },
+    rating: {
+      type: Number,
+      default: 0,
+    },
+    userRatingCount: {
+      type: Number,
+      default: 0,
     },
   },
   {

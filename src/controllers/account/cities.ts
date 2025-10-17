@@ -22,7 +22,6 @@ const createNewCity = async (req: Request, res: Response) => {
     if (!apiKey) throw new CustomAPIError('Google Places API key is not configured', StatusCodes.INTERNAL_SERVER_ERROR)
     const fields = 'displayName,photos,location,viewport,addressComponents'
     const url = `https://places.googleapis.com/v1/places/${city.placeId}?fields=${fields}&key=${apiKey}`
-    console.log(url)
 
     const response = await fetch(url)
     if (response.ok) {
