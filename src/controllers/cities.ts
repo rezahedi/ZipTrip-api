@@ -28,7 +28,7 @@ const createNewCity = async (req: Request, res: Response) => {
 
     // Then update the city document in Mongodb with new data
     // if doc with placeId exist update, if not create doc
-    await CitySchema.updateOne(
+    const result = await CitySchema.updateOne(
       { placeId: city.placeId },
       {
         $set: {
@@ -37,7 +37,9 @@ const createNewCity = async (req: Request, res: Response) => {
         },
       },
       { upsert: true }
-    ).orFail(new CustomAPIError('Failed to create or update the city', StatusCodes.INTERNAL_SERVER_ERROR))
+    )
+    if (result.matchedCount === 0 && result.upsertedCount === 0)
+      throw new CustomAPIError('Failed to create or update the city', StatusCodes.INTERNAL_SERVER_ERROR)
 
     cityDoc = await CitySchema.findOne({ placeId: city.placeId }).lean()
   }
