@@ -779,6 +779,22 @@ paths:
                   "duration": 5,
                   "createdAt": "2025-05-14T05:36:21.948Z",
                   "updatedAt": "2025-09-16T22:33:36.732Z",
+                  "cities": [{
+                    "_id": "68f0353cd5a998699dc5cdc7",
+                    "placeId": "ChIJIQBpAG2ahYAR_6128GcTUEo",
+                    "name": "San Francisco",
+                    "state": "California",
+                    "country": "United States",
+                    "imageURL": "https://res.cloudinary.com/dqw16fnae/image/upload/v1760591367/ZipTrip/Places/media_uqd61a.jpg",
+                    "plans": 5,
+                    "location": [37.7749295, -122.41941550000001],
+                    "viewport": {
+                      "low": [37.703399999999995, -122.527],
+                      "high": [37.812, -122.3482]
+                    },
+                    "createdAt": "2025-10-15T23:58:53.645Z",
+                    "updatedAt": "2025-10-17T21:42:29.779Z"
+                  }],
                   "stops": [
                     {
                       "placeId": "place-id-sdfds",

@@ -8,6 +8,7 @@ import NotFoundError from '../../errors/not_found'
 import UnauthenticatedError from '../../errors/unauthentication_error'
 import { coordsToGeoJson, geoJsonToCoords } from '../../utils/location'
 import CitySchema, { ICity } from '../../models/Cities'
+import { Types } from 'mongoose'
 
 type PlaceDTO = Omit<IPlace, 'location' | 'createdAt' | 'updatedAt'> & {
   location: [number, number]
@@ -124,21 +125,72 @@ const fetchPlan = async (req: Request, res: Response) => {
   const userId = req.user.userId
   const planId = req.params.planId
 
-  const plan: IPlan | null = await PlanSchema.findOne({
-    userId,
-    _id: planId,
-  })
-    .orFail(new NotFoundError(`No plan with id ${planId}`))
-    .select(
-      'title description images cities stopCount stops type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
-    )
-    .populate('userId', 'name')
-    .lean()
+  const plan = await PlanSchema.aggregate([
+    {
+      $match: { userId, _id: new Types.ObjectId(planId) },
+    },
+    {
+      $project: {
+        title: 1,
+        description: 1,
+        images: 1,
+        cities: 1,
+        stopCount: 1,
+        stops: 1,
+        type: 1,
+        rate: 1,
+        reviewCount: 1,
+        startLocation: 1,
+        finishLocation: 1,
+        distance: 1,
+        duration: 1,
+        createdAt: 1,
+        updatedAt: 1,
+      },
+    },
+    {
+      $lookup: {
+        from: 'cities', // name of the Cities collection
+        localField: 'cities.placeId',
+        foreignField: 'placeId',
+        as: 'cities', // NOTE: If need the exact cities order, save as cityDetails and uncomment the mapping stage below, otherwise it may change the order of added cities!
+      },
+    },
+    // {
+    //   $addFields: {
+    //     cities: {
+    //       $map: {
+    //         input: '$cities',
+    //         as: 'c',
+    //         in: {
+    //           $mergeObjects: [
+    //             '$$c',
+    //             {
+    //               $arrayElemAt: [
+    //                 {
+    //                   $filter: {
+    //                     input: '$cityDetails',
+    //                     as: 'inputCity',
+    //                     cond: { $eq: ['$$inputCity.placeId', '$$c.placeId'] },
+    //                   },
+    //                 },
+    //                 0,
+    //               ],
+    //             },
+    //           ],
+    //         },
+    //       },
+    //     },
+    //   },
+    // },
+  ])
+  if (plan.length === 0) throw new NotFoundError(`No plan with id ${planId}`)
 
   res.status(StatusCodes.OK).json({
-    ...plan,
-    startLocation: geoJsonToCoords(plan?.startLocation),
-    finishLocation: geoJsonToCoords(plan?.finishLocation),
+    ...plan[0],
+    cities: plan[0].cities.map((city: ICity) => ({ ...city, location: geoJsonToCoords(city.location) })),
+    startLocation: geoJsonToCoords(plan[0]?.startLocation),
+    finishLocation: geoJsonToCoords(plan[0]?.finishLocation),
   })
 }
 
