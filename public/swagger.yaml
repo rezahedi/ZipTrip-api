@@ -221,6 +221,48 @@ paths:
                 }
           headers: {}
       deprecated: false
+    post:
+      tags:
+        - Account
+      summary: Create new City
+      operationId: CreateCity
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountCityRequestBody'
+            example: |
+              {
+                "placeId": "place-id-sdfsd",
+                "name": "Oakland"
+              }
+        required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                {
+                  "_id": "city-id-asdfsd",
+                  "placeId": "place-id-sdfsd",
+                  "name": "Oakland",
+                  "state": "California",
+                  "country": "United States",
+                  "imageURL": "http://example.com/oakland_city.jpg",
+                  "location": [37.8043, -122.2711],
+                  "viewport": {
+                    "low": [37.6317, -122.3558],
+                    "high": [37.8853, -122.1147]
+                  },
+                  "plans": 1,
+                  "createdAt": "2025-10-15T20:18:50.502Z",
+                  "updatedAt": "2025-10-15T20:28:29.754Z"
+                }
+          headers: {}
+      deprecated: false
   /plans/city/{cityId}:
     parameters:
       - in: path
@@ -737,6 +779,22 @@ paths:
                   "duration": 5,
                   "createdAt": "2025-05-14T05:36:21.948Z",
                   "updatedAt": "2025-09-16T22:33:36.732Z",
+                  "cities": [{
+                    "_id": "68f0353cd5a998699dc5cdc7",
+                    "placeId": "ChIJIQBpAG2ahYAR_6128GcTUEo",
+                    "name": "San Francisco",
+                    "state": "California",
+                    "country": "United States",
+                    "imageURL": "https://res.cloudinary.com/dqw16fnae/image/upload/v1760591367/ZipTrip/Places/media_uqd61a.jpg",
+                    "plans": 5,
+                    "location": [37.7749295, -122.41941550000001],
+                    "viewport": {
+                      "low": [37.703399999999995, -122.527],
+                      "high": [37.812, -122.3482]
+                    },
+                    "createdAt": "2025-10-15T23:58:53.645Z",
+                    "updatedAt": "2025-10-17T21:42:29.779Z"
+                  }],
                   "stops": [
                     {
                       "placeId": "place-id-sdfds",
@@ -956,51 +1014,6 @@ paths:
       responses:
         '204':
           description: 'No Content'
-          headers: {}
-      deprecated: false
-  /account/cities:
-    post:
-      tags:
-        - Account
-      summary: Create new City
-      security:
-        - bearerAuth: []
-      operationId: CreateCity
-      parameters: []
-      requestBody:
-        description: ''
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AccountCityRequestBody'
-            example: |
-              {
-                "placeId": "place-id-sdfsd",
-                "name": "Oakland"
-              }
-        required: true
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              example: |
-                {
-                  "_id": "city-id-asdfsd",
-                  "placeId": "place-id-sdfsd",
-                  "name": "Oakland",
-                  "state": "California",
-                  "country": "United States",
-                  "imageURL": "http://example.com/oakland_city.jpg",
-                  "location": [37.8043, -122.2711],
-                  "viewport": {
-                    "low": [37.6317, -122.3558],
-                    "high": [37.8853, -122.1147]
-                  },
-                  "plans": 1,
-                  "createdAt": "2025-10-15T20:18:50.502Z",
-                  "updatedAt": "2025-10-15T20:28:29.754Z"
-                }
           headers: {}
       deprecated: false
 components:
