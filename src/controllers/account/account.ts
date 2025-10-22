@@ -150,7 +150,7 @@ const updatePlan = async (req: Request, res: Response) => {
 
   let { stops, ...plan } = req.body
 
-  if (stops && stops.length > 0) {
+  if (stops) {
     // Insert stops in Places collection if id does not exist
     const ops = stops.map((stop: PlaceDTO) => ({
       updateOne: {
@@ -164,7 +164,7 @@ const updatePlan = async (req: Request, res: Response) => {
         upsert: true, // only insert if not exist
       },
     }))
-    await PlaceSchema.bulkWrite(ops)
+    if (ops.length > 0) await PlaceSchema.bulkWrite(ops)
 
     plan.stops = stops
     plan.stopCount = stops.length
