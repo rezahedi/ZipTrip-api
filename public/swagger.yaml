@@ -444,43 +444,6 @@ paths:
                 }
           headers: {}
       deprecated: false
-  /places/fetch/{googlePlaceId}:
-    parameters:
-      - in: path
-        name: googlePlaceId
-        schema:
-          type: string
-          example: google-place-id-sdfsdf
-        required: true
-        description: The Google place ID
-    get:
-      tags:
-        - Places
-      summary: Get json data fetched from google places api by the place id
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              example: |
-                {
-                  "placeId": "google-place-id-sdfsdf",
-                  "name": "Morcom Rose Garden",
-                  "state": "California",
-                  "country": "United States",
-                  "imageURL": "http://example.com/media_dtznfo.jpg",
-                  "address": "700 Jean St, Oakland",
-                  "location": [37.82001, -122.24656],
-                  "type": "garden",
-                  "iconURL": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/tree_pinlet",
-                  "iconBackground": "#4DB546",
-                  "summary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
-                  "reviewSummary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
-                  "rating": 4.7,
-                  "userRatingCount": 954
-                }
-          headers: {}
-      deprecated: false
   /auth/register:
     post:
       tags:
