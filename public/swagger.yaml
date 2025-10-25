@@ -9,6 +9,70 @@ servers:
   - url: https://ii-practicum-team-5-back-1.onrender.com/api/v1
     variables: {}
 paths:
+  /all:
+    get:
+      tags:
+        - Plans
+        - Places
+      summary: Get All Plans and Places, filter by geo location bounding box
+      operationId: GetAllPoints
+      parameters:
+        - $ref: '#/components/parameters/LatMin'
+        - $ref: '#/components/parameters/LngMin'
+        - $ref: '#/components/parameters/LatMax'
+        - $ref: '#/components/parameters/LngMax'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                {
+                  "count": 2,
+                  "items": [
+                    {
+                      "type": "plan",
+                      "item": {
+                        "_id": "68f184f82b5869008428d70a",
+                        "userId": {
+                          "_id": "67fd2f5ebede3059343fae72",
+                          "name": "John Doe"
+                        },
+                        "title": "UC Berkeley Neighborhood",
+                        "images": [
+                          "http://example.com/b6ptxwdn1uiykfhubuy5.jpg"
+                        ],
+                        "cities": [
+                          {
+                            "placeId": "ChIJ00mFOjZ5hYARk-l1ppUV6pQ",
+                            "name": "Berkeley, CA, USA"
+                          }
+                        ],
+                        "stopCount": 14,
+                        "rate": 4.5,
+                        "reviewCount": 183,
+                        "distance": 7.2,
+                        "duration": 6.5,
+                        "startLocation": [37.8697, -122.2675],
+                        "isBookmarked": false
+                      }
+                    },
+                    {
+                      "type": "place",
+                      "item": {
+                        "_id": "68f1855cd5a998699dc5fd73",
+                        "placeId": "ChIJoXC4GD59hYAR1RH0OwVhx1M",
+                        "iconBackground": "#13B5C7",
+                        "iconURL": "http://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+                        "location": [37.869338, -122.2613],
+                        "name": "Zellerbach Playhouse",
+                        "type": "performing_arts_theater"
+                      }
+                    }
+                  ]
+                }
+          headers: {}
+      deprecated: false
   /plans:
     get:
       tags:
