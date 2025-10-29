@@ -1043,6 +1043,189 @@ paths:
           description: 'No Content'
           headers: {}
       deprecated: false
+  /account/list:
+    get:
+      tags:
+        - List
+      summary: Retrieve all of a user's lists
+      security:
+        - bearerAuth: []
+      operationId: AccountGetUserLists
+      parameters: []
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                [{
+                  "_id": "690197296ff",
+                  "name": "My First List",
+                  "places": ["ChIJy4PlpUCBhYA"]
+                }]
+          headers: {}
+      deprecated: false
+    post:
+      tags:
+        - List
+      summary: Create new List
+      security:
+        - bearerAuth: []
+      operationId: CreateList
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountListRequestBody'
+            example: |
+              {
+                "name": "List name or title"
+              }
+        required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                {
+                  "_id": "69025351b26731",
+                  "userId": "67fd2f5ebede3",
+                  "name": "List name or title",
+                  "places": [],
+                  "createdAt": "2025-10-29T17:48:01.681Z",
+                  "updatedAt": "2025-10-29T17:48:01.681Z"
+                }
+          headers: {}
+      deprecated: false
+  /account/list/{listId}:
+    parameters:
+      - in: path
+        name: listId
+        schema:
+          type: string
+          example: list-id-sdfsd
+        required: true
+        description: The list ID
+    get:
+      tags:
+        - List
+      summary: Retrieve a list details along with the associated place's details
+      security:
+        - bearerAuth: []
+      operationId: AccountGetListWithPlaces
+      parameters: []
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                {
+                  "_id": "690197296ff3",
+                  "userId": "67fd2f5ebed",
+                  "name": "List name or title",
+                  "places": [{
+                    "_id": "68f2b8ecd5a99",
+                    "placeId": "ChIJy4PlpUCB",
+                    "address": "Pier 7, San Francisco",
+                    "country": "United States",
+                    "iconBackground": "#7B9EB0",
+                    "iconURL": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+                    "imageURL": "http://example.com/media_ayjj8q.jpg",
+                    "location": [37.80006, -122.394391],
+                    "name": "Pier 7 Vista Point",
+                    "rating": 4.9,
+                    "reviewSummary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                    "state": "California",
+                    "summary": "Scenic, pedestrian-friendly pier offering sweeping views of the bay, plus fishing and benches.",
+                    "type": "",
+                    "userRatingCount": 114
+                  }],
+                  "createdAt": "2025-10-29T04:25:13.359Z",
+                  "updatedAt": "2025-10-29T17:40:03.821Z"
+                }
+          headers: {}
+      deprecated: false
+    delete:
+      tags:
+        - List
+      summary: Delete a list
+      security:
+        - bearerAuth: []
+      operationId: AccountDeleteList
+      parameters: []
+      responses:
+        '204':
+          description: 'No Content'
+          headers: {}
+      deprecated: false
+  /account/list/{listId}/{placeId}:
+    parameters:
+      - in: path
+        name: listId
+        schema:
+          type: string
+          example: list-id-sdfsd
+        required: true
+        description: The list ID
+      - in: path
+        name: placeId
+        schema:
+          type: string
+          example: google-place-id-sdfsd
+        required: true
+        description: The place ID
+    post:
+      tags:
+        - List
+      summary: Add a place to a list
+      security:
+        - bearerAuth: []
+      operationId: AccountAddPlaceToList
+      parameters: []
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                {
+                  "_id": "690197296ff3",
+                  "userId": "67fd2f5ebed",
+                  "name": "Second List",
+                  "places": ["ChIJy4PlpUCBh"],
+                  "createdAt": "2025-10-29T04:25:13.359Z",
+                  "updatedAt": "2025-10-29T18:00:26.614Z"
+                }
+          headers: {}
+      deprecated: false
+    delete:
+      tags:
+        - List
+      summary: Delete a place from a list
+      security:
+        - bearerAuth: []
+      operationId: AccountDeletePlaceFromList
+      parameters: []
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                {
+                  "_id": "690197296ff3",
+                  "userId": "67fd2f5ebed",
+                  "name": "Second List",
+                  "places": ["ChIJy4PlpUCBh"],
+                  "createdAt": "2025-10-29T04:25:13.359Z",
+                  "updatedAt": "2025-10-29T18:00:26.614Z"
+                }
+          headers: {}
+      deprecated: false
 components:
   securitySchemes:
     bearerAuth:
@@ -1106,6 +1289,14 @@ components:
           description: The image file to upload
       required:
         - image
+    AccountListRequestBody:
+      title: List's Object
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
     AccountPlanRequestBody:
       title: Plan's Object
       required:
