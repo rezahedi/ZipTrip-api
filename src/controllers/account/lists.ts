@@ -5,6 +5,12 @@ import { StatusCodes } from 'http-status-codes'
 import CustomAPIError from '../../errors/custom_error'
 import { Types } from 'mongoose'
 import NotFoundError from '../../errors/not_found'
+import { geoJsonToCoords } from '../../utils/location'
+import { IPlace } from '../../models/Places'
+
+type ListWithPlaces = Omit<IList, 'places'> & {
+  places: IPlace[]
+}
 
 const fetchLists = async (req: Request, res: Response) => {
   console.log('fetchLists')
@@ -31,13 +37,23 @@ const fetchAList = async (req: Request, res: Response) => {
     _id: new Types.ObjectId(listId),
   }
 
-  const listWithPlaces = await ListSchema.findOne(filters)
-    .populate({ path: 'places', model: 'Place', localField: 'places', foreignField: 'placeId' })
+  const listWithPlaces: ListWithPlaces | null = await ListSchema.findOne(filters)
+    .populate({
+      path: 'places',
+      model: 'Place',
+      localField: 'places',
+      foreignField: 'placeId',
+      select:
+        'placeId name state country imageURL address location type iconURL iconBackground summary reviewSummary rating userRatingCount',
+    })
     .lean()
 
   if (!listWithPlaces) throw new NotFoundError(`No list with id ${listId}`)
 
-  res.status(StatusCodes.OK).json(listWithPlaces)
+  res.status(StatusCodes.OK).json({
+    ...listWithPlaces,
+    places: listWithPlaces.places.map((place: IPlace) => ({ ...place, location: geoJsonToCoords(place.location) })),
+  })
 }
 
 const createNewList = async (req: Request, res: Response) => {
