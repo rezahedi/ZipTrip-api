@@ -13,7 +13,6 @@ type ListWithPlaces = Omit<IList, 'places'> & {
 }
 
 const fetchLists = async (req: Request, res: Response) => {
-  console.log('fetchLists')
   if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
 
   const filters = {
@@ -26,7 +25,6 @@ const fetchLists = async (req: Request, res: Response) => {
 }
 
 const fetchAList = async (req: Request, res: Response) => {
-  console.log('fetchAList')
   if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
 
   const userId = req.user.userId
@@ -57,7 +55,6 @@ const fetchAList = async (req: Request, res: Response) => {
 }
 
 const createNewList = async (req: Request, res: Response) => {
-  console.log('createNewList')
   if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
 
   const userId: string = req.user.userId
@@ -74,7 +71,6 @@ const createNewList = async (req: Request, res: Response) => {
 }
 
 const removeList = async (req: Request, res: Response) => {
-  console.log('removeList')
   if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
 
   const userId: string = req.user.userId
@@ -93,7 +89,6 @@ const removeList = async (req: Request, res: Response) => {
 }
 
 const addPlaceToList = async (req: Request, res: Response) => {
-  console.log('addPlaceToList')
   if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
 
   const userId: string = req.user.userId
@@ -119,7 +114,6 @@ const addPlaceToList = async (req: Request, res: Response) => {
 }
 
 const removePlaceFromList = async (req: Request, res: Response) => {
-  console.log('removePlaceFromList')
   if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
 
   const userId: string = req.user.userId
