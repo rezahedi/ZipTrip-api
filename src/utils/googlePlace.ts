@@ -29,6 +29,7 @@ type GooglePlace = {
   }
   rating: number
   userRatingCount: number
+  googleMapsLinks: Links
 }
 
 type AddressComponents = {
@@ -40,6 +41,11 @@ type AddressComponents = {
 type Photo = {
   imageURL?: string
   name: string
+}
+
+type Links = {
+  directionsUri: string
+  placeUri: string
 }
 
 export const transformGooglePlaceToSchema = (data: GooglePlace) => {
@@ -88,6 +94,12 @@ export const transformGooglePlaceToSchema = (data: GooglePlace) => {
   // Get User Rating Count
   const userRatingCount = Number(data.userRatingCount || '0')
 
+  // Get GoogleMap Direction URI
+  const directionGoogleURI = data.googleMapsLinks?.directionsUri || ''
+
+  // Get GoogleMap Place URI
+  const placeGoogleURI = data.googleMapsLinks?.placeUri || ''
+
   return {
     placeId: data.id,
     name,
@@ -103,6 +115,8 @@ export const transformGooglePlaceToSchema = (data: GooglePlace) => {
     reviewSummary,
     rating,
     userRatingCount,
+    directionGoogleURI,
+    placeGoogleURI,
   }
 }
 

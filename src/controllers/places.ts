@@ -8,7 +8,7 @@ import CustomAPIError from '../errors/custom_error'
 import { v2 as cloudinary } from 'cloudinary'
 
 const PLACES_MAX_LIMIT = 50
-const GOOGLE_PLACE_FETCH_VERSION = 4
+const GOOGLE_PLACE_FETCH_VERSION = 5
 const PLACE_IMG_UPLOAD_MAX_COUNT = 1
 
 const fetchAllPlaces = async (req: Request, res: Response) => {
@@ -45,7 +45,7 @@ const fetchPlace = async (req: Request, res: Response) => {
       if (!apiKey)
         throw new CustomAPIError('Google Places API key is not configured', StatusCodes.INTERNAL_SERVER_ERROR)
       const fields =
-        'id,displayName,shortFormattedAddress,formattedAddress,addressComponents,location,icon_mask_base_uri,photos,primaryType,iconBackgroundColor,editorialSummary,generativeSummary,reviewSummary,rating,userRatingCount'
+        'id,displayName,shortFormattedAddress,formattedAddress,addressComponents,location,icon_mask_base_uri,photos,primaryType,iconBackgroundColor,editorialSummary,generativeSummary,reviewSummary,rating,userRatingCount,googleMapsLinks'
       const url = `https://places.googleapis.com/v1/places/${placeId}?fields=${fields}&key=${apiKey}`
 
       const response = await fetch(url)
