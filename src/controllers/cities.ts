@@ -2,13 +2,13 @@ import { coordsToGeoJson } from './../utils/location'
 import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import CitySchema, { ICity } from '../models/Cities'
-import PlanSchema, { IPlan } from '../models/Plans'
-import BookmarkSchema from '../models/Bookmarks'
+import PlanSchema from '../models/Plans'
 import NotFoundError from '../errors/not_found'
 import { geoJsonToCoords } from '../utils/location'
 import { fetchCityDetail } from '../utils/googlePlace'
 import { uploadImage } from '../utils/cloudStorage'
 import CustomAPIError from '../errors/custom_error'
+import { attachBookmarkFlagToPlans } from './util'
 
 const PAGE_SIZE = 10
 const SORT = '-plans'
@@ -149,32 +149,6 @@ const fetchCityWithPlans = async (req: Request, res: Response) => {
       })),
     },
   })
-}
-
-const attachBookmarkFlagToPlans = async (plans: IPlan[], userId: string) => {
-  if (!userId)
-    return plans.map((plan) => ({
-      ...plan,
-      isBookmarked: false,
-    }))
-
-  // Extract only plan IDs
-  const planIds = plans.map((plan) => plan._id)
-
-  // Get plan IDs from bookmarks collection based on userId
-  const bookmarks = await BookmarkSchema.find({
-    userId,
-    planId: { $in: planIds },
-  }).select('planId')
-
-  // Create a Set for fast lookup
-  const bookmarkedPlanIds = new Set(bookmarks.map((b) => b.planId.toString()))
-
-  // Attach isBookmarked state to each plan
-  return plans.map((plan) => ({
-    ...plan,
-    isBookmarked: bookmarkedPlanIds.has(plan._id.toString()),
-  }))
 }
 
 export { createNewCity, fetchAllCities, fetchCityWithPlans }

@@ -6,6 +6,7 @@ import BookmarkSchema from '../models/Bookmarks'
 import UserSchema, { IUser } from '../models/Users'
 import NotFoundError from '../errors/not_found'
 import { geoJsonToCoords } from '../utils/location'
+import { attachBookmarkFlagToPlans } from './util'
 
 const PAGE_SIZE = 10
 const PLANS_MAX_LIMIT = 40
@@ -112,7 +113,9 @@ const fetchPlan = async (req: Request, res: Response) => {
   const unorderedPlaces = await PlaceSchema.find({
     placeId: { $in: placeIds },
   })
-    .select('placeId name state country address summary imageURL location type rating userRatingCount reviewSummary')
+    .select(
+      'placeId name state country address summary imageURL location type rating userRatingCount reviewSummary directionGoogleURI placeGoogleURI'
+    )
     .lean()
 
   // Make sure the order of places is the same as plan.stops
@@ -144,32 +147,6 @@ const fetchPlan = async (req: Request, res: Response) => {
     startLocation: geoJsonToCoords(plan?.startLocation),
     finishLocation: geoJsonToCoords(plan?.finishLocation),
   })
-}
-
-const attachBookmarkFlagToPlans = async (plans: IPlan[], userId: string) => {
-  if (!userId)
-    return plans.map((plan) => ({
-      ...plan,
-      isBookmarked: false,
-    }))
-
-  // Extract only plan IDs
-  const planIds = plans.map((plan) => plan._id)
-
-  // Get plan IDs from bookmarks collection based on userId
-  const bookmarks = await BookmarkSchema.find({
-    userId,
-    planId: { $in: planIds },
-  }).select('planId')
-
-  // Create a Set for fast lookup
-  const bookmarkedPlanIds = new Set(bookmarks.map((b) => b.planId.toString()))
-
-  // Attach isBookmarked state to each plan
-  return plans.map((plan) => ({
-    ...plan,
-    isBookmarked: bookmarkedPlanIds.has(plan._id.toString()),
-  }))
 }
 
 const fetchAllNearbyPlans = async (req: Request, res: Response) => {

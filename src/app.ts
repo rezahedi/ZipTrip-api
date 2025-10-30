@@ -5,6 +5,7 @@ import favicon from 'express-favicon'
 import logger from 'morgan'
 import router from './routes/mainRouter'
 import authRouter from './routes/auth'
+import allNearbyRouter from './routes/allNearby'
 import plansRouter from './routes/plans'
 import placesRouter from './routes/places'
 import accountRouter from './routes/account'
@@ -30,6 +31,7 @@ app.use(favicon(__dirname + '/public/favicon.ico'))
 
 // routes
 app.use('/api/v1', express.json(), router)
+app.use('/api/v1/all', express.json(), allNearbyRouter)
 app.use('/api/v1/plans', express.json(), optionalAuthMiddleware, plansRouter)
 app.use('/api/v1/places', express.json(), optionalAuthMiddleware, placesRouter)
 app.use('/api/v1/auth', express.json(), authRouter)
