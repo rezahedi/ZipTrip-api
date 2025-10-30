@@ -113,7 +113,9 @@ const fetchPlan = async (req: Request, res: Response) => {
   const unorderedPlaces = await PlaceSchema.find({
     placeId: { $in: placeIds },
   })
-    .select('placeId name state country address summary imageURL location type rating userRatingCount reviewSummary')
+    .select(
+      'placeId name state country address summary imageURL location type rating userRatingCount reviewSummary directionGoogleURI placeGoogleURI'
+    )
     .lean()
 
   // Make sure the order of places is the same as plan.stops

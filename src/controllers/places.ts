@@ -22,7 +22,7 @@ const fetchPlace = async (req: Request, res: Response) => {
     placeId,
   })
     .select(
-      'placeId name state country imageURL address location type iconURL iconBackground summary reviewSummary rating userRatingCount'
+      'placeId name state country imageURL address location type iconURL iconBackground summary reviewSummary rating userRatingCount directionGoogleURI placeGoogleURI'
     )
     .lean()
 

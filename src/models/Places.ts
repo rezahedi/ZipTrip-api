@@ -18,6 +18,8 @@ export interface IPlace extends Document {
   reviewSummary: string // reviewSummary.text.text
   rating: number // rating
   userRatingCount: number // userRatingCount
+  directionGoogleURI?: string
+  placeGoogleURI?: string
   createdAt?: Date
   updatedAt?: Date
 }
@@ -100,6 +102,12 @@ const PlaceSchema: Schema<IPlace> = new Schema(
     userRatingCount: {
       type: Number,
       default: 0,
+    },
+    directionGoogleURI: {
+      type: String,
+    },
+    placeGoogleURI: {
+      type: String,
     },
   },
   {
