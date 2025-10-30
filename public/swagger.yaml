@@ -182,7 +182,9 @@ paths:
                       "state": "California",
                       "summary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
                       "type": "event_venue",
-                      "userRatingCount": 25183
+                      "userRatingCount": 25183,
+                      "directionGoogleURI": "https://www.google.com/maps/dir/?asdasd",
+                      "placeGoogleURI": "https://www.google.com/maps/place/?q=place-id-sdfsdf"
                     }
                   ],
                   "isBookmarked": false
@@ -472,7 +474,9 @@ paths:
                   "reviewSummary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
                   "state": "California",
                   "summary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
-                  "userRatingCount": 2518
+                  "userRatingCount": 2518,
+                  "directionGoogleURI": "https://www.google.com/maps/dir/?asdasd",
+                  "placeGoogleURI": "https://www.google.com/maps/place/?q=place-id-sdfsdf"
                 }
           headers: {}
       deprecated: false
