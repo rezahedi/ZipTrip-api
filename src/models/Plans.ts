@@ -77,6 +77,14 @@ export const stopSchema = new mongoose.Schema({
     type: [Number, Number],
     required: [true, 'Provide location coordinates for each stop'],
   },
+  rating: {
+    type: Number,
+    default: 0,
+  },
+  userRatingCount: {
+    type: Number,
+    default: 0,
+  },
 })
 
 const PlanSchema: Schema<IPlan> = new Schema(
