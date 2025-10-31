@@ -60,14 +60,15 @@ const pointSchema = new mongoose.Schema({
   },
 })
 
-const stopSchema = new mongoose.Schema({
+export const stopSchema = new mongoose.Schema({
   placeId: {
     type: String,
+    required: [true, 'Provide place ID'],
     // ref: 'Place',
   },
   name: {
     type: String,
-    required: [true, 'Provide name between 3 to 200 char length'],
+    required: [true, 'Provide place name'],
   },
   description: String,
   imageURL: String,
