@@ -5,12 +5,6 @@ import { StatusCodes } from 'http-status-codes'
 import CustomAPIError from '../../errors/custom_error'
 import { Types } from 'mongoose'
 import NotFoundError from '../../errors/not_found'
-import { geoJsonToCoords } from '../../utils/location'
-import { IPlace } from '../../models/Places'
-
-type ListWithPlaces = Omit<IList, 'places'> & {
-  places: IPlace[]
-}
 
 const fetchLists = async (req: Request, res: Response) => {
   if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
@@ -19,7 +13,7 @@ const fetchLists = async (req: Request, res: Response) => {
     userId: req.user.userId,
   }
 
-  const lists = await ListSchema.find(filters).select('name places').lean()
+  const lists = await ListSchema.find(filters).select('name placeIDs').lean()
 
   res.status(StatusCodes.OK).json(lists)
 }
@@ -35,23 +29,11 @@ const fetchAList = async (req: Request, res: Response) => {
     _id: new Types.ObjectId(listId),
   }
 
-  const listWithPlaces: ListWithPlaces | null = await ListSchema.findOne(filters)
-    .populate({
-      path: 'places',
-      model: 'Place',
-      localField: 'places',
-      foreignField: 'placeId',
-      select:
-        'placeId name state country imageURL address location type iconURL iconBackground summary reviewSummary rating userRatingCount',
-    })
-    .lean()
+  const listWithPlaces: IList | null = await ListSchema.findOne(filters).select('name placeDetails').lean()
 
   if (!listWithPlaces) throw new NotFoundError(`No list with id ${listId}`)
 
-  res.status(StatusCodes.OK).json({
-    ...listWithPlaces,
-    places: listWithPlaces.places.map((place: IPlace) => ({ ...place, location: geoJsonToCoords(place.location) })),
-  })
+  res.status(StatusCodes.OK).json(listWithPlaces)
 }
 
 const createNewList = async (req: Request, res: Response) => {
@@ -92,21 +74,21 @@ const addPlaceToList = async (req: Request, res: Response) => {
   if (!req.user) throw new UnauthenticatedError('Not authorized to access.')
 
   const userId: string = req.user.userId
-  const { listId, placeId } = req.params
+  const { listId } = req.params
+  const place = req.body
 
-  const updatedList: IList | null = await ListSchema.findOneAndUpdate(
-    {
-      _id: listId,
-      userId,
-    },
-    {
-      $addToSet: { places: placeId },
-    },
-    {
-      new: true,
-      runValidators: true,
-    }
-  )
+  if (!place) throw new CustomAPIError('Provide place details', StatusCodes.BAD_REQUEST)
+
+  const list = await ListSchema.findOne({ _id: listId, userId })
+
+  if (!list) throw new NotFoundError(`No list with id ${listId}`)
+
+  if (list.placeIDs.includes(place.placeId))
+    throw new CustomAPIError('Place is already in the list', StatusCodes.BAD_REQUEST)
+
+  list.placeIDs.push(place.placeId)
+  list.placeDetails.push(place)
+  const updatedList = await list.save()
 
   if (!updatedList) throw new CustomAPIError('Failed to add place to the list', StatusCodes.INTERNAL_SERVER_ERROR)
 
@@ -119,19 +101,16 @@ const removePlaceFromList = async (req: Request, res: Response) => {
   const userId: string = req.user.userId
   const { listId, placeId } = req.params
 
-  const updatedList: IList | null = await ListSchema.findOneAndUpdate(
-    {
-      _id: listId,
-      userId,
-    },
-    {
-      $pull: { places: placeId },
-    },
-    {
-      new: true,
-      runValidators: true,
-    }
-  )
+  const list = await ListSchema.findOne({ _id: listId, userId })
+
+  if (!list) throw new NotFoundError(`No list with id ${listId}`)
+
+  if (!list.placeIDs.includes(placeId)) throw new CustomAPIError('Place is not in the list', StatusCodes.BAD_REQUEST)
+
+  list.placeIDs = list.placeIDs.filter((id) => id !== placeId)
+  list.placeDetails = list.placeDetails.filter((p) => p.placeId !== placeId)
+
+  const updatedList = await list.save()
 
   if (!updatedList) throw new CustomAPIError('Failed to remove place from the list', StatusCodes.INTERNAL_SERVER_ERROR)
 

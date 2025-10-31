@@ -1065,7 +1065,7 @@ paths:
                 [{
                   "_id": "690197296ff",
                   "name": "My First List",
-                  "places": ["ChIJy4PlpUCBhYA"]
+                  "placeIDs": ["ChIJy4PlpUCBhYA"]
                 }]
           headers: {}
       deprecated: false
@@ -1098,7 +1098,8 @@ paths:
                   "_id": "69025351b26731",
                   "userId": "67fd2f5ebede3",
                   "name": "List name or title",
-                  "places": [],
+                  "placeIDs": [],
+                  "placeDetails": [],
                   "createdAt": "2025-10-29T17:48:01.681Z",
                   "updatedAt": "2025-10-29T17:48:01.681Z"
                 }
@@ -1129,27 +1130,63 @@ paths:
               example: |
                 {
                   "_id": "690197296ff3",
-                  "userId": "67fd2f5ebed",
                   "name": "List name or title",
-                  "places": [{
-                    "_id": "68f2b8ecd5a99",
+                  "placeDetails": [{
                     "placeId": "ChIJy4PlpUCB",
-                    "address": "Pier 7, San Francisco",
-                    "country": "United States",
-                    "iconBackground": "#7B9EB0",
-                    "iconURL": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
-                    "imageURL": "http://example.com/media_ayjj8q.jpg",
-                    "location": [37.80006, -122.394391],
                     "name": "Pier 7 Vista Point",
-                    "rating": 4.9,
-                    "reviewSummary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
-                    "state": "California",
-                    "summary": "Scenic, pedestrian-friendly pier offering sweeping views of the bay, plus fishing and benches.",
-                    "type": "",
-                    "userRatingCount": 114
+                    "address": "Pier 7, San Francisco",
+                    "imageURL": "http://example.com/media_ayjj8q.jpg",
+                    "location": [37.80006, -122.394391]
                   }],
                   "createdAt": "2025-10-29T04:25:13.359Z",
                   "updatedAt": "2025-10-29T17:40:03.821Z"
+                }
+          headers: {}
+      deprecated: false
+    post:
+      tags:
+        - List
+      summary: Add a place to a list
+      security:
+        - bearerAuth: []
+      operationId: AccountAddPlaceToList
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountListPlaceRequestBody'
+            example: |
+              {
+                "placeId": "google-place-id-sdfsd",
+                "name": "Ferry Building Marketplace",
+                "description": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                "imageURL": "https://dummyimage.com/390x265/2196F3/fff.png",
+                "address": "1 Ferry Building, San Francisco, CA 94111",
+                "location": [37.7955, -122.3937]
+              }
+        required: true
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                {
+                  "_id": "690197296ff3",
+                  "userId": "67fd2f5ebed",
+                  "name": "Second List",
+                  "placeDetails": [{
+                    "placeId": "google-place-id-sdfsd",
+                    "name": "Ferry Building Marketplace",
+                    "description": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                    "imageURL": "https://dummyimage.com/390x265/2196F3/fff.png",
+                    "address": "1 Ferry Building, San Francisco, CA 94111",
+                    "location": [37.7955, -122.3937]
+                  }],
+                  "createdAt": "2025-10-29T04:25:13.359Z",
+                  "updatedAt": "2025-10-29T18:00:26.614Z"
                 }
           headers: {}
       deprecated: false
@@ -1182,30 +1219,6 @@ paths:
           example: google-place-id-sdfsd
         required: true
         description: The place ID
-    post:
-      tags:
-        - List
-      summary: Add a place to a list
-      security:
-        - bearerAuth: []
-      operationId: AccountAddPlaceToList
-      parameters: []
-      responses:
-        '201':
-          description: Successful response
-          content:
-            application/json:
-              example: |
-                {
-                  "_id": "690197296ff3",
-                  "userId": "67fd2f5ebed",
-                  "name": "Second List",
-                  "places": ["ChIJy4PlpUCBh"],
-                  "createdAt": "2025-10-29T04:25:13.359Z",
-                  "updatedAt": "2025-10-29T18:00:26.614Z"
-                }
-          headers: {}
-      deprecated: false
     delete:
       tags:
         - List
@@ -1224,7 +1237,8 @@ paths:
                   "_id": "690197296ff3",
                   "userId": "67fd2f5ebed",
                   "name": "Second List",
-                  "places": ["ChIJy4PlpUCBh"],
+                  "placeIDs": [],
+                  "placeDetails": [],
                   "createdAt": "2025-10-29T04:25:13.359Z",
                   "updatedAt": "2025-10-29T18:00:26.614Z"
                 }
@@ -1301,6 +1315,28 @@ components:
       properties:
         name:
           type: string
+    AccountListPlaceRequestBody:
+      title: Place's Object
+      required:
+        - placeId
+        - name
+        - location
+      type: object
+      properties:
+        placeId:
+          type: string
+        name:
+          type: string
+        imageURL:
+          type: string
+        address:
+          type: string
+        description:
+          type: string
+        location:
+          type: array
+          items:
+            type: number
     AccountPlanRequestBody:
       title: Plan's Object
       required:
@@ -1351,8 +1387,6 @@ components:
                 type: array
                 items:
                   type: number
-              sequence:
-                type: number
     AccountCityRequestBody:
       title: City's Object
       required:

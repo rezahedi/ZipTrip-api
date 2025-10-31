@@ -21,8 +21,8 @@ import {
 const router = express.Router()
 
 router.route('/list').get(fetchLists).post(createNewList)
-router.route('/list/:listId').get(fetchAList).delete(removeList)
-router.route('/list/:listId/:placeId').post(addPlaceToList).delete(removePlaceFromList)
+router.route('/list/:listId').get(fetchAList).post(addPlaceToList).delete(removeList)
+router.route('/list/:listId/:placeId').delete(removePlaceFromList)
 router.route('/plans/').get(fetchAllPlans).post(createNewPlan)
 router.route('/plans/:planId').get(fetchPlan).put(updatePlan).delete(deletePlan)
 router.route('/bookmarks').get(fetchAllBookmarkedPlans)

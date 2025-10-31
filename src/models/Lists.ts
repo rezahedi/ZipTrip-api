@@ -1,9 +1,11 @@
 import mongoose, { Schema, Document, Types } from 'mongoose'
+import { IPlanStop, stopSchema } from './Plans'
 
 export interface IList extends Document {
   userId: Types.ObjectId
   name: string
-  places: string[]
+  placeIDs: string[]
+  placeDetails: IPlanStop[]
   createdAt?: Date
   updatedAt?: Date
 }
@@ -19,10 +21,16 @@ const ListSchema: Schema<IList> = new Schema(
       type: String,
       required: [true, 'Provide list name'],
     },
-    places: {
+    placeIDs: {
       type: [String],
       default: [],
     },
+    placeDetails: [
+      {
+        _id: false,
+        type: stopSchema,
+      },
+    ],
   },
   {
     timestamps: true,
