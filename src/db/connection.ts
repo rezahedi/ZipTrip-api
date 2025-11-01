@@ -1,20 +1,22 @@
 import mongoose from 'mongoose'
 
-const connectDB = (url: string) => {
+let isConnected = false // track the connection state
+
+const connectDB = async (url: string) => {
   if (!url) {
     throw new Error('Database connection string is undefined. Check your environment variables.')
   }
-  return mongoose
-    .connect(url, {
-      serverSelectionTimeoutMS: 5000,
-    })
-    .then(() => {
-      console.log('Connected to the DB ...')
-    })
-    .catch((error: string) => {
-      console.error('Database connection Error: ', error)
-      process.exit(1)
-    })
+
+  if (isConnected) {
+    // Reuse existing connection
+    return
+  }
+
+  const db = await mongoose.connect(url, {
+    serverSelectionTimeoutMS: 5000,
+  })
+  isConnected = db.connections[0].readyState === 1
+  console.log('MongoDB connected')
 }
 
 export { connectDB }
