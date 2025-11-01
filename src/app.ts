@@ -12,6 +12,7 @@ import accountRouter from './routes/account'
 import imagesRouter from './routes/images'
 import swaggerUI from 'swagger-ui-express'
 import YAML from 'yamljs'
+import dbMiddleware from './middlewares/dbMiddleware'
 import authMiddleware, { optionalAuthMiddleware } from './middlewares/authMiddleware'
 import errorHandlerMiddleware from './middlewares/errorHandlerMiddleware'
 import notFoundMiddleware from './middlewares/notFoundMiddleware'
@@ -26,6 +27,7 @@ app.use(cors())
 app.use(logger('dev'))
 app.use(express.static('public'))
 app.use(favicon(__dirname + '/public/favicon.ico'))
+app.use(dbMiddleware)
 
 // TODO: Should setup some security middlewares like: rate limiter, helmet, xss ...
 
