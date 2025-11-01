@@ -12,6 +12,7 @@ import accountRouter from './routes/account'
 import imagesRouter from './routes/images'
 import swaggerUI from 'swagger-ui-express'
 import YAML from 'yamljs'
+import dbMiddleware from './middlewares/dbMiddleware'
 import authMiddleware, { optionalAuthMiddleware } from './middlewares/authMiddleware'
 import errorHandlerMiddleware from './middlewares/errorHandlerMiddleware'
 import notFoundMiddleware from './middlewares/notFoundMiddleware'
@@ -22,10 +23,21 @@ const upload = multer({ storage: multer.memoryStorage() })
 const app = express()
 
 // middleware
-app.use(cors())
+app.use(
+  cors({
+    origin: [
+      'http://localhost:5173', // for local dev
+      'https://ziptrip.rezahedi.dev', // for production frontend
+    ],
+    credentials: true, // allow cookies / auth headers
+    allowedHeaders: ['Content-Type', 'Authorization'], // needed for JWT
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], // safe list
+  })
+)
 app.use(logger('dev'))
 app.use(express.static('public'))
 app.use(favicon(__dirname + '/public/favicon.ico'))
+app.use(dbMiddleware)
 
 // TODO: Should setup some security middlewares like: rate limiter, helmet, xss ...
 
