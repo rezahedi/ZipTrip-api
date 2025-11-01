@@ -23,7 +23,17 @@ const upload = multer({ storage: multer.memoryStorage() })
 const app = express()
 
 // middleware
-app.use(cors())
+app.use(
+  cors({
+    origin: [
+      'http://localhost:5173', // for local dev
+      'https://ziptrip.rezahedi.dev', // for production frontend
+    ],
+    credentials: true, // allow cookies / auth headers
+    allowedHeaders: ['Content-Type', 'Authorization'], // needed for JWT
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], // safe list
+  })
+)
 app.use(logger('dev'))
 app.use(express.static('public'))
 app.use(favicon(__dirname + '/public/favicon.ico'))
