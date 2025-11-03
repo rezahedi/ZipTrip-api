@@ -15,7 +15,6 @@ const googleLogin = async (req: Request, res: Response): Promise<void> => {
   if (!code) throw new UnauthenticatedError('Provide code.')
 
   const { tokens } = await oAuth2Client.getToken(code)
-  console.log('google tokens', tokens)
 
   const userInfo = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo`, {
     method: 'GET',
@@ -29,7 +28,6 @@ const googleLogin = async (req: Request, res: Response): Promise<void> => {
       console.log(err)
       throw new UnauthenticatedError('Not authorized to access.')
     })
-  console.log(userInfo)
 
   const email = userInfo.email.toLocaleLowerCase()
   if (!email) throw new UnauthenticatedError('Not authorized to access.')
