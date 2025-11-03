@@ -29,14 +29,13 @@ const googleLogin = async (req: Request, res: Response): Promise<void> => {
       throw new UnauthenticatedError('Not authorized to access.')
     })
 
-  const email = userInfo.email.toLocaleLowerCase()
-  if (!email) throw new UnauthenticatedError('Not authorized to access.')
+  if (!userInfo || !userInfo.email) throw new UnauthenticatedError('Not authorized to access.')
 
-  let user: IUser | null = await UserSchema.findOne({ email })
+  let user: IUser | null = await UserSchema.findOne({ email: userInfo.email })
   if (!user) {
     user = new UserSchema({
       name: userInfo.name,
-      email,
+      email: userInfo.email,
       password: crypto.randomUUID(), // random password for OAuth users
       imageURL: userInfo.picture,
     })
