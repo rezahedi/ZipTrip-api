@@ -209,7 +209,7 @@ export const fetchDirection = async (points: [number, number][]): Promise<Direct
     },
     ...(intermediates.length && { intermediates }),
     travelMode: 'WALK',
-    polylineQuality: 'overview',
+    polylineQuality: 'OVERVIEW',
     routingPreference: 'ROUTING_PREFERENCE_UNSPECIFIED',
     computeAlternativeRoutes: false,
     // routeModifiers: {
