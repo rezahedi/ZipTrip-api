@@ -7,7 +7,7 @@ export interface IPlanStop {
   description?: string
   imageURL: string
   address: string
-  location: [number]
+  location: [number, number]
 }
 
 interface ICityRef {
@@ -24,6 +24,7 @@ export interface IPlan extends Document {
   cities: ICityRef[]
   stopCount: number
   stops: IPlanStop[]
+  polyline: string
   rate: number
   reviewCount: number
   startLocation?: {
@@ -123,6 +124,10 @@ const PlanSchema: Schema<IPlan> = new Schema(
         type: stopSchema,
       },
     ],
+    polyline: {
+      type: String,
+      default: '',
+    },
     rate: {
       type: Number,
       default: 0,

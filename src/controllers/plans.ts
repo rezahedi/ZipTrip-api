@@ -102,7 +102,7 @@ const fetchPlan = async (req: Request, res: Response) => {
   const plan: IPlan | null = await PlanSchema.findById(planId)
     .orFail(new NotFoundError(`Item not found with the id: ${planId}`))
     .select(
-      'title description images cities stopCount stops type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
+      'title description images cities stopCount stops polyline type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
     )
     .populate('userId', 'name imageURL')
     .lean()

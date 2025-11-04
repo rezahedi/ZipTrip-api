@@ -137,6 +137,7 @@ const fetchPlan = async (req: Request, res: Response) => {
         cities: 1,
         stopCount: 1,
         stops: 1,
+        polyline: 1,
         type: 1,
         rate: 1,
         reviewCount: 1,
