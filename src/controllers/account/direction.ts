@@ -19,6 +19,12 @@ const updateDirection = async (req: Request, res: Response) => {
 
   if (!direction) throw new CustomAPIError('Unable to fetch direction', StatusCodes.INTERNAL_SERVER_ERROR)
 
+  // Update plan with direction details
+  plan.polyline = direction.polyline
+  plan.distance = Math.floor(direction.distanceMeters / 16.0934) / 100 // convert meters to miles with two decimals
+  plan.duration = Math.floor(direction.durationSeconds / 36) / 100 + plan.stopCount // Convert seconds to hours + one hour for each stops
+  await plan.save()
+
   res.status(StatusCodes.OK).json(direction)
 }
 
