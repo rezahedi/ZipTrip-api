@@ -17,6 +17,7 @@ import {
   addPlaceToList,
   removePlaceFromList,
 } from '../controllers/account/lists'
+import { updateDirection } from '../controllers/account/direction'
 
 const router = express.Router()
 
@@ -25,6 +26,7 @@ router.route('/list/:listId').get(fetchAList).post(addPlaceToList).delete(remove
 router.route('/list/:listId/:placeId').delete(removePlaceFromList)
 router.route('/plans/').get(fetchAllPlans).post(createNewPlan)
 router.route('/plans/:planId').get(fetchPlan).put(updatePlan).delete(deletePlan)
+router.route('/plans/:planId/direction').get(updateDirection)
 router.route('/bookmarks').get(fetchAllBookmarkedPlans)
 router.route('/bookmarks/:planId').post(addBookmark).delete(removeBookmark)
 
