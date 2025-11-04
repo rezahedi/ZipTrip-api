@@ -170,3 +170,74 @@ export const fetchCityDetail = async (cityId: string) => {
     }
   } else throw new Error("Couldn't fetch the city's detail from Google Place API")
 }
+
+export type DirectionResponse = {
+  distanceMeters: number
+  durationSeconds: number
+  polyline: string
+}
+
+export const fetchDirection = async (points: [number, number][]): Promise<DirectionResponse | null> => {
+  if (points.length < 2) return null
+
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY as string
+  if (!apiKey) throw new Error('Google Places API key is not configured')
+
+  const origin = points[0]
+  const destination = points[points.length - 1]
+  const waypoints = points.slice(1, -1)
+
+  const intermediates = waypoints.map((p) => ({ location: { latLng: { latitude: p[0], longitude: p[1] } } }))
+
+  const url = `https://routes.googleapis.com/directions/v2:computeRoutes`
+  const routeRequestBody = {
+    origin: {
+      location: {
+        latLng: {
+          latitude: origin[0],
+          longitude: origin[1],
+        },
+      },
+    },
+    destination: {
+      location: {
+        latLng: {
+          latitude: destination[0],
+          longitude: destination[1],
+        },
+      },
+    },
+    ...(intermediates.length && { intermediates }),
+    travelMode: 'WALK',
+    polylineQuality: 'overview',
+    routingPreference: 'ROUTING_PREFERENCE_UNSPECIFIED',
+    computeAlternativeRoutes: false,
+    // routeModifiers: {
+    //   avoidTolls: false,
+    //   avoidHighways: false,
+    //   avoidFerries: false,
+    // },
+    languageCode: 'en-US',
+    // units: 'METRIC | IMPERIAL', // and then access it through field mask: routes.localizedValues.distance.text
+  }
+  const fields = 'routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline'
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Goog-Api-Key': apiKey,
+      'X-Goog-FieldMask': fields,
+    },
+    body: JSON.stringify(routeRequestBody),
+  })
+  if (response.ok) {
+    const data = await response.json()
+    if (!data.routes || data.routes.length === 0) return null
+    return {
+      distanceMeters: data.routes[0].distanceMeters,
+      durationSeconds: parseInt(data.routes[0].duration),
+      polyline: data.routes[0].polyline.encodedPolyline,
+    }
+  } else throw new Error('Unable to fetch direction from Google API')
+}
