@@ -4,7 +4,8 @@ import './Users'
 export interface IPlanStop {
   placeId: string
   name: string
-  description?: string
+  note?: string
+  expense?: number
   imageURL: string
   address: string
   location: [number, number]
@@ -61,7 +62,7 @@ const pointSchema = new mongoose.Schema({
   },
 })
 
-export const stopSchema = new mongoose.Schema({
+export const stopSchema: Schema<IPlanStop> = new Schema({
   placeId: {
     type: String,
     required: [true, 'Provide place ID'],
@@ -71,20 +72,12 @@ export const stopSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Provide place name'],
   },
-  description: String,
+  note: String,
   imageURL: String,
   address: String,
   location: {
     type: [Number, Number],
     required: [true, 'Provide location coordinates for each stop'],
-  },
-  rating: {
-    type: Number,
-    default: 0,
-  },
-  userRatingCount: {
-    type: Number,
-    default: 0,
   },
 })
 

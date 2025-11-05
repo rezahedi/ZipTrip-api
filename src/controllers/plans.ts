@@ -134,17 +134,15 @@ const fetchPlan = async (req: Request, res: Response) => {
   const unorderedPlaces = await PlaceSchema.find({
     placeId: { $in: placeIds },
   })
-    .select(
-      'placeId name state country address summary imageURL location type rating userRatingCount reviewSummary directionGoogleURI placeGoogleURI'
-    )
+    .select('placeId state country summary type rating userRatingCount reviewSummary directionGoogleURI placeGoogleURI')
     .lean()
 
   // Make sure the order of places is the same as plan.stops
   const places = plan?.stops.map((stop) => {
-    const res = unorderedPlaces.find((place) => stop.placeId === place.placeId)
+    const placeDetail = unorderedPlaces.find((place) => stop.placeId === place.placeId)
     return {
-      ...res,
-      location: geoJsonToCoords(res?.location),
+      ...stop,
+      ...placeDetail,
     }
   })
 
