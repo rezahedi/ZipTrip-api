@@ -2,11 +2,13 @@ import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import PlanSchema, { IPlan } from '../models/Plans'
 import PlaceSchema from '../models/Places'
+import CitySchema from '../models/Cities'
 import BookmarkSchema from '../models/Bookmarks'
 import UserSchema, { IUser } from '../models/Users'
 import NotFoundError from '../errors/not_found'
 import { geoJsonToCoords } from '../utils/location'
 import { attachBookmarkFlagToPlans } from './util'
+import CustomAPIError from '../errors/custom_error'
 
 const PAGE_SIZE = 10
 const PLANS_MAX_LIMIT = 40
@@ -100,12 +102,31 @@ const fetchPlan = async (req: Request, res: Response) => {
   const { planId } = req.params
 
   const plan: IPlan | null = await PlanSchema.findById(planId)
-    .orFail(new NotFoundError(`Item not found with the id: ${planId}`))
     .select(
       'title description images cities stopCount stops polyline type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
     )
     .populate('userId', 'name imageURL')
     .lean()
+
+  if (!plan) throw new CustomAPIError(`Plan not found with the id ${planId}`, StatusCodes.NOT_FOUND)
+
+  // Get all cityIDs of stops in an array
+  const cityIds = plan?.cities.map((c) => c.placeId)
+  // Select all cities by the ids
+  const unorderedCities = await CitySchema.find({
+    placeId: { $in: cityIds },
+  })
+    .select('placeId name state country imageURL location viewport plans')
+    .lean()
+
+  // Make sure the order of cities is the same as plan.cities
+  const cities = plan?.cities.map((city) => {
+    const res = unorderedCities.find((c) => city.placeId === c.placeId)
+    return {
+      ...res,
+      location: geoJsonToCoords(res?.location),
+    }
+  })
 
   // Get all placeIDs of stops in an array
   const placeIds = plan?.stops.map((stop) => stop.placeId)
@@ -141,11 +162,11 @@ const fetchPlan = async (req: Request, res: Response) => {
 
   res.status(StatusCodes.OK).json({
     ...plan,
-    // Replace plan.stops with the new array of places
+    cities: cities,
     stops: places,
     isBookmarked,
-    startLocation: geoJsonToCoords(plan?.startLocation),
-    finishLocation: geoJsonToCoords(plan?.finishLocation),
+    startLocation: geoJsonToCoords(plan.startLocation),
+    finishLocation: geoJsonToCoords(plan.finishLocation),
   })
 }
 

@@ -8,7 +8,6 @@ import NotFoundError from '../../errors/not_found'
 import UnauthenticatedError from '../../errors/unauthentication_error'
 import { coordsToGeoJson, geoJsonToCoords } from '../../utils/location'
 import CitySchema, { ICity } from '../../models/Cities'
-import { Types } from 'mongoose'
 
 type PlaceDTO = Omit<IPlace, 'location' | 'createdAt' | 'updatedAt'> & {
   location: [number, number]
@@ -125,73 +124,62 @@ const fetchPlan = async (req: Request, res: Response) => {
   const userId = req.user.userId
   const planId = req.params.planId
 
-  const plan = await PlanSchema.aggregate([
-    {
-      $match: { userId, _id: new Types.ObjectId(planId) },
-    },
-    {
-      $project: {
-        title: 1,
-        description: 1,
-        images: 1,
-        cities: 1,
-        stopCount: 1,
-        stops: 1,
-        polyline: 1,
-        type: 1,
-        rate: 1,
-        reviewCount: 1,
-        startLocation: 1,
-        finishLocation: 1,
-        distance: 1,
-        duration: 1,
-        createdAt: 1,
-        updatedAt: 1,
-      },
-    },
-    {
-      $lookup: {
-        from: 'cities', // name of the Cities collection
-        localField: 'cities.placeId',
-        foreignField: 'placeId',
-        as: 'cities', // NOTE: If need the exact cities order, save as cityDetails and uncomment the mapping stage below, otherwise it may change the order of added cities!
-      },
-    },
-    // {
-    //   $addFields: {
-    //     cities: {
-    //       $map: {
-    //         input: '$cities',
-    //         as: 'c',
-    //         in: {
-    //           $mergeObjects: [
-    //             '$$c',
-    //             {
-    //               $arrayElemAt: [
-    //                 {
-    //                   $filter: {
-    //                     input: '$cityDetails',
-    //                     as: 'inputCity',
-    //                     cond: { $eq: ['$$inputCity.placeId', '$$c.placeId'] },
-    //                   },
-    //                 },
-    //                 0,
-    //               ],
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
-  ])
-  if (plan.length === 0) throw new NotFoundError(`No plan with id ${planId}`)
+  const plan: IPlan | null = await PlanSchema.findOne({
+    _id: planId,
+    userId,
+  })
+    .select(
+      'title description images cities stopCount stops polyline type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
+    )
+    .populate('userId', 'name imageURL')
+    .lean()
+
+  if (!plan) throw new CustomAPIError(`Plan not found with the id ${planId}`, StatusCodes.NOT_FOUND)
+
+  // Get all cityIDs of stops in an array
+  const cityIds = plan?.cities.map((c) => c.placeId)
+  // Select all cities by the ids
+  const unorderedCities = await CitySchema.find({
+    placeId: { $in: cityIds },
+  })
+    .select('placeId name state country imageURL location viewport plans')
+    .lean()
+
+  // Make sure the order of cities is the same as plan.cities
+  const cities = plan?.cities.map((city) => {
+    const res = unorderedCities.find((c) => city.placeId === c.placeId)
+    return {
+      ...res,
+      location: geoJsonToCoords(res?.location),
+    }
+  })
+
+  // Get all placeIDs of stops in an array
+  const placeIds = plan?.stops.map((stop) => stop.placeId)
+  // Select all places by the ids
+  const unorderedPlaces = await PlaceSchema.find({
+    placeId: { $in: placeIds },
+  })
+    .select(
+      'placeId name state country address summary imageURL location type rating userRatingCount reviewSummary directionGoogleURI placeGoogleURI'
+    )
+    .lean()
+
+  // Make sure the order of places is the same as plan.stops
+  const places = plan?.stops.map((stop) => {
+    const res = unorderedPlaces.find((place) => stop.placeId === place.placeId)
+    return {
+      ...res,
+      location: geoJsonToCoords(res?.location),
+    }
+  })
 
   res.status(StatusCodes.OK).json({
-    ...plan[0],
-    cities: plan[0].cities.map((city: ICity) => ({ ...city, location: geoJsonToCoords(city.location) })),
-    startLocation: geoJsonToCoords(plan[0]?.startLocation),
-    finishLocation: geoJsonToCoords(plan[0]?.finishLocation),
+    ...plan,
+    cities: cities,
+    stops: places,
+    startLocation: geoJsonToCoords(plan.startLocation),
+    finishLocation: geoJsonToCoords(plan.finishLocation),
   })
 }
 
