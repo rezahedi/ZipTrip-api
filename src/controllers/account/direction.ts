@@ -4,6 +4,9 @@ import CustomAPIError from '../../errors/custom_error'
 import { fetchDirection } from '../../utils/googlePlace'
 import PlanSchema, { IPlan } from '../../models/Plans'
 
+const SECOND_PER_HOUR = 3600
+const METER_PER_MILE = 1609.34
+
 const updateDirection = async (req: Request, res: Response) => {
   const { planId } = req.params
   if (!planId) throw new CustomAPIError('Provide plan id', StatusCodes.BAD_REQUEST)
