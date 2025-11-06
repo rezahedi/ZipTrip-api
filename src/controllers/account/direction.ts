@@ -21,8 +21,8 @@ const updateDirection = async (req: Request, res: Response) => {
 
   // Update plan with direction details
   plan.polyline = direction.polyline
-  plan.distance = Math.floor(direction.distanceMeters / 16.0934) / 100 // convert meters to miles with two decimals
-  plan.duration = Math.floor(direction.durationSeconds / 36) / 100 + plan.stopCount // Convert seconds to hours + one hour for each stops
+  plan.distance = Math.round((direction.distanceMeters / METER_PER_MILE) * 100) / 100 // convert meters to miles with two decimals
+  plan.duration = Math.round((direction.durationSeconds / SECOND_PER_HOUR + plan.stopCount) * 100) / 100 // Convert seconds to hours + one hour for each stops
   await plan.save()
 
   res.status(StatusCodes.OK).json(direction)
