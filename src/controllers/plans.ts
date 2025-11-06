@@ -1,14 +1,13 @@
 import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import PlanSchema, { IPlan } from '../models/Plans'
-import PlaceSchema from '../models/Places'
-import CitySchema from '../models/Cities'
 import BookmarkSchema from '../models/Bookmarks'
 import UserSchema, { IUser } from '../models/Users'
 import NotFoundError from '../errors/not_found'
 import { geoJsonToCoords } from '../utils/location'
 import { attachBookmarkFlagToPlans } from './util'
 import CustomAPIError from '../errors/custom_error'
+import fixme_populatePlan from './account/fixme_util'
 
 const PAGE_SIZE = 10
 const PLANS_MAX_LIMIT = 40
@@ -110,41 +109,7 @@ const fetchPlan = async (req: Request, res: Response) => {
 
   if (!plan) throw new CustomAPIError(`Plan not found with the id ${planId}`, StatusCodes.NOT_FOUND)
 
-  // Get all cityIDs of stops in an array
-  const cityIds = plan?.cities.map((c) => c.placeId)
-  // Select all cities by the ids
-  const unorderedCities = await CitySchema.find({
-    placeId: { $in: cityIds },
-  })
-    .select('placeId name state country imageURL location viewport plans')
-    .lean()
-
-  // Make sure the order of cities is the same as plan.cities
-  const cities = plan?.cities.map((city) => {
-    const res = unorderedCities.find((c) => city.placeId === c.placeId)
-    return {
-      ...res,
-      location: geoJsonToCoords(res?.location),
-    }
-  })
-
-  // Get all placeIDs of stops in an array
-  const placeIds = plan?.stops.map((stop) => stop.placeId)
-  // Select all places by the ids
-  const unorderedPlaces = await PlaceSchema.find({
-    placeId: { $in: placeIds },
-  })
-    .select('placeId state country summary type rating userRatingCount reviewSummary directionGoogleURI placeGoogleURI')
-    .lean()
-
-  // Make sure the order of places is the same as plan.stops
-  const places = plan?.stops.map((stop) => {
-    const placeDetail = unorderedPlaces.find((place) => stop.placeId === place.placeId)
-    return {
-      ...stop,
-      ...placeDetail,
-    }
-  })
+  const populatedPlan = await fixme_populatePlan(plan)
 
   const loggedInUser = req.user || null
   let isBookmarked: boolean = false
@@ -159,12 +124,8 @@ const fetchPlan = async (req: Request, res: Response) => {
   }
 
   res.status(StatusCodes.OK).json({
-    ...plan,
-    cities: cities,
-    stops: places,
+    ...populatedPlan,
     isBookmarked,
-    startLocation: geoJsonToCoords(plan.startLocation),
-    finishLocation: geoJsonToCoords(plan.finishLocation),
   })
 }
 

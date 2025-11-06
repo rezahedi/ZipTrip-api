@@ -8,6 +8,7 @@ import NotFoundError from '../../errors/not_found'
 import UnauthenticatedError from '../../errors/unauthentication_error'
 import { coordsToGeoJson, geoJsonToCoords } from '../../utils/location'
 import CitySchema, { ICity } from '../../models/Cities'
+import fixme_populatePlan from './fixme_util'
 
 type IPlaceDTO = Omit<IPlace, 'location' | 'createdAt' | 'updatedAt'> & {
   location: [number, number]
@@ -136,49 +137,9 @@ const fetchPlan = async (req: Request, res: Response) => {
 
   if (!plan) throw new CustomAPIError(`Plan not found with the id ${planId}`, StatusCodes.NOT_FOUND)
 
-  // Get all cityIDs of stops in an array
-  const cityIds = plan?.cities.map((c) => c.placeId)
-  // Select all cities by the ids
-  const unorderedCities = await CitySchema.find({
-    placeId: { $in: cityIds },
-  })
-    .select('placeId name state country imageURL location viewport plans')
-    .lean()
+  const populatedPlan = await fixme_populatePlan(plan)
 
-  // Make sure the order of cities is the same as plan.cities
-  const cities = plan?.cities.map((city) => {
-    const res = unorderedCities.find((c) => city.placeId === c.placeId)
-    return {
-      ...res,
-      location: geoJsonToCoords(res?.location),
-    }
-  })
-
-  // Get all placeIDs of stops in an array
-  const placeIds = plan?.stops.map((stop) => stop.placeId)
-  // Select all places by the ids
-  const unorderedPlaces = await PlaceSchema.find({
-    placeId: { $in: placeIds },
-  })
-    .select('placeId state country summary type rating userRatingCount reviewSummary directionGoogleURI placeGoogleURI')
-    .lean()
-
-  // Make sure the order of places is the same as plan.stops
-  const places = plan?.stops.map((stop) => {
-    const placeDetail = unorderedPlaces.find((place) => stop.placeId === place.placeId)
-    return {
-      ...stop,
-      ...placeDetail,
-    }
-  })
-
-  res.status(StatusCodes.OK).json({
-    ...plan,
-    cities: cities,
-    stops: places,
-    startLocation: geoJsonToCoords(plan.startLocation),
-    finishLocation: geoJsonToCoords(plan.finishLocation),
-  })
+  res.status(StatusCodes.OK).json(populatedPlan)
 }
 
 const updatePlan = async (req: Request, res: Response) => {
@@ -231,49 +192,9 @@ const updatePlan = async (req: Request, res: Response) => {
 
   if (!updatedPlan) throw new CustomAPIError('Failed to update the plan', StatusCodes.INTERNAL_SERVER_ERROR)
 
-  // Get all cityIDs of stops in an array
-  const cityIds = updatedPlan.cities.map((c) => c.placeId)
-  // Select all cities by the ids
-  const unorderedCities = await CitySchema.find({
-    placeId: { $in: cityIds },
-  })
-    .select('placeId name state country imageURL location viewport plans')
-    .lean()
+  const populatedPlan = await fixme_populatePlan(updatedPlan)
 
-  // Make sure the order of cities is the same as plan.cities
-  const cities = updatedPlan.cities.map((city) => {
-    const res = unorderedCities.find((c) => city.placeId === c.placeId)
-    return {
-      ...res,
-      location: geoJsonToCoords(res?.location),
-    }
-  })
-
-  // Get all placeIDs of stops in an array
-  const placeIds = updatedPlan.stops.map((stop) => stop.placeId)
-  // Select all places by the ids
-  const unorderedPlaces = await PlaceSchema.find({
-    placeId: { $in: placeIds },
-  })
-    .select('placeId state country summary type rating userRatingCount reviewSummary directionGoogleURI placeGoogleURI')
-    .lean()
-
-  // Make sure the order of places is the same as plan.stops
-  const places = updatedPlan.stops.map((stop) => {
-    const placeDetail = unorderedPlaces.find((place) => stop.placeId === place.placeId)
-    return {
-      ...stop,
-      ...placeDetail,
-    }
-  })
-
-  res.status(StatusCodes.CREATED).json({
-    ...updatedPlan,
-    cities: cities,
-    stops: places,
-    startLocation: geoJsonToCoords(updatedPlan.startLocation),
-    finishLocation: geoJsonToCoords(updatedPlan.finishLocation),
-  })
+  res.status(StatusCodes.CREATED).json(populatedPlan)
 }
 
 const deletePlan = async (req: Request, res: Response) => {
