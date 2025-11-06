@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose'
 import bcrypt from 'bcryptjs'
 import jwt, { SignOptions } from 'jsonwebtoken'
+import { parseMs } from '../utils/ms'
 
 export interface IUser extends Document {
   name: string
@@ -85,7 +86,10 @@ UserSchema.methods.createJWT = function (): { token: string; expiresIn: string }
     expiresIn: expiresIn as SignOptions['expiresIn'],
   }
 
-  return { token: jwt.sign({ userId: this._id, name: this.name }, secretKey, options), expiresIn: expiresIn }
+  return {
+    token: jwt.sign({ userId: this._id, name: this.name }, secretKey, options),
+    expiresIn: new Date(Date.now() + parseMs(expiresIn)).toUTCString(),
+  }
 }
 
 // compare password method
