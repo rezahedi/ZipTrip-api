@@ -143,50 +143,58 @@ paths:
             application/json:
               example: |
                 {
-                  "_id": "plan-id-sdfsdf",
+                  "_id": "plan-id-sdfds",
                   "userId": {
-                    "_id": "user-id-sdfdsf",
+                    "_id": "user-id-sdfsd",
                     "name": "Reza",
-                    "imageURL": "http://example.com/reza.jpg"
+                    "imageURL": "http://example.com/bob.jpg"
                   },
-                  "title": "New York City Essentials Tour",
-                  "description": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                  "title": "San Francisco Day Tour",
+                  "description": "A one-day tour exploring San Francisco's iconic sites.",
                   "images": [
-                    "https://example.com/image1.jpg",
-                    "https://example.com/image2.jpg"
+                    "https://example.com/image1.jpg"
                   ],
-                  cities: [{
-                    "placeId": "google-place-id-sdfsd",
-                    "name": "San Francisco, CA, USA"
-                  }]
+                  "polyline": "aiseFvmfjVSBBo...j@GHbALhB@TN|BrAK?HXMTC",
                   "stopCount": 1,
-                  "reviewCount": 83,
-                  "startLocation": [40.7924, -73.9519],
-                  "finishLocation": [40.7614, -73.9776],
-                  "distance": 8.3,
-                  "duration": 4,
-                  "createdAt": "2025-04-22T23:54:08.160Z",
-                  "updatedAt": "2025-09-16T22:23:47.445Z",
-                  "type": "Half day",
-                  "stops": [
-                    {
-                      "_id": "place-id-sdfdsf",
-                      "placeId": "google-place-id-sdfsd",
-                      "address": "3601 Lyon St, San Francisco",
-                      "country": "United States",
-                      "imageURL": "http://example.com/media_ctmv1a.jpg",
-                      "location": [37.8029, -122.4484],
-                      "name": "Palace of Fine Arts",
-                      "rating": 4.8,
-                      "reviewSummary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
-                      "state": "California",
-                      "summary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
-                      "type": "event_venue",
-                      "userRatingCount": 25183,
-                      "directionGoogleURI": "https://www.google.com/maps/dir/?asdasd",
-                      "placeGoogleURI": "https://www.google.com/maps/place/?q=place-id-sdfsdf"
-                    }
-                  ],
+                  "cities": [{
+                    "_id": "city-id-sdfsd",
+                    "placeId": "google-place-id",
+                    "imageURL": "https://example.com/media_uqd61a.jpg",
+                    "name": "San Francisco",
+                    "plans": 6,
+                    "viewport": {
+                      "low": [37.70339, -122.527],
+                      "high": [37.812, -122.3482]
+                    },
+                    "country": "United States",
+                    "location": [37.77492, -122.41941],
+                    "state": "California"
+                  }],
+                  "stops": [{
+                    "placeId": "google-place-id-sdfsd",
+                    "name": "Victorian Home Walk",
+                    "note": "",
+                    "expense": null,
+                    "imageURL": "https://example.com/media_xpeh9k.png",
+                    "address": "Queen Anne Hotel, 1590 Sutter St, San Francisco",
+                    "location": [37.78722, -122.42654],
+                    "_id": "place-id-sdfsd",
+                    "country": "United States",
+                    "type": "tour_agency",
+                    "rating": 4.8,
+                    "reviewSummary": "",
+                    "state": "California",
+                    "summary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                    "userRatingCount": 70
+                  }],
+                  "rate": 0,
+                  "reviewCount": 0,
+                  "startLocation":  [0, 0],
+                  "finishLocation":  [0, 0],
+                  "distance": 0,
+                  "duration": 0,
+                  "createdAt": "2025-10-03T21:27:45.420Z",
+                  "updatedAt": "2025-10-03T21:27:45.420Z",
                   "isBookmarked": false
                 }
           headers: {}
@@ -762,7 +770,7 @@ paths:
                   "distance": 0,
                   "duration": 0,
                   "createdAt": "2025-10-03T21:27:45.420Z",
-                  "updatedAt": "2025-10-03T21:27:45.420Z",
+                  "updatedAt": "2025-10-03T21:27:45.420Z"
                 }
           headers: {}
       deprecated: false
@@ -792,50 +800,56 @@ paths:
                 {
                   "_id": "plan-id-sdfds",
                   "userId": {
-                    "_id": "user-id-sdfdsf",
-                    "name": "Reza"
+                    "_id": "user-id-sdfsd",
+                    "name": "Reza",
+                    "imageURL": "http://example.com/bob.jpg"
                   },
-                  "title": "A Day Around Lake Merritt: Nature, Culture & Good Eats",
-                  "description": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                  "title": "San Francisco Day Tour",
+                  "description": "A one-day tour exploring San Francisco's iconic sites.",
                   "images": [
                     "https://example.com/image1.jpg"
                   ],
-                  "type": "Full day",
+                  "polyline": "aiseFvmfjVSBBo...j@GHbALhB@TN|BrAK?HXMTC",
                   "stopCount": 1,
-                  "rate": 2.9,
-                  "reviewCount": 95,
-                  "startLocation": [37.80940406629325, -122.25985216557562],
-                  "finishLocation": [37.8098488, -122.2610236],
-                  "distance": 4,
-                  "duration": 5,
-                  "createdAt": "2025-05-14T05:36:21.948Z",
-                  "updatedAt": "2025-09-16T22:33:36.732Z",
                   "cities": [{
-                    "_id": "68f0353cd5a998699dc5cdc7",
-                    "placeId": "ChIJIQBpAG2ahYAR_6128GcTUEo",
+                    "_id": "city-id-sdfsd",
+                    "placeId": "google-place-id",
+                    "imageURL": "https://example.com/media_uqd61a.jpg",
                     "name": "San Francisco",
-                    "state": "California",
-                    "country": "United States",
-                    "imageURL": "https://res.cloudinary.com/dqw16fnae/image/upload/v1760591367/ZipTrip/Places/media_uqd61a.jpg",
-                    "plans": 5,
-                    "location": [37.7749295, -122.41941550000001],
+                    "plans": 6,
                     "viewport": {
-                      "low": [37.703399999999995, -122.527],
+                      "low": [37.70339, -122.527],
                       "high": [37.812, -122.3482]
                     },
-                    "createdAt": "2025-10-15T23:58:53.645Z",
-                    "updatedAt": "2025-10-17T21:42:29.779Z"
+                    "country": "United States",
+                    "location": [37.77492, -122.41941],
+                    "state": "California"
                   }],
-                  "stops": [
-                    {
-                      "placeId": "place-id-sdfds",
-                      "name": "Children's Fairyland",
-                      "description": "",
-                      "imageURL": "https://example.com/children-fairyland.jpg",
-                      "address": "699 Bellevue Ave Oakland, CA 94610",
-                      "location": [37.80940406629325, -122.25985216557562]
-                    }
-                  ]
+                  "stops": [{
+                    "placeId": "google-place-id-sdfsd",
+                    "name": "Victorian Home Walk",
+                    "note": "",
+                    "expense": null,
+                    "imageURL": "https://example.com/media_xpeh9k.png",
+                    "address": "Queen Anne Hotel, 1590 Sutter St, San Francisco",
+                    "location": [37.78722, -122.42654],
+                    "_id": "place-id-sdfsd",
+                    "country": "United States",
+                    "type": "tour_agency",
+                    "rating": 4.8,
+                    "reviewSummary": "",
+                    "state": "California",
+                    "summary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                    "userRatingCount": 70
+                  }],
+                  "rate": 0,
+                  "reviewCount": 0,
+                  "startLocation":  [0, 0],
+                  "finishLocation":  [0, 0],
+                  "distance": 0,
+                  "duration": 0,
+                  "createdAt": "2025-10-03T21:27:45.420Z",
+                  "updatedAt": "2025-10-03T21:27:45.420Z"
                 }
           headers: {}
       deprecated: false
@@ -889,27 +903,47 @@ paths:
                   "_id": "plan-id-sdfds",
                   "userId": {
                     "_id": "user-id-sdfsd",
-                    "name": "Reza"
+                    "name": "Reza",
+                    "imageURL": "http://example.com/bob.jpg"
                   },
                   "title": "San Francisco Day Tour",
                   "description": "A one-day tour exploring San Francisco's iconic sites.",
                   "images": [
                     "https://example.com/image1.jpg"
                   ],
+                  "polyline": "aiseFvmfjVSBBo...j@GHbALhB@TN|BrAK?HXMTC",
                   "stopCount": 1,
                   "cities": [{
-                    "placeId": "google-place-id-sdfsd",
-                    "name": "Oakland, CA"
+                    "_id": "city-id-sdfsd",
+                    "placeId": "google-place-id",
+                    "imageURL": "https://example.com/media_uqd61a.jpg",
+                    "name": "San Francisco",
+                    "plans": 6,
+                    "viewport": {
+                      "low": [37.70339, -122.527],
+                      "high": [37.812, -122.3482]
+                    },
+                    "country": "United States",
+                    "location": [37.77492, -122.41941],
+                    "state": "California"
                   }],
-                  "stops": [
-                    {
-                      "placeId": "place-id-sdfdsf",
-                      "name": "Place Name",
-                      "imageURL": "http://example.com/image.jpg",
-                      "address": "1 Ferry Building, San Francisco, CA 94111",
-                      "location": [0, 0]
-                    }
-                  ],
+                  "stops": [{
+                    "placeId": "google-place-id-sdfsd",
+                    "name": "Victorian Home Walk",
+                    "note": "",
+                    "expense": null,
+                    "imageURL": "https://example.com/media_xpeh9k.png",
+                    "address": "Queen Anne Hotel, 1590 Sutter St, San Francisco",
+                    "location": [37.78722, -122.42654],
+                    "_id": "place-id-sdfsd",
+                    "country": "United States",
+                    "type": "tour_agency",
+                    "rating": 4.8,
+                    "reviewSummary": "",
+                    "state": "California",
+                    "summary": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                    "userRatingCount": 70
+                  }],
                   "rate": 0,
                   "reviewCount": 0,
                   "startLocation":  [0, 0],
@@ -917,7 +951,7 @@ paths:
                   "distance": 0,
                   "duration": 0,
                   "createdAt": "2025-10-03T21:27:45.420Z",
-                  "updatedAt": "2025-10-03T21:27:45.420Z",
+                  "updatedAt": "2025-10-03T21:27:45.420Z"
                 }
           headers: {}
       deprecated: false
@@ -971,6 +1005,36 @@ paths:
                 }
           headers: {}
       deprecated: false
+  /account/plans/{planId}/direction:
+    parameters:
+      - in: path
+        name: planId
+        schema:
+          type: string
+          example: plan-id-sdfsd
+        required: true
+        description: The plan ID
+    get:
+      tags: 
+        - Account
+      summary: Fetch plan's direction encoded polyline, distance and duration from Google Map API
+      security:
+        - bearerAuth: []
+      operationId: AccountGetPlanDirection
+      parameters: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                {
+                  "distanceMeters": 1859,
+                  "durationSeconds": 1515,
+                  "polyline": "aiseFvmfjVSBB\\oANf...bALhB@TN|BrAK?HXMTC"
+                }
+          headers: {}
+      deprecated: false
   /account/bookmarks:
     get:
       tags:
@@ -1007,7 +1071,7 @@ paths:
                       "startLocation": [2343243, -234234],
                       "finishLocation": [2343243, -234234],
                       "distance": 7,
-                      "duration": 2,
+                      "duration": 2
                     }
                   ]
                 }
