@@ -222,12 +222,55 @@ const updatePlan = async (req: Request, res: Response) => {
       new: true,
       runValidators: true,
     }
-  ).populate('userId', 'name')
+  )
+    .select(
+      'title description images cities stopCount stops polyline type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
+    )
+    .populate('userId', 'name imageURL')
+    .lean()
 
   if (!updatedPlan) throw new CustomAPIError('Failed to update the plan', StatusCodes.INTERNAL_SERVER_ERROR)
 
+  // Get all cityIDs of stops in an array
+  const cityIds = updatedPlan.cities.map((c) => c.placeId)
+  // Select all cities by the ids
+  const unorderedCities = await CitySchema.find({
+    placeId: { $in: cityIds },
+  })
+    .select('placeId name state country imageURL location viewport plans')
+    .lean()
+
+  // Make sure the order of cities is the same as plan.cities
+  const cities = updatedPlan.cities.map((city) => {
+    const res = unorderedCities.find((c) => city.placeId === c.placeId)
+    return {
+      ...res,
+      location: geoJsonToCoords(res?.location),
+    }
+  })
+
+  // Get all placeIDs of stops in an array
+  const placeIds = updatedPlan.stops.map((stop) => stop.placeId)
+  // Select all places by the ids
+  const unorderedPlaces = await PlaceSchema.find({
+    placeId: { $in: placeIds },
+  })
+    .select('placeId state country summary type rating userRatingCount reviewSummary directionGoogleURI placeGoogleURI')
+    .lean()
+
+  // Make sure the order of places is the same as plan.stops
+  const places = updatedPlan.stops.map((stop) => {
+    const placeDetail = unorderedPlaces.find((place) => stop.placeId === place.placeId)
+    return {
+      ...stop,
+      ...placeDetail,
+    }
+  })
+
   res.status(StatusCodes.CREATED).json({
-    ...updatedPlan.toJSON(),
+    ...updatedPlan,
+    cities: cities,
+    stops: places,
     startLocation: geoJsonToCoords(updatedPlan.startLocation),
     finishLocation: geoJsonToCoords(updatedPlan.finishLocation),
   })
