@@ -11,7 +11,7 @@ export interface IUser extends Document {
   passwordResetExpires?: number
   createdAt?: Date
   updatedAt?: Date
-  createJWT(): string
+  createJWT(): { token: string; expiresIn: string }
   comparePassword(userPassword: string): Promise<boolean>
 }
 
@@ -74,7 +74,7 @@ UserSchema.pre<IUser>('save', async function (next) {
 })
 
 // create JWT token method
-UserSchema.methods.createJWT = function (): string {
+UserSchema.methods.createJWT = function (): { token: string; expiresIn: string } {
   const secretKey = process.env.JWT_SECRET_KEY as string // Explicit cast to string
   if (!secretKey) {
     throw new Error('JWT_SECRET_KEY is not defined in the environment variable.')
@@ -85,7 +85,7 @@ UserSchema.methods.createJWT = function (): string {
     expiresIn: expiresIn as SignOptions['expiresIn'],
   }
 
-  return jwt.sign({ userId: this._id, name: this.name }, secretKey, options)
+  return { token: jwt.sign({ userId: this._id, name: this.name }, secretKey, options), expiresIn: expiresIn }
 }
 
 // compare password method

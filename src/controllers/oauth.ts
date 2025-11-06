@@ -43,7 +43,7 @@ const googleLogin = async (req: Request, res: Response): Promise<void> => {
   }
 
   // generate JWT token and response.
-  const token = user.createJWT()
+  const { token, expiresIn } = user.createJWT()
 
   res.status(StatusCodes.OK).json({
     _id: user._id,
@@ -51,6 +51,7 @@ const googleLogin = async (req: Request, res: Response): Promise<void> => {
     email: user.email,
     imageURL: user.imageURL,
     token,
+    expiresIn,
   })
 }
 
