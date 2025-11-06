@@ -36,7 +36,6 @@ MONGO_URI="your-mongodb-uri"
 # JWT Settings
 JWT_SECRET_KEY="unique-jwt-secret-key"
 JWT_LIFETIME="1d"
-JWT_EXPIRES_IN="3600"
 NODE_ENV="development"
 # SMTP & SendGrid Settings
 SMTP_HOST="smtp.sendgrid.net"

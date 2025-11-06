@@ -44,13 +44,7 @@ const googleLogin = async (req: Request, res: Response): Promise<void> => {
 
   // generate JWT token and response.
   const token = user.createJWT()
-  const expiresIn = process.env.JWT_EXPIRES_IN || 3000
-  res.cookie('token', token, {
-    maxAge: parseInt(`${expiresIn}`) * 1000,
-    httpOnly: true,
-    secure: process.env.NODE_ENV == 'production',
-    sameSite: 'strict',
-  })
+
   res.status(StatusCodes.OK).json({
     _id: user._id,
     name: user.name,
