@@ -11,7 +11,7 @@ export interface IPlanStop {
   location: [number, number]
 }
 
-interface ICityRef {
+export interface IPlanCity {
   placeId: string
   name: string
 }
@@ -22,7 +22,7 @@ export interface IPlan extends Document {
   description?: string
   images: string[]
   type?: 'Full day' | 'Half day' | 'Night'
-  cities: ICityRef[]
+  cities: IPlanCity[]
   stopCount: number
   stops: IPlanStop[]
   polyline: string
@@ -42,7 +42,7 @@ export interface IPlan extends Document {
   updatedAt?: Date
 }
 
-const CitySchema = new mongoose.Schema<ICityRef>(
+const CitySchema = new mongoose.Schema<IPlanCity>(
   {
     placeId: { type: String, required: true },
     name: { type: String, required: true },
@@ -72,7 +72,14 @@ export const stopSchema: Schema<IPlanStop> = new Schema({
     type: String,
     required: [true, 'Provide place name'],
   },
-  note: String,
+  note: {
+    type: String,
+    default: '',
+  },
+  expense: {
+    type: Number,
+    default: 0,
+  },
   imageURL: String,
   address: String,
   location: {
