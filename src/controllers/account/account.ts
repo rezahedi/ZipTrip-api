@@ -8,13 +8,13 @@ import NotFoundError from '../../errors/not_found'
 import UnauthenticatedError from '../../errors/unauthentication_error'
 import { coordsToGeoJson, geoJsonToCoords } from '../../utils/location'
 import CitySchema, { ICity } from '../../models/Cities'
-import { Types } from 'mongoose'
+import fixme_populatePlan from './fixme_util'
 
-type PlaceDTO = Omit<IPlace, 'location' | 'createdAt' | 'updatedAt'> & {
+type IPlaceDTO = Omit<IPlace, 'location' | 'createdAt' | 'updatedAt'> & {
   location: [number, number]
 }
 
-type CityDTO = Omit<ICity, 'imageURL' | 'location' | 'plans' | 'createdAt' | 'updatedAt'>
+type ICityDTO = Omit<ICity, 'imageURL' | 'location' | 'plans' | 'createdAt' | 'updatedAt'>
 
 const PAGE_SIZE = 10
 
@@ -62,7 +62,7 @@ const createNewPlan = async (req: Request, res: Response) => {
   // Insert cities in Cities collection if placeId does not exist
   // Increment plan's count in Cities Collection if placeId exist
   if (cities && cities.length > 0) {
-    const ops = cities.map((city: CityDTO) => ({
+    const ops = cities.map((city: ICityDTO) => ({
       updateOne: {
         filter: { placeId: city.placeId },
         update: {
@@ -82,7 +82,7 @@ const createNewPlan = async (req: Request, res: Response) => {
 
   if (stops && stops.length > 0) {
     // Insert stops in Places collection if id does not exist
-    const ops = stops.map((stop: PlaceDTO) => ({
+    const ops = stops.map((stop: IPlaceDTO) => ({
       updateOne: {
         filter: { placeId: stop.placeId },
         update: {
@@ -125,74 +125,21 @@ const fetchPlan = async (req: Request, res: Response) => {
   const userId = req.user.userId
   const planId = req.params.planId
 
-  const plan = await PlanSchema.aggregate([
-    {
-      $match: { userId, _id: new Types.ObjectId(planId) },
-    },
-    {
-      $project: {
-        title: 1,
-        description: 1,
-        images: 1,
-        cities: 1,
-        stopCount: 1,
-        stops: 1,
-        polyline: 1,
-        type: 1,
-        rate: 1,
-        reviewCount: 1,
-        startLocation: 1,
-        finishLocation: 1,
-        distance: 1,
-        duration: 1,
-        createdAt: 1,
-        updatedAt: 1,
-      },
-    },
-    {
-      $lookup: {
-        from: 'cities', // name of the Cities collection
-        localField: 'cities.placeId',
-        foreignField: 'placeId',
-        as: 'cities', // NOTE: If need the exact cities order, save as cityDetails and uncomment the mapping stage below, otherwise it may change the order of added cities!
-      },
-    },
-    // {
-    //   $addFields: {
-    //     cities: {
-    //       $map: {
-    //         input: '$cities',
-    //         as: 'c',
-    //         in: {
-    //           $mergeObjects: [
-    //             '$$c',
-    //             {
-    //               $arrayElemAt: [
-    //                 {
-    //                   $filter: {
-    //                     input: '$cityDetails',
-    //                     as: 'inputCity',
-    //                     cond: { $eq: ['$$inputCity.placeId', '$$c.placeId'] },
-    //                   },
-    //                 },
-    //                 0,
-    //               ],
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
-  ])
-  if (plan.length === 0) throw new NotFoundError(`No plan with id ${planId}`)
-
-  res.status(StatusCodes.OK).json({
-    ...plan[0],
-    cities: plan[0].cities.map((city: ICity) => ({ ...city, location: geoJsonToCoords(city.location) })),
-    startLocation: geoJsonToCoords(plan[0]?.startLocation),
-    finishLocation: geoJsonToCoords(plan[0]?.finishLocation),
+  const plan: IPlan | null = await PlanSchema.findOne({
+    _id: planId,
+    userId,
   })
+    .select(
+      'title description images cities stopCount stops polyline type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
+    )
+    .populate('userId', 'name imageURL')
+    .lean()
+
+  if (!plan) throw new CustomAPIError(`Plan not found with the id ${planId}`, StatusCodes.NOT_FOUND)
+
+  const populatedPlan = await fixme_populatePlan(plan)
+
+  res.status(StatusCodes.OK).json(populatedPlan)
 }
 
 const updatePlan = async (req: Request, res: Response) => {
@@ -205,7 +152,7 @@ const updatePlan = async (req: Request, res: Response) => {
 
   if (stops) {
     // Insert stops in Places collection if id does not exist
-    const ops = stops.map((stop: PlaceDTO) => ({
+    const ops = stops.map((stop: IPlaceDTO) => ({
       updateOne: {
         filter: { placeId: stop.placeId },
         update: {
@@ -236,15 +183,18 @@ const updatePlan = async (req: Request, res: Response) => {
       new: true,
       runValidators: true,
     }
-  ).populate('userId', 'name')
+  )
+    .select(
+      'title description images cities stopCount stops polyline type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
+    )
+    .populate('userId', 'name imageURL')
+    .lean()
 
   if (!updatedPlan) throw new CustomAPIError('Failed to update the plan', StatusCodes.INTERNAL_SERVER_ERROR)
 
-  res.status(StatusCodes.CREATED).json({
-    ...updatedPlan.toJSON(),
-    startLocation: geoJsonToCoords(updatedPlan.startLocation),
-    finishLocation: geoJsonToCoords(updatedPlan.finishLocation),
-  })
+  const populatedPlan = await fixme_populatePlan(updatedPlan)
+
+  res.status(StatusCodes.CREATED).json(populatedPlan)
 }
 
 const deletePlan = async (req: Request, res: Response) => {

@@ -1,12 +1,13 @@
 import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import PlanSchema, { IPlan } from '../models/Plans'
-import PlaceSchema from '../models/Places'
 import BookmarkSchema from '../models/Bookmarks'
 import UserSchema, { IUser } from '../models/Users'
 import NotFoundError from '../errors/not_found'
 import { geoJsonToCoords } from '../utils/location'
 import { attachBookmarkFlagToPlans } from './util'
+import CustomAPIError from '../errors/custom_error'
+import fixme_populatePlan from './account/fixme_util'
 
 const PAGE_SIZE = 10
 const PLANS_MAX_LIMIT = 40
@@ -100,32 +101,15 @@ const fetchPlan = async (req: Request, res: Response) => {
   const { planId } = req.params
 
   const plan: IPlan | null = await PlanSchema.findById(planId)
-    .orFail(new NotFoundError(`Item not found with the id: ${planId}`))
     .select(
       'title description images cities stopCount stops polyline type rate reviewCount startLocation finishLocation distance duration createdAt updatedAt'
     )
     .populate('userId', 'name imageURL')
     .lean()
 
-  // Get all placeIDs of stops in an array
-  const placeIds = plan?.stops.map((stop) => stop.placeId)
-  // Select all places by the ids
-  const unorderedPlaces = await PlaceSchema.find({
-    placeId: { $in: placeIds },
-  })
-    .select(
-      'placeId name state country address summary imageURL location type rating userRatingCount reviewSummary directionGoogleURI placeGoogleURI'
-    )
-    .lean()
+  if (!plan) throw new CustomAPIError(`Plan not found with the id ${planId}`, StatusCodes.NOT_FOUND)
 
-  // Make sure the order of places is the same as plan.stops
-  const places = plan?.stops.map((stop) => {
-    const res = unorderedPlaces.find((place) => stop.placeId === place.placeId)
-    return {
-      ...res,
-      location: geoJsonToCoords(res?.location),
-    }
-  })
+  const populatedPlan = await fixme_populatePlan(plan)
 
   const loggedInUser = req.user || null
   let isBookmarked: boolean = false
@@ -140,12 +124,8 @@ const fetchPlan = async (req: Request, res: Response) => {
   }
 
   res.status(StatusCodes.OK).json({
-    ...plan,
-    // Replace plan.stops with the new array of places
-    stops: places,
+    ...populatedPlan,
     isBookmarked,
-    startLocation: geoJsonToCoords(plan?.startLocation),
-    finishLocation: geoJsonToCoords(plan?.finishLocation),
   })
 }
 
