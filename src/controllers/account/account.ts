@@ -9,11 +9,11 @@ import UnauthenticatedError from '../../errors/unauthentication_error'
 import { coordsToGeoJson, geoJsonToCoords } from '../../utils/location'
 import CitySchema, { ICity } from '../../models/Cities'
 
-type PlaceDTO = Omit<IPlace, 'location' | 'createdAt' | 'updatedAt'> & {
+type IPlaceDTO = Omit<IPlace, 'location' | 'createdAt' | 'updatedAt'> & {
   location: [number, number]
 }
 
-type CityDTO = Omit<ICity, 'imageURL' | 'location' | 'plans' | 'createdAt' | 'updatedAt'>
+type ICityDTO = Omit<ICity, 'imageURL' | 'location' | 'plans' | 'createdAt' | 'updatedAt'>
 
 const PAGE_SIZE = 10
 
@@ -61,7 +61,7 @@ const createNewPlan = async (req: Request, res: Response) => {
   // Insert cities in Cities collection if placeId does not exist
   // Increment plan's count in Cities Collection if placeId exist
   if (cities && cities.length > 0) {
-    const ops = cities.map((city: CityDTO) => ({
+    const ops = cities.map((city: ICityDTO) => ({
       updateOne: {
         filter: { placeId: city.placeId },
         update: {
@@ -81,7 +81,7 @@ const createNewPlan = async (req: Request, res: Response) => {
 
   if (stops && stops.length > 0) {
     // Insert stops in Places collection if id does not exist
-    const ops = stops.map((stop: PlaceDTO) => ({
+    const ops = stops.map((stop: IPlaceDTO) => ({
       updateOne: {
         filter: { placeId: stop.placeId },
         update: {
@@ -191,7 +191,7 @@ const updatePlan = async (req: Request, res: Response) => {
 
   if (stops) {
     // Insert stops in Places collection if id does not exist
-    const ops = stops.map((stop: PlaceDTO) => ({
+    const ops = stops.map((stop: IPlaceDTO) => ({
       updateOne: {
         filter: { placeId: stop.placeId },
         update: {
