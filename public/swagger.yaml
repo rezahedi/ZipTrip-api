@@ -552,7 +552,7 @@ paths:
                   "email": "bob@example.com",
                   "imageURL": "http://example.com/bob.jpg",
                   "token": "example-token-sdf98sdf879sdf9sd8fsd89f89wefw",
-                  "expiresIn": "1d"
+                  "expiresIn": "Sat, 08 Nov 2025 04:42:04 GMT"
                 }
           headers: {}
       deprecated: false
@@ -588,7 +588,7 @@ paths:
                   "email": "bob@example.com",
                   "imageURL": "http://example.com/bob.jpg",
                   "token": "example-token-sdf98sdf879sdf9sd8fsd89f89wefw",
-                  "expiresIn": "1d"
+                  "expiresIn": "Sat, 08 Nov 2025 04:42:04 GMT"
                 }
           headers: {}
       deprecated: false
@@ -647,7 +647,7 @@ paths:
                   "email": "bob@example.com",
                   "imageURL": "http://example.com/bob.jpg",
                   "token": "example-token-sdf98sdf879sdf9sd8fsd89f89wefw",
-                  "expiresIn": "1d"
+                  "expiresIn": "Sat, 08 Nov 2025 04:42:04 GMT"
                 }
           headers: {}
       deprecated: false 
