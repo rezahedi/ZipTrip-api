@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose'
 import bcrypt from 'bcryptjs'
 import jwt, { SignOptions } from 'jsonwebtoken'
+import { parseMs } from '../utils/ms'
 
 export interface IUser extends Document {
   name: string
@@ -11,7 +12,7 @@ export interface IUser extends Document {
   passwordResetExpires?: number
   createdAt?: Date
   updatedAt?: Date
-  createJWT(): string
+  createJWT(): { token: string; expiresIn: string }
   comparePassword(userPassword: string): Promise<boolean>
 }
 
@@ -74,22 +75,21 @@ UserSchema.pre<IUser>('save', async function (next) {
 })
 
 // create JWT token method
-UserSchema.methods.createJWT = function (): string {
+UserSchema.methods.createJWT = function (): { token: string; expiresIn: string } {
   const secretKey = process.env.JWT_SECRET_KEY as string // Explicit cast to string
   if (!secretKey) {
     throw new Error('JWT_SECRET_KEY is not defined in the environment variable.')
   }
-  // previous code with error
-  // const expiresIn = process.env.JWT_LIFETIME ? parseInt(process.env.JWT_LIFETIME) : 3600 // Default to 1 hour (3600 seconds)
-  // const options: SignOptions = {
-  //   expiresIn,
-  // }
+
   const expiresIn = process.env.JWT_LIFETIME || '1d'
   const options: SignOptions = {
     expiresIn: expiresIn as SignOptions['expiresIn'],
   }
 
-  return jwt.sign({ userId: this._id, name: this.name }, secretKey, options)
+  return {
+    token: jwt.sign({ userId: this._id, name: this.name }, secretKey, options),
+    expiresIn: new Date(Date.now() + parseMs(expiresIn)).toUTCString(),
+  }
 }
 
 // compare password method

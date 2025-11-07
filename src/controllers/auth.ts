@@ -25,7 +25,7 @@ const register = async (req: Request<object, object, RegisterRequestBody>, res: 
   })
   await user.save()
 
-  const token = user.createJWT()
+  const { token, expiresIn } = user.createJWT()
 
   res.status(StatusCodes.CREATED).json({
     _id: user._id,
@@ -33,6 +33,7 @@ const register = async (req: Request<object, object, RegisterRequestBody>, res: 
     email: user.email,
     imageURL: user.imageURL,
     token,
+    expiresIn,
   })
 }
 
@@ -54,20 +55,15 @@ const login = async (req: Request, res: Response): Promise<void> => {
   }
 
   // generate JWT token and response.
-  const token = user.createJWT()
-  const expiresIn = process.env.JWT_EXPIRES_IN || 3000
-  res.cookie('token', token, {
-    maxAge: parseInt(`${expiresIn}`) * 1000,
-    httpOnly: true,
-    secure: process.env.NODE_ENV == 'production',
-    sameSite: 'strict',
-  })
+  const { token, expiresIn } = user.createJWT()
+
   res.status(StatusCodes.OK).json({
     _id: user._id,
     name: user.name,
     email: user.email,
     imageURL: user.imageURL,
     token,
+    expiresIn,
   })
 }
 
@@ -135,13 +131,14 @@ const resetPassword = async (req: Request, res: Response) => {
   user.passwordResetExpires = undefined
 
   await user.save()
-  const token = user.createJWT()
+  const { token, expiresIn } = user.createJWT()
   res.status(StatusCodes.OK).json({
     _id: user._id,
     name: user.name,
     email: user.email,
     imageURL: user.imageURL,
     token,
+    expiresIn,
   })
 }
 
