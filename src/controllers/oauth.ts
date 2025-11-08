@@ -20,7 +20,7 @@ const googleLogin = async (req: Request, res: Response): Promise<void> => {
   })
 
   const payload = ticket.getPayload()
-  if (!payload) throw new UnauthenticatedError('Invalid token.')
+  if (!payload || !payload.email) throw new UnauthenticatedError('Invalid token.')
 
   let user: IUser | null = await UserSchema.findOne({ email: payload.email })
   if (!user) {
