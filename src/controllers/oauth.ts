@@ -4,7 +4,7 @@ import UserSchema, { IUser } from '../models/Users'
 import { StatusCodes } from 'http-status-codes'
 import { OAuth2Client } from 'google-auth-library'
 
-const oAuth2Client = new OAuth2Client(
+const client = new OAuth2Client(
   process.env.GOOGLE_OAUTH2_CLIENT_ID,
   process.env.GOOGLE_OAUTH2_CLIENT_SECRET,
   'postmessage'
@@ -14,30 +14,21 @@ const googleLogin = async (req: Request, res: Response): Promise<void> => {
   const { code } = req.body
   if (!code) throw new UnauthenticatedError('Provide code.')
 
-  const { tokens } = await oAuth2Client.getToken(code)
-
-  const userInfo = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${tokens.access_token}`,
-    },
+  const ticket = await client.verifyIdToken({
+    idToken: code,
+    audience: process.env.GOOGLE_OAUTH2_CLIENT_ID,
   })
-    .then((res) => res.json())
-    .then((res) => res)
-    .catch((err) => {
-      console.log(err)
-      throw new UnauthenticatedError('Not authorized to access.')
-    })
 
-  if (!userInfo || !userInfo.email) throw new UnauthenticatedError('Not authorized to access.')
+  const payload = ticket.getPayload()
+  if (!payload) throw new UnauthenticatedError('Invalid token.')
 
-  let user: IUser | null = await UserSchema.findOne({ email: userInfo.email })
+  let user: IUser | null = await UserSchema.findOne({ email: payload.email })
   if (!user) {
     user = new UserSchema({
-      name: userInfo.name,
-      email: userInfo.email,
+      name: payload.name,
+      email: payload.email,
       password: crypto.randomUUID(), // random password for OAuth users
-      imageURL: userInfo.picture,
+      imageURL: payload.picture,
     })
     await user.save()
   }
