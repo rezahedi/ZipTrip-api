@@ -25,12 +25,10 @@ const upload = multer({ storage: multer.memoryStorage() })
 const app = express()
 
 // middleware
+const corsOriginURLs = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : '*'
 app.use(
   cors({
-    origin: [
-      'http://localhost:5173', // for local dev
-      'https://ziptrip.rezahedi.dev', // for production frontend
-    ],
+    origin: corsOriginURLs,
     credentials: true, // allow cookies / auth headers
     allowedHeaders: ['Content-Type', 'Authorization'], // needed for JWT
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], // safe list
