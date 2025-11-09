@@ -18,6 +18,8 @@ import errorHandlerMiddleware from './middlewares/errorHandlerMiddleware'
 import notFoundMiddleware from './middlewares/notFoundMiddleware'
 import path from 'path'
 import multer from 'multer'
+import { loadEnv } from './utils/loadEnv'
+loadEnv()
 
 const upload = multer({ storage: multer.memoryStorage() })
 const app = express()
