@@ -3,7 +3,7 @@ import { connectDB } from '../db/connection'
 import { StatusCodes } from 'http-status-codes'
 import CustomAPIError from '../errors/custom_error'
 
-const authMiddleware = async (request: Request, response: Response, next: NextFunction) => {
+const dbMiddleware = async (request: Request, response: Response, next: NextFunction) => {
   if (!process.env.MONGO_URI) {
     throw new CustomAPIError(
       'Database connection string is undefined. Check your environment variables.',
@@ -15,4 +15,4 @@ const authMiddleware = async (request: Request, response: Response, next: NextFu
   next()
 }
 
-export default authMiddleware
+export default dbMiddleware
