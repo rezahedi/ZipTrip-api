@@ -18,17 +18,17 @@ import errorHandlerMiddleware from './middlewares/errorHandlerMiddleware'
 import notFoundMiddleware from './middlewares/notFoundMiddleware'
 import path from 'path'
 import multer from 'multer'
+import { loadEnv } from './utils/loadEnv'
+loadEnv()
 
 const upload = multer({ storage: multer.memoryStorage() })
 const app = express()
 
 // middleware
+const corsOriginURLs = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : false
 app.use(
   cors({
-    origin: [
-      'http://localhost:5173', // for local dev
-      'https://ziptrip.rezahedi.dev', // for production frontend
-    ],
+    origin: corsOriginURLs,
     credentials: true, // allow cookies / auth headers
     allowedHeaders: ['Content-Type', 'Authorization'], // needed for JWT
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], // safe list
