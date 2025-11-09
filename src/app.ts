@@ -25,7 +25,7 @@ const upload = multer({ storage: multer.memoryStorage() })
 const app = express()
 
 // middleware
-const corsOriginURLs = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : '*'
+const corsOriginURLs = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : false
 app.use(
   cors({
     origin: corsOriginURLs,
